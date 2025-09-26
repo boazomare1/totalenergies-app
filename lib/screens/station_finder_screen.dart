@@ -187,27 +187,28 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                           child: DropdownButton<String>(
                             value: _selectedFilter,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 9),
+                            style: GoogleFonts.poppins(fontSize: 11, color: Colors.black87),
+                            hint: Text('Filter', style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600])),
                             items: const [
                               DropdownMenuItem(
                                 value: 'All',
-                                child: Text('All'),
+                                child: Text('All Stations'),
                               ),
                               DropdownMenuItem(
                                 value: 'Open Now',
-                                child: Text('Open'),
+                                child: Text('Open Now'),
                               ),
                               DropdownMenuItem(
                                 value: 'With Restaurant',
-                                child: Text('Restaurant'),
+                                child: Text('With Restaurant'),
                               ),
                               DropdownMenuItem(
                                 value: 'With Car Wash',
-                                child: Text('Car Wash'),
+                                child: Text('With Car Wash'),
                               ),
                               DropdownMenuItem(
                                 value: 'With ATM',
-                                child: Text('ATM'),
+                                child: Text('With ATM'),
                               ),
                             ],
                             onChanged: (value) {
@@ -233,7 +234,8 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                           child: DropdownButton<String>(
                             value: _selectedSort,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 9),
+                            style: GoogleFonts.poppins(fontSize: 11, color: Colors.black87),
+                            hint: Text('Sort', style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600])),
                             items: const [
                               DropdownMenuItem(
                                 value: 'Distance',
