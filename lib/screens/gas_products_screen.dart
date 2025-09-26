@@ -91,10 +91,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${product['name']} added to cart'),
-        action: SnackBarAction(
-          label: 'View Cart',
-          onPressed: _viewCart,
-        ),
+        action: SnackBarAction(label: 'View Cart', onPressed: _viewCart),
       ),
     );
   }
@@ -103,30 +100,33 @@ class _GasProductsScreenState extends State<GasProductsScreen>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CheckoutScreen(
-          cartItems: [Map<String, dynamic>.from(product)],
-          totalAmount: product['price'],
-        ),
+        builder:
+            (context) => CheckoutScreen(
+              cartItems: [Map<String, dynamic>.from(product)],
+              totalAmount: product['price'],
+            ),
       ),
     );
   }
 
   void _viewCart() {
     if (_cartItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Your cart is empty')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Your cart is empty')));
       return;
     }
 
-    double totalAmount = _cartItems.fold(0.0, (sum, item) => sum + item['price']);
+    double totalAmount = _cartItems.fold(
+      0.0,
+      (sum, item) => sum + item['price'],
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CheckoutScreen(
-          cartItems: _cartItems,
-          totalAmount: totalAmount,
-        ),
+        builder:
+            (context) =>
+                CheckoutScreen(cartItems: _cartItems, totalAmount: totalAmount),
       ),
     ).then((_) {
       _clearCart();
@@ -173,10 +173,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
           indicatorColor: Colors.white,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(text: 'Cylinders'),
-            Tab(text: 'Accessories'),
-          ],
+          tabs: const [Tab(text: 'Cylinders'), Tab(text: 'Accessories')],
         ),
         actions: [
           Stack(
@@ -216,10 +213,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildCylindersTab(),
-          _buildAccessoriesTab(),
-        ],
+        children: [_buildCylindersTab(), _buildAccessoriesTab()],
       ),
     );
   }
@@ -227,17 +221,14 @@ class _GasProductsScreenState extends State<GasProductsScreen>
   Widget _buildCylindersTab() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.6,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
+      child: ListView.builder(
         itemCount: _cylinders.length,
         itemBuilder: (context, index) {
           final cylinder = _cylinders[index];
-          return _buildCylinderCard(cylinder);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildCylinderCard(cylinder),
+          );
         },
       ),
     );
@@ -246,17 +237,14 @@ class _GasProductsScreenState extends State<GasProductsScreen>
   Widget _buildAccessoriesTab() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.6,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
+      child: ListView.builder(
         itemCount: _accessories.length,
         itemBuilder: (context, index) {
           final accessory = _accessories[index];
-          return _buildAccessoryCard(accessory);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: _buildAccessoryCard(accessory),
+          );
         },
       ),
     );
@@ -264,6 +252,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
 
   Widget _buildCylinderCard(Map<String, dynamic> cylinder) {
     return Container(
+      height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -275,110 +264,115 @@ class _GasProductsScreenState extends State<GasProductsScreen>
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
           // Product Image
-          Expanded(
-            flex: 3,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
+          Container(
+            width: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
               ),
-              child: Center(
-                child: Icon(
-                  Icons.local_gas_station,
-                  size: 50,
-                  color: Colors.grey[400],
-                ),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.local_gas_station,
+                size: 50,
+                color: Colors.grey[400],
               ),
             ),
           ),
           
           // Product Info
           Expanded(
-            flex: 2,
             child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: ClipRect(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      cylinder['name'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        cylinder['name'],
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      'KES ${cylinder['price'].toStringAsFixed(2)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFE60012),
+                      const SizedBox(height: 4),
+                      Text(
+                        cylinder['description'],
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    
-                    // Action Buttons
-                    Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => _addToCart(cylinder),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE60012),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'KES ${cylinder['price'].toStringAsFixed(2)}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFFE60012),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => _addToCart(cylinder),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE60012),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              'Add to cart',
-                              style: GoogleFonts.poppins(
-                                fontSize: 8,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          ),
+                          child: Text(
+                            'Add to cart',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () => _buyNow(cylinder),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFFE60012),
-                              side: const BorderSide(color: Color(0xFFE60012)),
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _buyNow(cylinder),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFE60012),
+                            side: const BorderSide(color: Color(0xFFE60012)),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              'Buy Now',
-                              style: GoogleFonts.poppins(
-                                fontSize: 8,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          ),
+                          child: Text(
+                            'Buy Now',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -389,6 +383,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
 
   Widget _buildAccessoryCard(Map<String, dynamic> accessory) {
     return Container(
+      height: 120,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -400,110 +395,115 @@ class _GasProductsScreenState extends State<GasProductsScreen>
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
           // Product Image
-          Expanded(
-            flex: 3,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
-                ),
+          Container(
+            width: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                bottomLeft: Radius.circular(12),
               ),
-              child: Center(
-                child: Icon(
-                  _getAccessoryIcon(accessory['category']),
-                  size: 50,
-                  color: Colors.grey[400],
-                ),
+            ),
+            child: Center(
+              child: Icon(
+                _getAccessoryIcon(accessory['category']),
+                size: 50,
+                color: Colors.grey[400],
               ),
             ),
           ),
           
           // Product Info
           Expanded(
-            flex: 2,
             child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: ClipRect(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      accessory['name'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        accessory['name'],
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      'KES ${accessory['price'].toStringAsFixed(2)}',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFE60012),
+                      const SizedBox(height: 4),
+                      Text(
+                        accessory['description'],
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    
-                    // Action Buttons
-                    Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => _addToCart(accessory),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFE60012),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'KES ${accessory['price'].toStringAsFixed(2)}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFFE60012),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => _addToCart(accessory),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE60012),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              'Add to cart',
-                              style: GoogleFonts.poppins(
-                                fontSize: 8,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          ),
+                          child: Text(
+                            'Add to cart',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: () => _buyNow(accessory),
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFFE60012),
-                              side: const BorderSide(color: Color(0xFFE60012)),
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _buyNow(accessory),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFE60012),
+                            side: const BorderSide(color: Color(0xFFE60012)),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              'Buy Now',
-                              style: GoogleFonts.poppins(
-                                fontSize: 8,
-                                fontWeight: FontWeight.w600,
-                              ),
+                          ),
+                          child: Text(
+                            'Buy Now',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
