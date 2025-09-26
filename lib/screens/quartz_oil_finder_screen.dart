@@ -234,8 +234,8 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
             color: Colors.white,
             child: TabBar(
               controller: _tabController,
-            indicatorColor: const Color(0xFFE60012),
-            labelColor: const Color(0xFFE60012),
+              indicatorColor: const Color(0xFFE60012),
+              labelColor: const Color(0xFFE60012),
               unselectedLabelColor: Colors.grey[600],
               onTap: (index) {
                 // Handle tab selection
@@ -245,11 +245,15 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.directions_car, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Vehicle & Equipment',
-                        style: GoogleFonts.poppins(fontSize: 12),
+                      Icon(Icons.directions_car, size: 16),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          'Vehicle & Equipment',
+                          style: GoogleFonts.poppins(fontSize: 11),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -258,11 +262,15 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.search, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'License Plate',
-                        style: GoogleFonts.poppins(fontSize: 12),
+                      Icon(Icons.search, size: 16),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          'License Plate',
+                          style: GoogleFonts.poppins(fontSize: 11),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -271,11 +279,15 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.oil_barrel, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Oil Search',
-                        style: GoogleFonts.poppins(fontSize: 12),
+                      Icon(Icons.oil_barrel, size: 16),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          'Oil Search',
+                          style: GoogleFonts.poppins(fontSize: 11),
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -320,29 +332,34 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (isWorkshop) ...[
               Icon(
                 Icons.arrow_forward,
                 color: isSelected ? const Color(0xFFE60012) : Colors.white,
-                size: 16,
+                size: 14,
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 2),
             ],
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? const Color(0xFFE60012) : Colors.white,
+            Flexible(
+              child: Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? const Color(0xFFE60012) : Colors.white,
+                ),
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             if (!isWorkshop) ...[
-              const SizedBox(width: 4),
+              const SizedBox(width: 2),
               Icon(
                 Icons.info_outline,
                 color: isSelected ? const Color(0xFFE60012) : Colors.white,
-                size: 16,
+                size: 14,
               ),
             ],
           ],
@@ -511,55 +528,58 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
             style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
           ),
           const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children:
-                  _vehicleTypes.map<Widget>((type) {
-                    final isSelected = _selectedVehicleType == type['id'];
-                    return GestureDetector(
-                      onTap:
-                          () =>
-                              setState(() => _selectedVehicleType = type['id']),
-                      child: Container(
-                        width: (MediaQuery.of(context).size.width - 56) / 2,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color:
-                                isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
-                            width: isSelected ? 2 : 1,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              type['icon'] as IconData,
-                              color:
-                                  isSelected ? const Color(0xFFE60012) : Colors.grey[600],
-                              size: 24,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              type['name'] as String,
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                                color:
-                                    isSelected
-                                        ? const Color(0xFFE60012)
-                                        : Colors.grey[600],
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children:
+                _vehicleTypes.map<Widget>((type) {
+                  final isSelected = _selectedVehicleType == type['id'];
+                  return GestureDetector(
+                    onTap:
+                        () => setState(() => _selectedVehicleType = type['id']),
+                    child: Container(
+                      width: (MediaQuery.of(context).size.width - 56) / 2,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color:
+                              isSelected
+                                  ? const Color(0xFFE60012)
+                                  : Colors.grey[300]!,
+                          width: isSelected ? 2 : 1,
                         ),
                       ),
-                    );
-                  }).toList(),
-            ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            type['icon'] as IconData,
+                            color:
+                                isSelected
+                                    ? const Color(0xFFE60012)
+                                    : Colors.grey[600],
+                            size: 24,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            type['name'] as String,
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color:
+                                  isSelected
+                                      ? const Color(0xFFE60012)
+                                      : Colors.grey[600],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+          ),
 
           const SizedBox(height: 20),
 
@@ -707,16 +727,17 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
-              width: isSelected ? 2 : 1,
-            ),
+              border: Border.all(
+                color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
+                width: isSelected ? 2 : 1,
+              ),
             ),
             child: Row(
               children: [
                 Icon(
                   icon,
-                  color: isSelected ? const Color(0xFFE60012) : Colors.grey[600],
+                  color:
+                      isSelected ? const Color(0xFFE60012) : Colors.grey[600],
                   size: 24,
                 ),
                 const SizedBox(width: 16),
@@ -729,7 +750,10 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: isSelected ? const Color(0xFFE60012) : Colors.black87,
+                          color:
+                              isSelected
+                                  ? const Color(0xFFE60012)
+                                  : Colors.black87,
                         ),
                       ),
                       if (title == 'Make' && _selectedMake.isNotEmpty)
@@ -867,7 +891,11 @@ class _QuartzOilFinderScreenState extends State<QuartzOilFinderScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(width: double.infinity, height: 2, color: const Color(0xFFE60012)),
+        Container(
+          width: double.infinity,
+          height: 2,
+          color: const Color(0xFFE60012),
+        ),
         const SizedBox(height: 16),
         Text(
           'Quartz product finder FAQs',
