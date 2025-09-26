@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentBannerIndex = 0;
   late PageController _bannerController;
   bool _hasShownNewsletterPopup = false;
+  String _newsletterPreference = 'show'; // 'show', 'later', 'never'
 
   @override
   void initState() {
@@ -27,6 +28,18 @@ class _HomeScreenState extends State<HomeScreen> {
     _bannerController = PageController();
     _startBannerAutoScroll();
     _showNewsletterOptIn();
+    
+    // Reset preference after 5 minutes for "Show Later" users (for testing)
+    if (_newsletterPreference == 'later') {
+      Future.delayed(const Duration(minutes: 5), () {
+        if (mounted) {
+          setState(() {
+            _newsletterPreference = 'show';
+            _hasShownNewsletterPopup = false;
+          });
+        }
+      });
+    }
   }
 
   @override
@@ -633,7 +646,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showNewsletterOptIn() {
-    if (!_hasShownNewsletterPopup) {
+    if (!_hasShownNewsletterPopup && _newsletterPreference == 'show') {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           showDialog(
@@ -643,6 +656,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onOptIn: () {
                 setState(() {
                   _hasShownNewsletterPopup = true;
+                  _newsletterPreference = 'never';
                 });
                 Navigator.pop(context);
                 _showOptInSuccess();
@@ -650,6 +664,22 @@ class _HomeScreenState extends State<HomeScreen> {
               onSkip: () {
                 setState(() {
                   _hasShownNewsletterPopup = true;
+                  _newsletterPreference = 'never';
+                });
+                Navigator.pop(context);
+              },
+              onLater: () {
+                setState(() {
+                  _hasShownNewsletterPopup = true;
+                  _newsletterPreference = 'later';
+                });
+                Navigator.pop(context);
+                _showLaterMessage();
+              },
+              onNever: () {
+                setState(() {
+                  _hasShownNewsletterPopup = true;
+                  _newsletterPreference = 'never';
                 });
                 Navigator.pop(context);
               },
@@ -672,15 +702,32 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  void _showLaterMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'No problem! We\'ll ask you again later.',
+          style: GoogleFonts.poppins(),
+        ),
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 }
 
 class _NewsletterOptInDialog extends StatefulWidget {
   final VoidCallback onOptIn;
   final VoidCallback onSkip;
+  final VoidCallback onLater;
+  final VoidCallback onNever;
 
   const _NewsletterOptInDialog({
     required this.onOptIn,
     required this.onSkip,
+    required this.onLater,
+    required this.onNever,
   });
 
   @override
@@ -783,52 +830,98 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
             const SizedBox(height: 24),
             
             // Action Buttons
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: widget.onSkip,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: Text(
-                      'Skip',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _isOptingIn ? null : _optIn,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isOptingIn
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Text(
-                            'Opt In',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                // Primary Action Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _isOptingIn ? null : _optIn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE60012),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                  ),
+                        ),
+                        child: _isOptingIn
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                'Opt In',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: widget.onSkip,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: const BorderSide(color: Color(0xFFE60012)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Skip',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: const Color(0xFFE60012),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Secondary Action Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: widget.onLater,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                        ),
+                        child: Text(
+                          'Show Later',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.orange[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: widget.onNever,
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                        ),
+                        child: Text(
+                          'Never Show Again',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -843,11 +936,13 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text(
-            text,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[700],
+          Expanded(
+            child: Text(
+              text,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.grey[700],
+              ),
             ),
           ),
         ],
