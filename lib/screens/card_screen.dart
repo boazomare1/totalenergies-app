@@ -819,108 +819,112 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Top Up Card',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: topUpController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Amount (KSh)',
-                labelStyle: GoogleFonts.poppins(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Choose Payment Method',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(
+            'Top Up Card',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      final amount = double.tryParse(topUpController.text);
-                      if (amount != null && amount > 0) {
-                        topUpController.dispose();
-                        Navigator.pop(context);
-                        _navigateToMpesaPayment(amount);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Please enter a valid amount',
-                              style: GoogleFonts.poppins(),
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.phone_android, size: 20),
-                    label: Text('M-Pesa', style: GoogleFonts.poppins()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                TextField(
+                  controller: topUpController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Amount (KSh)',
+                    labelStyle: GoogleFonts.poppins(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      final amount = double.tryParse(topUpController.text);
-                      if (amount != null && amount > 0) {
-                        topUpController.dispose();
-                        Navigator.pop(context);
-                        _navigateToVisaPayment(amount);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Please enter a valid amount',
-                              style: GoogleFonts.poppins(),
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.credit_card, size: 20),
-                    label: Text('Visa', style: GoogleFonts.poppins()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                const SizedBox(height: 20),
+                Text(
+                  'Choose Payment Method',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                   ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final amount = double.tryParse(topUpController.text);
+                          if (amount != null && amount > 0) {
+                            Navigator.pop(context);
+                            topUpController.dispose();
+                            _navigateToMpesaPayment(amount);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please enter a valid amount',
+                                  style: GoogleFonts.poppins(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(Icons.phone_android, size: 20),
+                        label: Text('M-Pesa', style: GoogleFonts.poppins()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final amount = double.tryParse(topUpController.text);
+                          if (amount != null && amount > 0) {
+                            Navigator.pop(context);
+                            topUpController.dispose();
+                            _navigateToVisaPayment(amount);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please enter a valid amount',
+                                  style: GoogleFonts.poppins(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(Icons.credit_card, size: 20),
+                        label: Text('Visa', style: GoogleFonts.poppins()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE60012),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                topUpController.dispose();
+              },
+              child: Text('Cancel', style: GoogleFonts.poppins()),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              topUpController.dispose();
-              Navigator.pop(context);
-            },
-            child: Text('Cancel', style: GoogleFonts.poppins()),
-          ),
-        ],
       ),
     );
   }
@@ -929,23 +933,24 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MpesaPaymentScreen(
-          amount: amount,
-          onPaymentSuccess: (phoneNumber) {
-            setState(() {
-              _cardBalance += amount;
-              _transactions.insert(0, {
-                'id': DateTime.now().millisecondsSinceEpoch.toString(),
-                'type': 'topup',
-                'amount': amount,
-                'description': 'Card Top-up via M-Pesa ($phoneNumber)',
-                'date': DateTime.now().toIso8601String().split('T')[0],
-                'time': '${DateTime.now().hour}:${DateTime.now().minute}',
-                'status': 'completed',
-              });
-            });
-          },
-        ),
+        builder:
+            (context) => MpesaPaymentScreen(
+              amount: amount,
+              onPaymentSuccess: (phoneNumber) {
+                setState(() {
+                  _cardBalance += amount;
+                  _transactions.insert(0, {
+                    'id': DateTime.now().millisecondsSinceEpoch.toString(),
+                    'type': 'topup',
+                    'amount': amount,
+                    'description': 'Card Top-up via M-Pesa ($phoneNumber)',
+                    'date': DateTime.now().toIso8601String().split('T')[0],
+                    'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+                    'status': 'completed',
+                  });
+                });
+              },
+            ),
       ),
     );
   }
@@ -954,23 +959,25 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VisaPaymentScreen(
-          amount: amount,
-          onPaymentSuccess: (cardNumber, expiryDate, cvv, cardHolderName) {
-            setState(() {
-              _cardBalance += amount;
-              _transactions.insert(0, {
-                'id': DateTime.now().millisecondsSinceEpoch.toString(),
-                'type': 'topup',
-                'amount': amount,
-                'description': 'Card Top-up via Visa/Mastercard (****${cardNumber.substring(cardNumber.length - 4)})',
-                'date': DateTime.now().toIso8601String().split('T')[0],
-                'time': '${DateTime.now().hour}:${DateTime.now().minute}',
-                'status': 'completed',
-              });
-            });
-          },
-        ),
+        builder:
+            (context) => VisaPaymentScreen(
+              amount: amount,
+              onPaymentSuccess: (cardNumber, expiryDate, cvv, cardHolderName) {
+                setState(() {
+                  _cardBalance += amount;
+                  _transactions.insert(0, {
+                    'id': DateTime.now().millisecondsSinceEpoch.toString(),
+                    'type': 'topup',
+                    'amount': amount,
+                    'description':
+                        'Card Top-up via Visa/Mastercard (****${cardNumber.substring(cardNumber.length - 4)})',
+                    'date': DateTime.now().toIso8601String().split('T')[0],
+                    'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+                    'status': 'completed',
+                  });
+                });
+              },
+            ),
       ),
     );
   }
