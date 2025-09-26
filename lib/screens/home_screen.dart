@@ -752,9 +752,10 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
       ),
       child: Container(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             // Header
             Container(
               padding: const EdgeInsets.all(16),
@@ -768,29 +769,29 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
                 color: const Color(0xFFE60012),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             
             // Title
             Text(
               'Stay Updated!',
               style: GoogleFonts.poppins(
-                fontSize: 24,
+                fontSize: 22,
                 fontWeight: FontWeight.bold,
                 color: const Color(0xFFE60012),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             
             // Description
             Text(
               'Get the latest offers, promotions, and news from TotalEnergies delivered straight to your phone.',
               style: GoogleFonts.poppins(
-                fontSize: 16,
+                fontSize: 14,
                 color: Colors.grey[700],
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             
             // Phone Number Input
             TextField(
@@ -809,11 +810,11 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             
             // Benefits List
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: BorderRadius.circular(12),
@@ -827,7 +828,7 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             
             // Action Buttons
             Column(
@@ -886,18 +887,18 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 
                 // Preference Selection
                 Text(
                   'Or choose your preference:',
                   style: GoogleFonts.poppins(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 
                 // Radio Button Style Options
                 Container(
@@ -1014,7 +1015,8 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
                 ),
               ],
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );
