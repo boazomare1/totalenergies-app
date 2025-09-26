@@ -5,6 +5,7 @@ import 'anticounterfeit_screen.dart';
 import 'card_screen.dart';
 import 'offers_screen.dart';
 import 'gas_products_screen.dart';
+import 'pay_at_station_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -501,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Pay for Fuel, Gas & Lub...',
             Icons.payment,
             Colors.blue,
-            () => _navigateToScreen(const CardScreen()),
+            () => _showPayAtStationModal(),
           ),
           const SizedBox(height: 12),
 
@@ -586,6 +587,25 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => screen),
+    );
+  }
+
+  void _showPayAtStationModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: const PayAtStationScreen(),
+      ),
     );
   }
 }
