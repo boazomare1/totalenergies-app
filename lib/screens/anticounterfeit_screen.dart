@@ -556,12 +556,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   children: [
                     Icon(Icons.report_problem, color: Colors.red[600], size: 24),
                     const SizedBox(width: 12),
-                    Text(
-                      'Report Counterfeit Product',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                    Expanded(
+                      child: Text(
+                        'Report Counterfeit Product',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
                       ),
                     ),
                   ],

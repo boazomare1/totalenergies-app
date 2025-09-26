@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'station_finder_screen.dart';
+import 'orders_screen.dart';
+import 'anticounterfeit_screen.dart';
+import 'card_screen.dart';
+import 'offers_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -158,33 +163,36 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.black87,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(
-                              Icons.card_giftcard,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              '5 offers',
-                              style: GoogleFonts.poppins(
+                      GestureDetector(
+                        onTap: () => _navigateToScreen(const OffersScreen()),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.card_giftcard,
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                                size: 16,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Text(
+                                '5 offers',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -463,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Find nearby TotalEnergies stations',
             Icons.location_on,
             Colors.amber,
-            () {},
+            () => _navigateToScreen(const StationFinderScreen()),
           ),
           const SizedBox(height: 12),
 
@@ -473,7 +481,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Order gas cylinders for home delivery',
             Icons.local_gas_station,
             Colors.green,
-            () {},
+            () => _navigateToScreen(const OrdersScreen()),
           ),
           const SizedBox(height: 12),
 
@@ -483,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Choose the right oil',
             Icons.oil_barrel,
             Colors.orange,
-            () {},
+            () => _navigateToScreen(const AnticounterfeitScreen()),
           ),
           const SizedBox(height: 12),
 
@@ -493,7 +501,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Pay for Fuel, Gas & Lub...',
             Icons.payment,
             Colors.blue,
-            () {},
+            () => _navigateToScreen(const CardScreen()),
           ),
           const SizedBox(height: 12),
 
@@ -503,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Apply | Top Up | Manage...',
             Icons.credit_card,
             const Color(0xFFE60012),
-            () {},
+            () => _navigateToScreen(const CardScreen()),
           ),
         ],
       ),
@@ -571,6 +579,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _navigateToScreen(Widget screen) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => screen),
     );
   }
 }
