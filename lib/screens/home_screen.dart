@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'station_finder_screen.dart';
-import 'anticounterfeit_screen.dart';
 import 'card_screen.dart';
 import 'offers_screen.dart';
 import 'gas_products_screen.dart';
 import 'pay_at_station_screen.dart';
+import 'quartz_oil_finder_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -492,7 +492,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Choose the right oil',
             Icons.oil_barrel,
             Colors.orange,
-            () => _navigateToScreen(const AnticounterfeitScreen()),
+            () => _navigateToScreen(const QuartzOilFinderScreen()),
           ),
           const SizedBox(height: 12),
 
@@ -584,10 +584,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToScreen(Widget screen) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => screen),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
   }
 
   void _showPayAtStationModal() {
@@ -595,17 +592,18 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.9,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+      builder:
+          (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.9,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: const PayAtStationScreen(),
           ),
-        ),
-        child: const PayAtStationScreen(),
-      ),
     );
   }
 }
