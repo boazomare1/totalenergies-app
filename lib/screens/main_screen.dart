@@ -3,6 +3,7 @@ import 'home_screen.dart';
 import 'orders_screen.dart';
 import 'anticounterfeit_screen.dart';
 import 'card_screen.dart';
+import 'station_finder_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,6 +17,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
+    const StationFinderScreen(),
     const OrdersScreen(),
     const AnticounterfeitScreen(),
     const CardScreen(),
@@ -60,6 +62,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.location_on_outlined),
+              activeIcon: Icon(Icons.location_on),
+              label: 'Find Station',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_bag_outlined),
