@@ -531,50 +531,68 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
+                // Price - takes minimal space
+                Text(
+                  'Price: ${station['price']}/L',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFFE60012),
+                  ),
+                ),
+                const Spacer(),
+                // Details button with icon
+                TextButton.icon(
+                  onPressed: () {
+                    _showStationDetails(station);
+                  },
+                  icon: const Icon(
+                    Icons.info_outline,
+                    size: 14,
+                    color: Color(0xFFE60012),
+                  ),
+                  label: const Text(
+                    'Details',
+                    style: TextStyle(fontSize: 11),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFE60012),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Navigate button with icon - takes remaining space
                 Expanded(
-                  child: Text(
-                    'Price: ${station['price']}/L',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFFE60012),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: TextButton(
-                    onPressed: () {
-                      _showStationDetails(station);
-                    },
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFFE60012),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    ),
-                    child: const Text('Details', style: TextStyle(fontSize: 10)),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: ElevatedButton(
+                  flex: 2,
+                  child: ElevatedButton.icon(
                     onPressed:
                         station['isOpen']
                             ? () {
                               _navigateToStation(station);
                             }
                             : null,
+                    icon: const Icon(
+                      Icons.directions,
+                      size: 16,
+                    ),
+                    label: const Text(
+                      'Navigate',
+                      style: TextStyle(fontSize: 12),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE60012),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 12,
+                        vertical: 8,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Navigate', style: TextStyle(fontSize: 10)),
                   ),
                 ),
               ],
