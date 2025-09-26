@@ -737,6 +737,7 @@ class _NewsletterOptInDialog extends StatefulWidget {
 class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isOptingIn = false;
+  bool _showBenefits = false;
 
   @override
   void dispose() {
@@ -812,22 +813,57 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
             ),
             const SizedBox(height: 16),
             
-            // Benefits List
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Column(
-                children: [
-                  _buildBenefitItem('🎯 Exclusive offers and discounts'),
-                  _buildBenefitItem('⛽ Latest fuel price updates'),
-                  _buildBenefitItem('🏪 New station openings'),
-                  _buildBenefitItem('🔧 Service reminders'),
-                ],
+            // Benefits Toggle
+            GestureDetector(
+              onTap: _toggleBenefits,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[300]!),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      _showBenefits ? Icons.keyboard_arrow_up : Icons.info_outline,
+                      color: const Color(0xFFE60012),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _showBenefits ? 'Hide Benefits' : 'What you\'ll receive',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: const Color(0xFFE60012),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+            
+            // Benefits List (Expandable)
+            if (_showBenefits) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    _buildBenefitItem('🎯 Exclusive offers and discounts'),
+                    _buildBenefitItem('⛽ Latest fuel price updates'),
+                    _buildBenefitItem('🏪 New station openings'),
+                    _buildBenefitItem('🔧 Service reminders'),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             
             // Action Buttons
@@ -1039,6 +1075,12 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
         ],
       ),
     );
+  }
+
+  void _toggleBenefits() {
+    setState(() {
+      _showBenefits = !_showBenefits;
+    });
   }
 
   void _optIn() {
