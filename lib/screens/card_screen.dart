@@ -812,79 +812,240 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   }
 
   void _topUpCard() {
+    String selectedPaymentMethod = 'mpesa';
+    final topUpController = TextEditingController();
+    
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Top Up Card',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _topUpController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Amount (KSh)',
-                labelStyle: GoogleFonts.poppins(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(
+            'Top Up Card',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Amount Input
+              TextField(
+                controller: topUpController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Amount (KSh)',
+                  labelStyle: GoogleFonts.poppins(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Cancel', style: GoogleFonts.poppins()),
-                  ),
+              const SizedBox(height: 20),
+              
+              // Payment Method Selection
+              Text(
+                'Payment Method',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final amount = double.tryParse(_topUpController.text);
-                      if (amount != null && amount > 0) {
-                        setState(() {
-                          _cardBalance += amount;
-                          _transactions.insert(0, {
-                            'id': DateTime.now().millisecondsSinceEpoch.toString(),
-                            'type': 'topup',
-                            'amount': amount,
-                            'description': 'Card Top-up via M-Pesa',
-                            'date': DateTime.now().toIso8601String().split('T')[0],
-                            'time': '${DateTime.now().hour}:${DateTime.now().minute}',
-                            'status': 'completed',
-                          });
-                        });
-                        _topUpController.clear();
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Card topped up successfully!',
-                              style: GoogleFonts.poppins(),
+              ),
+              const SizedBox(height: 12),
+              
+              // M-Pesa Option
+              GestureDetector(
+                onTap: () => setDialogState(() => selectedPaymentMethod = 'mpesa'),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: selectedPaymentMethod == 'mpesa' 
+                        ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                        : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: selectedPaymentMethod == 'mpesa' 
+                          ? const Color(0xFFE60012)
+                          : Colors.grey[300]!,
+                      width: selectedPaymentMethod == 'mpesa' ? 2 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.phone_android,
+                        color: selectedPaymentMethod == 'mpesa' 
+                            ? const Color(0xFFE60012)
+                            : Colors.grey[600],
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'M-Pesa',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: selectedPaymentMethod == 'mpesa' 
+                                    ? const Color(0xFFE60012)
+                                    : Colors.black87,
+                              ),
                             ),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
-                    ),
-                    child: Text(
-                      'Top Up',
-                      style: GoogleFonts.poppins(color: Colors.white),
-                    ),
+                            Text(
+                              'Pay via M-Pesa mobile money',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (selectedPaymentMethod == 'mpesa')
+                        Icon(
+                          Icons.check_circle,
+                          color: const Color(0xFFE60012),
+                          size: 20,
+                        ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ],
+              ),
+              
+              const SizedBox(height: 12),
+              
+              // Visa Option
+              GestureDetector(
+                onTap: () => setDialogState(() => selectedPaymentMethod = 'visa'),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: selectedPaymentMethod == 'visa' 
+                        ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                        : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: selectedPaymentMethod == 'visa' 
+                          ? const Color(0xFFE60012)
+                          : Colors.grey[300]!,
+                      width: selectedPaymentMethod == 'visa' ? 2 : 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.credit_card,
+                        color: selectedPaymentMethod == 'visa' 
+                            ? const Color(0xFFE60012)
+                            : Colors.grey[600],
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Visa/Mastercard',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: selectedPaymentMethod == 'visa' 
+                                    ? const Color(0xFFE60012)
+                                    : Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              'Pay via Visa or Mastercard',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (selectedPaymentMethod == 'visa')
+                        Icon(
+                          Icons.check_circle,
+                          color: const Color(0xFFE60012),
+                          size: 20,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        topUpController.dispose();
+                        Navigator.pop(context);
+                      },
+                      child: Text('Cancel', style: GoogleFonts.poppins()),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final amount = double.tryParse(topUpController.text);
+                        if (amount != null && amount > 0) {
+                          setState(() {
+                            _cardBalance += amount;
+                            _transactions.insert(0, {
+                              'id': DateTime.now().millisecondsSinceEpoch.toString(),
+                              'type': 'topup',
+                              'amount': amount,
+                              'description': selectedPaymentMethod == 'mpesa' 
+                                  ? 'Card Top-up via M-Pesa'
+                                  : 'Card Top-up via Visa/Mastercard',
+                              'date': DateTime.now().toIso8601String().split('T')[0],
+                              'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+                              'status': 'completed',
+                            });
+                          });
+                          topUpController.dispose();
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Card topped up successfully via ${selectedPaymentMethod == 'mpesa' ? 'M-Pesa' : 'Visa/Mastercard'}!',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Please enter a valid amount',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE60012),
+                      ),
+                      child: Text(
+                        'Top Up',
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
