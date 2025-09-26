@@ -276,7 +276,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.65,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -323,7 +323,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.75,
+              childAspectRatio: 0.65,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -418,7 +418,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     'KES ${cylinder['price'].toStringAsFixed(2)}',
                     style: GoogleFonts.poppins(
@@ -438,7 +438,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -446,7 +446,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -459,7 +459,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -467,7 +467,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -540,7 +540,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     'KES ${accessory['price'].toStringAsFixed(2)}',
                     style: GoogleFonts.poppins(
@@ -560,7 +560,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -568,7 +568,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -581,7 +581,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -589,7 +589,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
