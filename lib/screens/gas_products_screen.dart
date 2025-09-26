@@ -276,7 +276,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.6,
+              childAspectRatio: 0.7,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -323,7 +323,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.6,
+              childAspectRatio: 0.7,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -430,15 +430,16 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                   const Spacer(),
                   
                   // Action Buttons
-                  Row(
+                  Column(
                     children: [
-                      Expanded(
+                      SizedBox(
+                        width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => _addToCart(cylinder),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -446,20 +447,21 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 8,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () => _buyNow(cylinder),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -467,7 +469,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 8,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -552,15 +554,16 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                   const Spacer(),
                   
                   // Action Buttons
-                  Row(
+                  Column(
                     children: [
-                      Expanded(
+                      SizedBox(
+                        width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => _addToCart(accessory),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -568,20 +571,21 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 8,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        width: double.infinity,
                         child: OutlinedButton(
                           onPressed: () => _buyNow(accessory),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -589,7 +593,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 8,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
