@@ -161,22 +161,22 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                     // Filter Dropdown
                     Expanded(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _selectedFilter,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 10),
+                            style: GoogleFonts.poppins(fontSize: 9),
                             items: const [
-                              DropdownMenuItem(value: 'All', child: Text('All Stations')),
-                              DropdownMenuItem(value: 'Open Now', child: Text('Open Now')),
-                              DropdownMenuItem(value: 'With Restaurant', child: Text('With Restaurant')),
-                              DropdownMenuItem(value: 'With Car Wash', child: Text('With Car Wash')),
-                              DropdownMenuItem(value: 'With ATM', child: Text('With ATM')),
+                              DropdownMenuItem(value: 'All', child: Text('All')),
+                              DropdownMenuItem(value: 'Open Now', child: Text('Open')),
+                              DropdownMenuItem(value: 'With Restaurant', child: Text('Restaurant')),
+                              DropdownMenuItem(value: 'With Car Wash', child: Text('Car Wash')),
+                              DropdownMenuItem(value: 'With ATM', child: Text('ATM')),
                             ],
                             onChanged: (value) {
                               setState(() {
@@ -187,21 +187,21 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 4),
                     
                     // Sort Dropdown
                     Expanded(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _selectedSort,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 10),
+                            style: GoogleFonts.poppins(fontSize: 9),
                             items: const [
                               DropdownMenuItem(value: 'Distance', child: Text('Distance')),
                               DropdownMenuItem(value: 'Rating', child: Text('Rating')),
