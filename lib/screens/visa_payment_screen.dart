@@ -3,7 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 class VisaPaymentScreen extends StatefulWidget {
   final double amount;
-  final Function(String cardNumber, String expiryDate, String cvv, String cardHolderName) onPaymentSuccess;
+  final Function(
+    String cardNumber,
+    String expiryDate,
+    String cvv,
+    String cardHolderName,
+  )
+  onPaymentSuccess;
 
   const VisaPaymentScreen({
     Key? key,
@@ -21,7 +27,7 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
   final _expiryDateController = TextEditingController();
   final _cvvController = TextEditingController();
   final _cardHolderNameController = TextEditingController();
-  
+
   bool _isProcessing = false;
 
   @override
@@ -210,7 +216,9 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
                         if (spaced != value) {
                           _cardNumberController.value = TextEditingValue(
                             text: spaced,
-                            selection: TextSelection.collapsed(offset: spaced.length),
+                            selection: TextSelection.collapsed(
+                              offset: spaced.length,
+                            ),
                           );
                         }
                       },
@@ -229,10 +237,7 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        prefixIcon: Icon(
-                          Icons.person,
-                          color: Colors.grey[600],
-                        ),
+                        prefixIcon: Icon(Icons.person, color: Colors.grey[600]),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -279,12 +284,17 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
                                 formatted = formatted.substring(0, 4);
                               }
                               if (formatted.length >= 2) {
-                                formatted = formatted.substring(0, 2) + '/' + formatted.substring(2);
+                                formatted =
+                                    formatted.substring(0, 2) +
+                                    '/' +
+                                    formatted.substring(2);
                               }
                               if (formatted != value) {
                                 _expiryDateController.value = TextEditingValue(
                                   text: formatted,
-                                  selection: TextSelection.collapsed(offset: formatted.length),
+                                  selection: TextSelection.collapsed(
+                                    offset: formatted.length,
+                                  ),
                                 );
                               }
                             },
@@ -380,37 +390,38 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: _isProcessing
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
+                  child:
+                      _isProcessing
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Processing...',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12),
+                              Text(
+                                'Processing...',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
+                            ],
+                          )
+                          : Text(
+                            'Pay KSh ${widget.amount.toStringAsFixed(2)}',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
-                          ],
-                        )
-                      : Text(
-                          'Pay KSh ${widget.amount.toStringAsFixed(2)}',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
                           ),
-                        ),
                 ),
               ),
             ],

@@ -817,10 +817,11 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   void _topUpCard() {
     showDialog(
       context: context,
-      builder: (context) => _TopUpDialog(
-        onMpesaPayment: _navigateToMpesaPayment,
-        onVisaPayment: _navigateToVisaPayment,
-      ),
+      builder:
+          (context) => _TopUpDialog(
+            onMpesaPayment: _navigateToMpesaPayment,
+            onVisaPayment: _navigateToVisaPayment,
+          ),
     );
   }
 

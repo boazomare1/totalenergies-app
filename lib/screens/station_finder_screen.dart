@@ -187,8 +187,17 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                           child: DropdownButton<String>(
                             value: _selectedFilter,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 11, color: Colors.black87),
-                            hint: Text('Filter', style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600])),
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.black87,
+                            ),
+                            hint: Text(
+                              'Filter',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: Colors.grey[600],
+                              ),
+                            ),
                             items: const [
                               DropdownMenuItem(
                                 value: 'All',
@@ -234,8 +243,17 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                           child: DropdownButton<String>(
                             value: _selectedSort,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 11, color: Colors.black87),
-                            hint: Text('Sort', style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[600])),
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: Colors.black87,
+                            ),
+                            hint: Text(
+                              'Sort',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: Colors.grey[600],
+                              ),
+                            ),
                             items: const [
                               DropdownMenuItem(
                                 value: 'Distance',

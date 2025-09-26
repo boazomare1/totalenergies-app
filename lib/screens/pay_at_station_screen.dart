@@ -220,7 +220,9 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              ..._paymentMethods.map((method) => _buildPaymentMethodCard(method)),
+              ..._paymentMethods.map(
+                (method) => _buildPaymentMethodCard(method),
+              ),
               const SizedBox(height: 24),
             ],
 
@@ -329,11 +331,7 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
                     color: type['color'].withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  child: Icon(
-                    type['icon'],
-                    color: type['color'],
-                    size: 24,
-                  ),
+                  child: Icon(type['icon'], color: type['color'], size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -360,11 +358,7 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
                   ),
                 ),
                 if (isSelected)
-                  Icon(
-                    Icons.check_circle,
-                    color: type['color'],
-                    size: 24,
-                  ),
+                  Icon(Icons.check_circle, color: type['color'], size: 24),
               ],
             ),
           ),
@@ -376,22 +370,25 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
   Widget _buildStationCard(Map<String, dynamic> station) {
     final isSelected = _selectedStation == station['id'];
     final isOpen = station['isOpen'] as bool;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          onTap: isOpen ? () {
-            setState(() {
-              _selectedStation = station['id'];
-              _selectedPaymentMethod = null;
-              _amount = 0.0;
-              _amountController.clear();
-              _phoneController.clear();
-            });
-          } : null,
+          onTap:
+              isOpen
+                  ? () {
+                    setState(() {
+                      _selectedStation = station['id'];
+                      _selectedPaymentMethod = null;
+                      _amount = 0.0;
+                      _amountController.clear();
+                      _phoneController.clear();
+                    });
+                  }
+                  : null,
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.all(16),
@@ -408,9 +405,10 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: isOpen 
-                        ? Colors.green.withValues(alpha: 0.1)
-                        : Colors.grey.withValues(alpha: 0.1),
+                    color:
+                        isOpen
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.grey.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Icon(
@@ -526,11 +524,7 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
                     color: method['color'].withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  child: Icon(
-                    method['icon'],
-                    color: method['color'],
-                    size: 24,
-                  ),
+                  child: Icon(method['icon'], color: method['color'], size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -557,11 +551,7 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
                   ),
                 ),
                 if (isSelected)
-                  Icon(
-                    Icons.check_circle,
-                    color: method['color'],
-                    size: 24,
-                  ),
+                  Icon(Icons.check_circle, color: method['color'], size: 24),
               ],
             ),
           ),
@@ -571,26 +561,29 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
   }
 
   void _proceedToPayment() {
-    if (_selectedPaymentType == null || _selectedStation == null || _amount <= 0) {
+    if (_selectedPaymentType == null ||
+        _selectedStation == null ||
+        _amount <= 0) {
       return;
     }
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentConfirmationScreen(
-          paymentType: _paymentTypes.firstWhere(
-            (type) => type['id'] == _selectedPaymentType,
-          ),
-          station: _stations.firstWhere(
-            (station) => station['id'] == _selectedStation,
-          ),
-          paymentMethod: _paymentMethods.firstWhere(
-            (method) => method['id'] == _selectedPaymentMethod,
-          ),
-          amount: _amount,
-          phoneNumber: _phoneController.text,
-        ),
+        builder:
+            (context) => PaymentConfirmationScreen(
+              paymentType: _paymentTypes.firstWhere(
+                (type) => type['id'] == _selectedPaymentType,
+              ),
+              station: _stations.firstWhere(
+                (station) => station['id'] == _selectedStation,
+              ),
+              paymentMethod: _paymentMethods.firstWhere(
+                (method) => method['id'] == _selectedPaymentMethod,
+              ),
+              amount: _amount,
+              phoneNumber: _phoneController.text,
+            ),
       ),
     );
   }
@@ -613,7 +606,8 @@ class PaymentConfirmationScreen extends StatefulWidget {
   });
 
   @override
-  State<PaymentConfirmationScreen> createState() => _PaymentConfirmationScreenState();
+  State<PaymentConfirmationScreen> createState() =>
+      _PaymentConfirmationScreenState();
 }
 
 class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
@@ -661,7 +655,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Payment Type
                   _buildSummaryRow(
                     'Payment Type',
@@ -670,7 +664,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                     widget.paymentType['color'],
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Station
                   _buildSummaryRow(
                     'Station',
@@ -679,7 +673,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                     Colors.blue,
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Amount
                   _buildSummaryRow(
                     'Amount',
@@ -688,7 +682,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                     Colors.green,
                   ),
                   const SizedBox(height: 12),
-                  
+
                   // Payment Method
                   _buildSummaryRow(
                     'Payment Method',
@@ -696,8 +690,9 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                     widget.paymentMethod['icon'],
                     widget.paymentMethod['color'],
                   ),
-                  
-                  if (widget.paymentMethod['id'] == 'mpesa' && widget.phoneNumber.isNotEmpty) ...[
+
+                  if (widget.paymentMethod['id'] == 'mpesa' &&
+                      widget.phoneNumber.isNotEmpty) ...[
                     const SizedBox(height: 12),
                     _buildSummaryRow(
                       'Phone Number',
@@ -709,9 +704,9 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Terms and Conditions
             Container(
               padding: const EdgeInsets.all(16),
@@ -725,7 +720,11 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.blue[700],
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Important Information',
@@ -751,9 +750,9 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Pay Now Button
             SizedBox(
               width: double.infinity,
@@ -766,37 +765,38 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: _isProcessing
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
+                child:
+                    _isProcessing
+                        ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Processing...',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                            const SizedBox(width: 12),
+                            Text(
+                              'Processing...',
+                              style: GoogleFonts.poppins(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
+                          ],
+                        )
+                        : Text(
+                          'Pay Now',
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
-                        ],
-                      )
-                    : Text(
-                        'Pay Now',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
                         ),
-                      ),
               ),
             ),
           ],
@@ -805,7 +805,12 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, IconData icon, Color color) {
+  Widget _buildSummaryRow(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Row(
       children: [
         Icon(icon, color: color, size: 20),
@@ -813,10 +818,7 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
         Expanded(
           child: Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
           ),
         ),
         Text(
@@ -848,14 +850,15 @@ class _PaymentConfirmationScreenState extends State<PaymentConfirmationScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => PaymentReceiptScreen(
-            paymentType: widget.paymentType,
-            station: widget.station,
-            paymentMethod: widget.paymentMethod,
-            amount: widget.amount,
-            phoneNumber: widget.phoneNumber,
-            transactionId: _generateTransactionId(),
-          ),
+          builder:
+              (context) => PaymentReceiptScreen(
+                paymentType: widget.paymentType,
+                station: widget.station,
+                paymentMethod: widget.paymentMethod,
+                amount: widget.amount,
+                phoneNumber: widget.phoneNumber,
+                transactionId: _generateTransactionId(),
+              ),
         ),
       );
     }
@@ -917,11 +920,7 @@ class PaymentReceiptScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.check_circle,
-                    color: Colors.green[600],
-                    size: 64,
-                  ),
+                  Icon(Icons.check_circle, color: Colors.green[600], size: 64),
                   const SizedBox(height: 16),
                   Text(
                     'Payment Successful!',
@@ -943,9 +942,9 @@ class PaymentReceiptScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Receipt
             Container(
               padding: const EdgeInsets.all(20),
@@ -1003,11 +1002,11 @@ class PaymentReceiptScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
                   const Divider(),
                   const SizedBox(height: 16),
-                  
+
                   // Payment Details
                   _buildReceiptRow('Payment Type', paymentType['title']),
                   _buildReceiptRow('Station', station['name']),
@@ -1015,11 +1014,11 @@ class PaymentReceiptScreen extends StatelessWidget {
                   _buildReceiptRow('Payment Method', paymentMethod['title']),
                   if (paymentMethod['id'] == 'mpesa' && phoneNumber.isNotEmpty)
                     _buildReceiptRow('Phone Number', '+254 $phoneNumber'),
-                  
+
                   const SizedBox(height: 16),
                   const Divider(),
                   const SizedBox(height: 16),
-                  
+
                   // Amount
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1045,9 +1044,9 @@ class PaymentReceiptScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // SMS Notification
             Container(
               padding: const EdgeInsets.all(16),
@@ -1072,9 +1071,9 @@ class PaymentReceiptScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Action Buttons
             Row(
               children: [
@@ -1151,10 +1150,7 @@ class PaymentReceiptScreen extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
           ),
           Text(
             value,

@@ -18,7 +18,7 @@ class MpesaPaymentScreen extends StatefulWidget {
 class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
   final _formKey = GlobalKey<FormState>();
   final _phoneNumberController = TextEditingController();
-  
+
   bool _isProcessing = false;
 
   @override
@@ -196,17 +196,23 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
                           formatted = formatted.substring(0, 9);
                         }
                         if (formatted.length >= 3) {
-                          formatted = formatted.substring(0, 3) + ' ' + 
-                                    formatted.substring(3);
+                          formatted =
+                              formatted.substring(0, 3) +
+                              ' ' +
+                              formatted.substring(3);
                         }
                         if (formatted.length >= 7) {
-                          formatted = formatted.substring(0, 7) + ' ' + 
-                                    formatted.substring(7);
+                          formatted =
+                              formatted.substring(0, 7) +
+                              ' ' +
+                              formatted.substring(7);
                         }
                         if (formatted != value) {
                           _phoneNumberController.value = TextEditingValue(
                             text: formatted,
-                            selection: TextSelection.collapsed(offset: formatted.length),
+                            selection: TextSelection.collapsed(
+                              offset: formatted.length,
+                            ),
                           );
                         }
                       },
@@ -311,37 +317,38 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: _isProcessing
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
+                  child:
+                      _isProcessing
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Processing...',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                              const SizedBox(width: 12),
+                              Text(
+                                'Processing...',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
+                            ],
+                          )
+                          : Text(
+                            'Pay KSh ${widget.amount.toStringAsFixed(2)} with M-Pesa',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
-                          ],
-                        )
-                      : Text(
-                          'Pay KSh ${widget.amount.toStringAsFixed(2)} with M-Pesa',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
                           ),
-                        ),
                 ),
               ),
 
