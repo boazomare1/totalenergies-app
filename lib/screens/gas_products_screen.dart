@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'checkout_screen.dart';
 
 class GasProductsScreen extends StatefulWidget {
   const GasProductsScreen({super.key});
@@ -11,6 +12,8 @@ class GasProductsScreen extends StatefulWidget {
 class _GasProductsScreenState extends State<GasProductsScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   int _cartItemCount = 0;
+  final List<Map<String, dynamic>> _cartItems = [];
+  double _cartTotal = 0.0;
 
   final List<Map<String, dynamic>> _cylinders = [
     {
@@ -623,6 +626,8 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
   void _addToCart(Map<String, dynamic> product) {
     setState(() {
       _cartItemCount++;
+      _cartItems.add(product);
+      _cartTotal += product['price'];
     });
     
     ScaffoldMessenger.of(context).showSnackBar(
@@ -642,373 +647,109 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
   }
 
   void _buyNow(Map<String, dynamic> product) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Handle
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Text(
-                    'Buy Now',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Product Details
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    // Product Info
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey[200]!),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              product['type'] != null ? Icons.local_gas_station : Icons.category,
-                              size: 40,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product['name'],
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'KES ${product['price'].toStringAsFixed(2)}',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color(0xFFE60012),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Delivery Information
-                    Text(
-                      'Delivery Information',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.local_shipping, color: Colors.blue[700]),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Home Delivery',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.blue[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Available between 7.00am and 8.00pm',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.blue[700],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
-                    // Contact Information
-                    Text(
-                      'Contact Information',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Phone Number',
-                        hintText: 'Enter your phone number',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        prefixIcon: const Icon(Icons.phone),
-                      ),
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Delivery Address',
-                        hintText: 'Enter your delivery address',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        prefixIcon: const Icon(Icons.location_on),
-                      ),
-                      maxLines: 3,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Order Button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Order placed successfully!',
-                          style: GoogleFonts.poppins(),
-                        ),
-                        backgroundColor: const Color(0xFFE60012),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE60012),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'Place Order - KES ${product['price'].toStringAsFixed(2)}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+    // Add to cart first
+    _addToCart(product);
+    
+    // Navigate to checkout
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(
+          cartItems: [product],
+          totalAmount: product['price'],
         ),
       ),
     );
   }
 
   void _viewCart() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+    if (_cartItemCount == 0) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height * 0.4,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            // Handle
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+          child: Column(
+            children: [
+              // Handle
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Text(
-                    'Shopping Cart',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '$_cartItemCount items',
-                    style: GoogleFonts.poppins(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Cart Content
-            Expanded(
-              child: _cartItemCount == 0
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.shopping_cart_outlined,
-                            size: 80,
-                            color: Colors.grey[400],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Your cart is empty',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Add some products to get started',
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : const Center(
-                      child: Text('Cart items will be displayed here'),
-                    ),
-            ),
-            
-            // Checkout Button
-            if (_cartItemCount > 0)
+              
+              // Header
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Proceeding to checkout...',
-                            style: GoogleFonts.poppins(),
-                          ),
-                          backgroundColor: const Color(0xFFE60012),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Proceed to Checkout',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                child: Text(
+                  'Shopping Cart',
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
                 ),
               ),
-          ],
+              
+              // Empty Cart
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.shopping_cart_outlined,
+                        size: 80,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Your cart is empty',
+                        style: GoogleFonts.poppins(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Add some products to get started',
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      // Navigate to checkout with cart items
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CheckoutScreen(
+            cartItems: _cartItems,
+            totalAmount: _cartTotal,
+          ),
+        ),
+      );
+    }
   }
 }
