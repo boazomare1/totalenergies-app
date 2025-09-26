@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -56,11 +57,11 @@ class _SplashScreenState extends State<SplashScreen>
       _fadeController.forward();
     });
 
-    // Navigate to home after splash duration (4.5 seconds)
-    Future.delayed(const Duration(milliseconds: 8000), () {
-      print('SplashScreen: Navigating to home screen');
+    // Navigate to main screen after splash duration (4.5 seconds)
+    Future.delayed(const Duration(milliseconds: 4500), () {
+      print('SplashScreen: Navigating to main screen');
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/home');
+        Navigator.of(context).pushReplacementNamed('/main');
       }
     });
   }
@@ -140,9 +141,9 @@ class _SplashScreenState extends State<SplashScreen>
                     opacity: _fadeAnimation.value,
                     child: Column(
                       children: [
-                        const Text(
+                        Text(
                           'TotalEnergies',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -152,7 +153,7 @@ class _SplashScreenState extends State<SplashScreen>
                         const SizedBox(height: 8),
                         Text(
                           'Energy for Life',
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 16,
                             color: Colors.white.withOpacity(0.9),
                             letterSpacing: 0.5,

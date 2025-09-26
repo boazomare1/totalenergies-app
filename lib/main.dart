@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_screen.dart';
 
 void main() {
   print('TotalEnergies App: Starting...');
@@ -29,12 +30,13 @@ class TotalEnergiesApp extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
+        textTheme: GoogleFonts.poppinsTextTheme(),
         useMaterial3: true,
       ),
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/main': (context) => const MainScreen(),
       },
     );
   }
