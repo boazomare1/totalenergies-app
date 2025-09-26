@@ -540,7 +540,7 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                     color: const Color(0xFFE60012),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 4),
                 // Details button with icon
                 TextButton.icon(
                   onPressed: () {
@@ -548,19 +548,19 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                   },
                   icon: const Icon(
                     Icons.info_outline,
-                    size: 14,
+                    size: 12,
                     color: Color(0xFFE60012),
                   ),
-                  label: const Text('Details', style: TextStyle(fontSize: 11)),
+                  label: const Text('Details', style: TextStyle(fontSize: 10)),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFFE60012),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
+                      horizontal: 6,
                       vertical: 4,
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 // Navigate button with icon - takes remaining space
                 Expanded(
                   flex: 2,
@@ -572,10 +572,7 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                             }
                             : null,
                     icon: const Icon(Icons.directions, size: 16),
-                    label: const Text(
-                      'Go',
-                      style: TextStyle(fontSize: 12),
-                    ),
+                    label: const Text('Go', style: TextStyle(fontSize: 12)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE60012),
                       foregroundColor: Colors.white,
