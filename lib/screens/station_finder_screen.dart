@@ -551,10 +551,7 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                     size: 14,
                     color: Color(0xFFE60012),
                   ),
-                  label: const Text(
-                    'Details',
-                    style: TextStyle(fontSize: 11),
-                  ),
+                  label: const Text('Details', style: TextStyle(fontSize: 11)),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFFE60012),
                     padding: const EdgeInsets.symmetric(
@@ -574,12 +571,9 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                               _navigateToStation(station);
                             }
                             : null,
-                    icon: const Icon(
-                      Icons.directions,
-                      size: 16,
-                    ),
+                    icon: const Icon(Icons.directions, size: 16),
                     label: const Text(
-                      'Navigate',
+                      'Go',
                       style: TextStyle(fontSize: 12),
                     ),
                     style: ElevatedButton.styleFrom(
