@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'visa_payment_screen.dart';
+import 'mpesa_payment_screen.dart';
 
 class CardScreen extends StatefulWidget {
   const CardScreen({super.key});
@@ -313,7 +315,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   subtitle: 'Personal use',
                   icon: Icons.person,
                   isSelected: _selectedApplicationType == 'individual',
-                  onTap: () => setState(() => _selectedApplicationType = 'individual'),
+                  onTap:
+                      () => setState(
+                        () => _selectedApplicationType = 'individual',
+                      ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -323,7 +328,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   subtitle: 'Business use',
                   icon: Icons.business,
                   isSelected: _selectedApplicationType == 'corporate',
-                  onTap: () => setState(() => _selectedApplicationType = 'corporate'),
+                  onTap:
+                      () => setState(
+                        () => _selectedApplicationType = 'corporate',
+                      ),
                 ),
               ),
             ],
@@ -474,7 +482,9 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     child: Text(
-                      _selectedCardType == 'virtual' ? 'Create Virtual Card' : 'Submit Application',
+                      _selectedCardType == 'virtual'
+                          ? 'Create Virtual Card'
+                          : 'Submit Application',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 16,
@@ -533,11 +543,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              Container(
-                height: 40,
-                width: 1,
-                color: Colors.grey[300],
-              ),
+              Container(height: 40, width: 1, color: Colors.grey[300]),
               Column(
                 children: [
                   Text(
@@ -599,11 +605,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
         ),
         child: Column(
           children: [
-            Icon(
-              icon,
-              color: const Color(0xFFE60012),
-              size: 32,
-            ),
+            Icon(icon, color: const Color(0xFFE60012), size: 32),
             const SizedBox(height: 8),
             Text(
               title,
@@ -632,7 +634,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE60012).withValues(alpha: 0.1) : Colors.white,
+          color:
+              isSelected
+                  ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                  : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
@@ -665,10 +670,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -689,7 +691,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE60012).withValues(alpha: 0.1) : Colors.white,
+          color:
+              isSelected
+                  ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                  : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
@@ -722,10 +727,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -737,7 +739,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   Widget _buildTransactionCard(Map<String, dynamic> transaction) {
     final isDebit = transaction['amount'] < 0;
     final amount = transaction['amount'].abs();
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -757,9 +759,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDebit 
-                ? Colors.red.withValues(alpha: 0.1)
-                : Colors.green.withValues(alpha: 0.1),
+              color:
+                  isDebit
+                      ? Colors.red.withValues(alpha: 0.1)
+                      : Colors.green.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -812,240 +815,161 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   }
 
   void _topUpCard() {
-    String selectedPaymentMethod = 'mpesa';
     final topUpController = TextEditingController();
-    
+
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(
-            'Top Up Card',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Amount Input
-              TextField(
-                controller: topUpController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Amount (KSh)',
-                  labelStyle: GoogleFonts.poppins(),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Top Up Card',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: topUpController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Amount (KSh)',
+                labelStyle: GoogleFonts.poppins(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              const SizedBox(height: 20),
-              
-              // Payment Method Selection
-              Text(
-                'Payment Method',
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Choose Payment Method',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-              const SizedBox(height: 12),
-              
-              // M-Pesa Option
-              GestureDetector(
-                onTap: () => setDialogState(() => selectedPaymentMethod = 'mpesa'),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: selectedPaymentMethod == 'mpesa' 
-                        ? const Color(0xFFE60012).withValues(alpha: 0.1)
-                        : Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: selectedPaymentMethod == 'mpesa' 
-                          ? const Color(0xFFE60012)
-                          : Colors.grey[300]!,
-                      width: selectedPaymentMethod == 'mpesa' ? 2 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.phone_android,
-                        color: selectedPaymentMethod == 'mpesa' 
-                            ? const Color(0xFFE60012)
-                            : Colors.grey[600],
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'M-Pesa',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: selectedPaymentMethod == 'mpesa' 
-                                    ? const Color(0xFFE60012)
-                                    : Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              'Pay via M-Pesa mobile money',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (selectedPaymentMethod == 'mpesa')
-                        Icon(
-                          Icons.check_circle,
-                          color: const Color(0xFFE60012),
-                          size: 20,
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Visa Option
-              GestureDetector(
-                onTap: () => setDialogState(() => selectedPaymentMethod = 'visa'),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: selectedPaymentMethod == 'visa' 
-                        ? const Color(0xFFE60012).withValues(alpha: 0.1)
-                        : Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: selectedPaymentMethod == 'visa' 
-                          ? const Color(0xFFE60012)
-                          : Colors.grey[300]!,
-                      width: selectedPaymentMethod == 'visa' ? 2 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.credit_card,
-                        color: selectedPaymentMethod == 'visa' 
-                            ? const Color(0xFFE60012)
-                            : Colors.grey[600],
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Visa/Mastercard',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: selectedPaymentMethod == 'visa' 
-                                    ? const Color(0xFFE60012)
-                                    : Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              'Pay via Visa or Mastercard',
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (selectedPaymentMethod == 'visa')
-                        Icon(
-                          Icons.check_circle,
-                          color: const Color(0xFFE60012),
-                          size: 20,
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Action Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () {
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final amount = double.tryParse(topUpController.text);
+                      if (amount != null && amount > 0) {
                         topUpController.dispose();
                         Navigator.pop(context);
-                      },
-                      child: Text('Cancel', style: GoogleFonts.poppins()),
+                        _navigateToMpesaPayment(amount);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Please enter a valid amount',
+                              style: GoogleFonts.poppins(),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.phone_android, size: 20),
+                    label: Text('M-Pesa', style: GoogleFonts.poppins()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[600],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        final amount = double.tryParse(topUpController.text);
-                        if (amount != null && amount > 0) {
-                          setState(() {
-                            _cardBalance += amount;
-                            _transactions.insert(0, {
-                              'id': DateTime.now().millisecondsSinceEpoch.toString(),
-                              'type': 'topup',
-                              'amount': amount,
-                              'description': selectedPaymentMethod == 'mpesa' 
-                                  ? 'Card Top-up via M-Pesa'
-                                  : 'Card Top-up via Visa/Mastercard',
-                              'date': DateTime.now().toIso8601String().split('T')[0],
-                              'time': '${DateTime.now().hour}:${DateTime.now().minute}',
-                              'status': 'completed',
-                            });
-                          });
-                          topUpController.dispose();
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Card topped up successfully via ${selectedPaymentMethod == 'mpesa' ? 'M-Pesa' : 'Visa/Mastercard'}!',
-                                style: GoogleFonts.poppins(),
-                              ),
-                              backgroundColor: Colors.green,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final amount = double.tryParse(topUpController.text);
+                      if (amount != null && amount > 0) {
+                        topUpController.dispose();
+                        Navigator.pop(context);
+                        _navigateToVisaPayment(amount);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Please enter a valid amount',
+                              style: GoogleFonts.poppins(),
                             ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Please enter a valid amount',
-                                style: GoogleFonts.poppins(),
-                              ),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE60012),
-                      ),
-                      child: Text(
-                        'Top Up',
-                        style: GoogleFonts.poppins(color: Colors.white),
-                      ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.credit_card, size: 20),
+                    label: Text('Visa', style: GoogleFonts.poppins()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE60012),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              topUpController.dispose();
+              Navigator.pop(context);
+            },
+            child: Text('Cancel', style: GoogleFonts.poppins()),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateToMpesaPayment(double amount) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MpesaPaymentScreen(
+          amount: amount,
+          onPaymentSuccess: (phoneNumber) {
+            setState(() {
+              _cardBalance += amount;
+              _transactions.insert(0, {
+                'id': DateTime.now().millisecondsSinceEpoch.toString(),
+                'type': 'topup',
+                'amount': amount,
+                'description': 'Card Top-up via M-Pesa ($phoneNumber)',
+                'date': DateTime.now().toIso8601String().split('T')[0],
+                'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+                'status': 'completed',
+              });
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  void _navigateToVisaPayment(double amount) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VisaPaymentScreen(
+          amount: amount,
+          onPaymentSuccess: (cardNumber, expiryDate, cvv, cardHolderName) {
+            setState(() {
+              _cardBalance += amount;
+              _transactions.insert(0, {
+                'id': DateTime.now().millisecondsSinceEpoch.toString(),
+                'type': 'topup',
+                'amount': amount,
+                'description': 'Card Top-up via Visa/Mastercard (****${cardNumber.substring(cardNumber.length - 4)})',
+                'date': DateTime.now().toIso8601String().split('T')[0],
+                'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+                'status': 'completed',
+              });
+            });
+          },
         ),
       ),
     );
@@ -1054,100 +978,102 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   void _linkExistingCard() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Link Existing Card',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Card Number',
-                labelStyle: GoogleFonts.poppins(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Link Existing Card',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Card PIN',
-                labelStyle: GoogleFonts.poppins(),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Cancel', style: GoogleFonts.poppins()),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Card Number',
+                    labelStyle: GoogleFonts.poppins(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Card linked successfully!',
-                            style: GoogleFonts.poppins(),
-                          ),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
-                    ),
-                    child: Text(
-                      'Link Card',
-                      style: GoogleFonts.poppins(color: Colors.white),
+                const SizedBox(height: 16),
+                TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Card PIN',
+                    labelStyle: GoogleFonts.poppins(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel', style: GoogleFonts.poppins()),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Card linked successfully!',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE60012),
+                        ),
+                        child: Text(
+                          'Link Card',
+                          style: GoogleFonts.poppins(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   void _checkBalance() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Card Balance',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Text(
-          'Your current balance is KSh ${_cardBalance.toStringAsFixed(2)}',
-          style: GoogleFonts.poppins(fontSize: 16),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE60012),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Card Balance',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: Colors.white),
+            content: Text(
+              'Your current balance is KSh ${_cardBalance.toStringAsFixed(2)}',
+              style: GoogleFonts.poppins(fontSize: 16),
             ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE60012),
+                ),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -1179,28 +1105,29 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     } else {
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(
-            'Application Submitted',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          ),
-          content: Text(
-            'Your physical card application has been submitted successfully. You will receive a notification once it\'s processed and delivered.',
-            style: GoogleFonts.poppins(),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE60012),
+        builder:
+            (context) => AlertDialog(
+              title: Text(
+                'Application Submitted',
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
               ),
-              child: Text(
-                'OK',
-                style: GoogleFonts.poppins(color: Colors.white),
+              content: Text(
+                'Your physical card application has been submitted successfully. You will receive a notification once it\'s processed and delivered.',
+                style: GoogleFonts.poppins(),
               ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE60012),
+                  ),
+                  child: Text(
+                    'OK',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
       );
     }
   }
@@ -1209,33 +1136,34 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE60012)),
+      builder:
+          (context) => AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE60012)),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Creating your virtual card...',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Please wait while we generate your card details',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Creating your virtual card...',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Please wait while we generate your card details',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+          ),
     );
 
     // Simulate card creation process
@@ -1249,281 +1177,293 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     final cardNumber = _generateCardNumber();
     final expiryDate = _generateExpiryDate();
     final cvv = _generateCVV();
-    final cardHolderName = _nameController.text.isNotEmpty ? _nameController.text : 'Card Holder';
+    final cardHolderName =
+        _nameController.text.isNotEmpty ? _nameController.text : 'Card Holder';
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Container(
-          height: 450,
-          child: Column(
-            children: [
-              // Swipeable Card
-              Expanded(
-                child: PageView(
-                  children: [
-                    // Card Front
-                    Container(
-                      margin: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFE60012), Color(0xFFB8000E)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFE60012).withValues(alpha: 0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          // TotalEnergies Logo
-                          Positioned(
-                            top: 16,
-                            right: 16,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Image.asset(
-                                'assets/images/totalenergies_logo_white.png',
-                                height: 20,
-                                width: 40,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Text(
-                                    'TOTAL',
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  );
-                                },
-                              ),
+      builder:
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Container(
+              height: 450,
+              child: Column(
+                children: [
+                  // Swipeable Card
+                  Expanded(
+                    child: PageView(
+                      children: [
+                        // Card Front
+                        Container(
+                          margin: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFE60012), Color(0xFFB8000E)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ),
-                          // Card Number
-                          Positioned(
-                            bottom: 60,
-                            left: 20,
-                            right: 20,
-                            child: Text(
-                              cardNumber,
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 2,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFFE60012,
+                                ).withValues(alpha: 0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
                               ),
-                            ),
+                            ],
                           ),
-                          // Card Holder Name
-                          Positioned(
-                            bottom: 20,
-                            left: 20,
-                            child: Text(
-                              cardHolderName.toUpperCase(),
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          // Expiry Date
-                          Positioned(
-                            bottom: 20,
-                            right: 20,
-                            child: Text(
-                              expiryDate,
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    // Card Back
-                    Container(
-                      margin: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withValues(alpha: 0.3),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          // Magnetic strip
-                          Positioned(
-                            top: 20,
-                            left: 0,
-                            right: 0,
-                            child: Container(
-                              height: 30,
-                              color: Colors.black,
-                            ),
-                          ),
-                          // CVV
-                          Positioned(
-                            top: 70,
-                            right: 20,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                'CVV: $cvv',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                          child: Stack(
+                            children: [
+                              // TotalEnergies Logo
+                              Positioned(
+                                top: 16,
+                                right: 16,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/totalenergies_logo_white.png',
+                                    height: 20,
+                                    width: 40,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Text(
+                                        'TOTAL',
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          // Lost Card Information
-                          Positioned(
-                            bottom: 20,
-                            left: 20,
-                            right: 20,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'If this card is lost or stolen:',
+                              // Card Number
+                              Positioned(
+                                bottom: 60,
+                                left: 20,
+                                right: 20,
+                                child: Text(
+                                  cardNumber,
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
-                                    fontSize: 12,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w600,
+                                    letterSpacing: 2,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Call: +254 700 000 000',
+                              ),
+                              // Card Holder Name
+                              Positioned(
+                                bottom: 20,
+                                left: 20,
+                                child: Text(
+                                  cardHolderName.toUpperCase(),
                                   style: GoogleFonts.poppins(
-                                    color: Colors.white70,
-                                    fontSize: 10,
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                Text(
-                                  'Email: support@totalenergies.co.ke',
+                              ),
+                              // Expiry Date
+                              Positioned(
+                                bottom: 20,
+                                right: 20,
+                                child: Text(
+                                  expiryDate,
                                   style: GoogleFonts.poppins(
-                                    color: Colors.white70,
-                                    fontSize: 10,
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                Text(
-                                  'Visit: Any TotalEnergies Station',
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.white70,
-                                    fontSize: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Card Back
+                        Container(
+                          margin: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withValues(alpha: 0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 5),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              // Magnetic strip
+                              Positioned(
+                                top: 20,
+                                left: 0,
+                                right: 0,
+                                child: Container(
+                                  height: 30,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              // CVV
+                              Positioned(
+                                top: 70,
+                                right: 20,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    'CVV: $cvv',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
-                              ],
+                              ),
+                              // Lost Card Information
+                              Positioned(
+                                bottom: 20,
+                                left: 20,
+                                right: 20,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'If this card is lost or stolen:',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Call: +254 700 000 000',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Email: support@totalenergies.co.ke',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Visit: Any TotalEnergies Station',
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Swipe indicator
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'Swipe to see card back',
+                      style: GoogleFonts.poppins(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Action Buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(color: Color(0xFFE60012)),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Close',
+                              style: GoogleFonts.poppins(
+                                color: const Color(0xFFE60012),
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              _saveCardDetails(
+                                cardNumber,
+                                expiryDate,
+                                cvv,
+                                cardHolderName,
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE60012),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Save Card',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              
-              // Swipe indicator
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Swipe to see card back',
-                  style: GoogleFonts.poppins(
-                    color: Colors.grey[600],
-                    fontSize: 12,
                   ),
-                ),
+                ],
               ),
-              
-              const SizedBox(height: 16),
-              
-              // Action Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFE60012)),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Close',
-                          style: GoogleFonts.poppins(
-                            color: const Color(0xFFE60012),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _saveCardDetails(cardNumber, expiryDate, cvv, cardHolderName);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE60012),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Save Card',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -1549,7 +1489,12 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     return (random % 900 + 100).toString();
   }
 
-  void _saveCardDetails(String cardNumber, String expiryDate, String cvv, String cardHolderName) {
+  void _saveCardDetails(
+    String cardNumber,
+    String expiryDate,
+    String cvv,
+    String cardHolderName,
+  ) {
     setState(() {
       _cardBalance = 0.0; // New card starts with zero balance
       _transactions.clear();
