@@ -886,42 +886,131 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                
+                // Preference Selection
+                Text(
+                  'Or choose your preference:',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 12),
-                // Secondary Action Row
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: widget.onLater,
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                
+                // Radio Button Style Options
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey[300]!),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      // Show Later Option
+                      InkWell(
+                        onTap: widget.onLater,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
                         ),
-                        child: Text(
-                          'Show Later',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.orange[600],
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.schedule,
+                                color: Colors.orange[600],
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Show Later',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Ask me again in a few minutes',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey[400],
+                                size: 20,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: widget.onNever,
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                      // Divider
+                      Container(
+                        height: 1,
+                        color: Colors.grey[200],
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      // Never Show Again Option
+                      InkWell(
+                        onTap: widget.onNever,
+                        borderRadius: const BorderRadius.only(
+                          bottomLeft: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
                         ),
-                        child: Text(
-                          'Never Show Again',
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.grey[600],
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.block,
+                                color: Colors.grey[600],
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Never Show Again',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Don\'t show this popup anymore',
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey[400],
+                                size: 20,
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
