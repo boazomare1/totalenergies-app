@@ -6,6 +6,8 @@ import 'offers_screen.dart';
 import 'gas_products_screen.dart';
 import 'pay_at_station_screen.dart';
 import 'quartz_oil_finder_screen.dart';
+import 'settings_screen.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -131,7 +133,28 @@ class _HomeScreenState extends State<HomeScreen> {
                             Icons.notifications_outlined,
                             color: Colors.white,
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const NotificationsScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.settings_outlined,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsScreen(),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
