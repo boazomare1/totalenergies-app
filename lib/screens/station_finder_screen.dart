@@ -159,9 +159,9 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                 Row(
                   children: [
                     // Filter Dropdown
-                    Flexible(
+                    Expanded(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
                           borderRadius: BorderRadius.circular(8),
@@ -170,7 +170,7 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                           child: DropdownButton<String>(
                             value: _selectedFilter,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 12),
+                            style: GoogleFonts.poppins(fontSize: 10),
                             items: const [
                               DropdownMenuItem(value: 'All', child: Text('All Stations')),
                               DropdownMenuItem(value: 'Open Now', child: Text('Open Now')),
@@ -187,12 +187,12 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     
                     // Sort Dropdown
-                    Flexible(
+                    Expanded(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
                           borderRadius: BorderRadius.circular(8),
@@ -201,7 +201,7 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                           child: DropdownButton<String>(
                             value: _selectedSort,
                             isExpanded: true,
-                            style: GoogleFonts.poppins(fontSize: 12),
+                            style: GoogleFonts.poppins(fontSize: 10),
                             items: const [
                               DropdownMenuItem(value: 'Distance', child: Text('Distance')),
                               DropdownMenuItem(value: 'Rating', child: Text('Rating')),
