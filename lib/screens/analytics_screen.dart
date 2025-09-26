@@ -31,20 +31,21 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 _selectedPeriod = value;
               });
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'week',
-                child: Text('This Week', style: GoogleFonts.poppins()),
-              ),
-              PopupMenuItem(
-                value: 'month',
-                child: Text('This Month', style: GoogleFonts.poppins()),
-              ),
-              PopupMenuItem(
-                value: 'year',
-                child: Text('This Year', style: GoogleFonts.poppins()),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'week',
+                    child: Text('This Week', style: GoogleFonts.poppins()),
+                  ),
+                  PopupMenuItem(
+                    value: 'month',
+                    child: Text('This Month', style: GoogleFonts.poppins()),
+                  ),
+                  PopupMenuItem(
+                    value: 'year',
+                    child: Text('This Year', style: GoogleFonts.poppins()),
+                  ),
+                ],
           ),
         ],
       ),
@@ -53,29 +54,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         children: [
           // Overview Cards
           _buildOverviewCards(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Usage Statistics
           _buildUsageStatistics(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Spending Analysis
           _buildSpendingAnalysis(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Station Visits
           _buildStationVisits(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Product Preferences
           _buildProductPreferences(),
-          
+
           const SizedBox(height: 24),
-          
+
           // Environmental Impact
           _buildEnvironmentalImpact(),
         ],
@@ -94,7 +95,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 'KSh 12,450',
                 Icons.attach_money,
                 Colors.green,
-                '+15% from last ${_selectedPeriod}',
+                '+15% from last $_selectedPeriod',
               ),
             ),
             const SizedBox(width: 12),
@@ -104,7 +105,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 '24',
                 Icons.location_on,
                 Colors.blue,
-                '+8 from last ${_selectedPeriod}',
+                '+8 from last $_selectedPeriod',
               ),
             ),
           ],
@@ -187,10 +188,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey[500],
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -239,10 +237,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -302,7 +297,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     );
   }
 
-  Widget _buildSpendingCategory(String category, int amount, double percentage, Color color) {
+  Widget _buildSpendingCategory(
+    String category,
+    int amount,
+    double percentage,
+    Color color,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -525,16 +525,36 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildImpactItem('CO₂ Emissions Saved', '120kg', Icons.eco, Colors.teal),
-          _buildImpactItem('Trees Planted Equivalent', '2.4', Icons.park, Colors.green),
-          _buildImpactItem('Fuel Efficiency', '+15%', Icons.trending_up, Colors.blue),
-          _buildImpactItem('Carbon Footprint', '-8%', Icons.footprint, Colors.orange),
+          _buildImpactItem(
+            'CO₂ Emissions Saved',
+            '120kg',
+            Icons.eco,
+            Colors.teal,
+          ),
+          _buildImpactItem(
+            'Trees Planted Equivalent',
+            '2.4',
+            Icons.park,
+            Colors.green,
+          ),
+          _buildImpactItem(
+            'Fuel Efficiency',
+            '+15%',
+            Icons.trending_up,
+            Colors.blue,
+          ),
+          _buildImpactItem('Carbon Footprint', '-8%', Icons.eco, Colors.orange),
         ],
       ),
     );
   }
 
-  Widget _buildImpactItem(String label, String value, IconData icon, Color color) {
+  Widget _buildImpactItem(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -544,10 +564,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
             ),
           ),
           Text(

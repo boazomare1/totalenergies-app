@@ -14,7 +14,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _emailNotifications = true;
   bool _smsNotifications = false;
   bool _offlineMode = false;
-  bool _analyticsEnabled = true;
   bool _locationServices = true;
   bool _biometricAuth = false;
   bool _darkMode = false;
@@ -40,7 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Profile Section
           _buildSectionHeader('Profile'),
           _buildProfileCard(),
-          
+
           // Notifications Section
           _buildSectionHeader('Notifications'),
           _buildSwitchTile(
@@ -64,7 +63,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             (value) => setState(() => _smsNotifications = value),
             Icons.sms,
           ),
-          
+
           // App Settings Section
           _buildSectionHeader('App Settings'),
           _buildSwitchTile(
@@ -93,20 +92,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Icons.attach_money,
             () => _showCurrencyDialog(),
           ),
-          
+
           // Privacy & Security Section
           _buildSectionHeader('Privacy & Security'),
           _buildListTile(
             'Analytics & Insights',
             'View your usage statistics and insights',
-            '',
+            Icons.analytics,
             () => Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const AnalyticsScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const AnalyticsScreen()),
             ),
-            Icons.analytics,
           ),
           _buildSwitchTile(
             'Location Services',
@@ -134,7 +130,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Icons.description,
             () => _showTermsOfService(),
           ),
-          
+
           // Support Section
           _buildSectionHeader('Support'),
           _buildListTile(
@@ -161,28 +157,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Icons.share,
             () => _shareApp(),
           ),
-          
+
           // About Section
           _buildSectionHeader('About'),
-          _buildListTile(
-            'App Version',
-            '1.0.0',
-            Icons.info,
-            null,
-          ),
-          _buildListTile(
-            'Build Number',
-            '100',
-            Icons.build,
-            null,
-          ),
+          _buildListTile('App Version', '1.0.0', Icons.info, null),
+          _buildListTile('Build Number', '100', Icons.build, null),
           _buildListTile(
             'Open Source Licenses',
             'View third-party licenses',
             Icons.code,
             () => _showLicenses(),
           ),
-          
+
           const SizedBox(height: 20),
         ],
       ),
@@ -223,11 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           CircleAvatar(
             radius: 30,
             backgroundColor: const Color(0xFFE60012).withValues(alpha: 0.1),
-            child: Icon(
-              Icons.person,
-              size: 30,
-              color: const Color(0xFFE60012),
-            ),
+            child: Icon(Icons.person, size: 30, color: const Color(0xFFE60012)),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -262,10 +244,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           IconButton(
             onPressed: () => _editProfile(),
-            icon: Icon(
-              Icons.edit,
-              color: const Color(0xFFE60012),
-            ),
+            icon: Icon(Icons.edit, color: const Color(0xFFE60012)),
           ),
         ],
       ),
@@ -295,25 +274,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: SwitchListTile(
         title: Text(
           title,
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         subtitle: Text(
           subtitle,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
+          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
         ),
         value: value,
         onChanged: onChanged,
         activeColor: const Color(0xFFE60012),
-        secondary: Icon(
-          icon,
-          color: const Color(0xFFE60012),
-        ),
+        secondary: Icon(icon, color: const Color(0xFFE60012)),
       ),
     );
   }
@@ -340,28 +310,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: ListTile(
         title: Text(
           title,
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         subtitle: Text(
           subtitle,
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            color: Colors.grey[600],
-          ),
+          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
         ),
-        leading: Icon(
-          icon,
-          color: const Color(0xFFE60012),
-        ),
-        trailing: onTap != null
-            ? Icon(
-                Icons.chevron_right,
-                color: Colors.grey[400],
-              )
-            : null,
+        leading: Icon(icon, color: const Color(0xFFE60012)),
+        trailing:
+            onTap != null
+                ? Icon(Icons.chevron_right, color: Colors.grey[400])
+                : null,
         onTap: onTap,
       ),
     );
@@ -370,54 +329,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _editProfile() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Edit Profile',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Text(
-          'Profile editing feature will be available in the next update.',
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Edit Profile',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
+            content: Text(
+              'Profile editing feature will be available in the next update.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showLanguageDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Select Language',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildLanguageOption('English', 'English'),
-            _buildLanguageOption('Kiswahili', 'Kiswahili'),
-            _buildLanguageOption('Français', 'French'),
-          ],
-        ),
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Select Language',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildLanguageOption('English', 'English'),
+                _buildLanguageOption('Kiswahili', 'Kiswahili'),
+                _buildLanguageOption('Français', 'French'),
+              ],
+            ),
+          ),
     );
   }
 
   Widget _buildLanguageOption(String name, String value) {
     return ListTile(
       title: Text(name, style: GoogleFonts.poppins()),
-      trailing: _selectedLanguage == value
-          ? Icon(Icons.check, color: const Color(0xFFE60012))
-          : null,
+      trailing:
+          _selectedLanguage == value
+              ? Icon(Icons.check, color: const Color(0xFFE60012))
+              : null,
       onTap: () {
         setState(() => _selectedLanguage = value);
         Navigator.pop(context);
@@ -428,29 +390,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showCurrencyDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Select Currency',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildCurrencyOption('KSh', 'Kenyan Shilling'),
-            _buildCurrencyOption('USD', 'US Dollar'),
-            _buildCurrencyOption('EUR', 'Euro'),
-          ],
-        ),
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Select Currency',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildCurrencyOption('KSh', 'Kenyan Shilling'),
+                _buildCurrencyOption('USD', 'US Dollar'),
+                _buildCurrencyOption('EUR', 'Euro'),
+              ],
+            ),
+          ),
     );
   }
 
   Widget _buildCurrencyOption(String code, String name) {
     return ListTile(
       title: Text('$code - $name', style: GoogleFonts.poppins()),
-      trailing: _selectedCurrency == code
-          ? Icon(Icons.check, color: const Color(0xFFE60012))
-          : null,
+      trailing:
+          _selectedCurrency == code
+              ? Icon(Icons.check, color: const Color(0xFFE60012))
+              : null,
       onTap: () {
         setState(() => _selectedCurrency = code);
         Navigator.pop(context);
@@ -459,55 +423,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showPrivacyPolicy() {
-    _showInfoDialog('Privacy Policy', 'Our privacy policy outlines how we collect, use, and protect your personal information.');
+    _showInfoDialog(
+      'Privacy Policy',
+      'Our privacy policy outlines how we collect, use, and protect your personal information.',
+    );
   }
 
   void _showTermsOfService() {
-    _showInfoDialog('Terms of Service', 'These terms govern your use of the TotalEnergies mobile application.');
+    _showInfoDialog(
+      'Terms of Service',
+      'These terms govern your use of the TotalEnergies mobile application.',
+    );
   }
 
   void _showHelpCenter() {
-    _showInfoDialog('Help Center', 'Visit our help center for frequently asked questions and support resources.');
+    _showInfoDialog(
+      'Help Center',
+      'Visit our help center for frequently asked questions and support resources.',
+    );
   }
 
   void _showContactUs() {
-    _showInfoDialog('Contact Us', 'Email: support@totalenergies.com\nPhone: +254 700 000 000\nHours: 8 AM - 6 PM (EAT)');
+    _showInfoDialog(
+      'Contact Us',
+      'Email: support@totalenergies.com\nPhone: +254 700 000 000\nHours: 8 AM - 6 PM (EAT)',
+    );
   }
 
   void _rateApp() {
-    _showInfoDialog('Rate App', 'Thank you for using TotalEnergies! Please rate us on the app store.');
+    _showInfoDialog(
+      'Rate App',
+      'Thank you for using TotalEnergies! Please rate us on the app store.',
+    );
   }
 
   void _shareApp() {
-    _showInfoDialog('Share App', 'Share TotalEnergies app with your friends and family.');
+    _showInfoDialog(
+      'Share App',
+      'Share TotalEnergies app with your friends and family.',
+    );
   }
 
   void _showLicenses() {
-    _showInfoDialog('Open Source Licenses', 'This app uses various open source libraries. View licenses for more details.');
+    _showInfoDialog(
+      'Open Source Licenses',
+      'This app uses various open source libraries. View licenses for more details.',
+    );
   }
 
   void _showInfoDialog(String title, String content) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          title,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Text(
-          content,
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              title,
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
             ),
+            content: Text(content, style: GoogleFonts.poppins()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

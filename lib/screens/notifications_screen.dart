@@ -59,7 +59,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       {
         'id': '4',
         'title': 'Card Application Approved',
-        'message': 'Your virtual card application has been approved and is ready to use',
+        'message':
+            'Your virtual card application has been approved and is ready to use',
         'timestamp': DateTime.now().subtract(const Duration(days: 1)),
         'isRead': true,
         'type': 'card',
@@ -68,7 +69,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       {
         'id': '5',
         'title': 'Maintenance Notice',
-        'message': 'Scheduled maintenance on our mobile app tonight from 2-4 AM',
+        'message':
+            'Scheduled maintenance on our mobile app tonight from 2-4 AM',
         'timestamp': DateTime.now().subtract(const Duration(days: 2)),
         'isRead': true,
         'type': 'system',
@@ -77,7 +79,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       {
         'id': '6',
         'title': 'Welcome to TotalEnergies',
-        'message': 'Thank you for downloading our app! Explore our services and offers',
+        'message':
+            'Thank you for downloading our app! Explore our services and offers',
         'timestamp': DateTime.now().subtract(const Duration(days: 3)),
         'isRead': true,
         'type': 'welcome',
@@ -86,7 +89,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       {
         'id': '7',
         'title': 'Fuel Price Update',
-        'message': 'Petrol prices have been updated. Check the latest rates in Station Finder',
+        'message':
+            'Petrol prices have been updated. Check the latest rates in Station Finder',
         'timestamp': DateTime.now().subtract(const Duration(days: 4)),
         'isRead': false,
         'type': 'fuel',
@@ -95,7 +99,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       {
         'id': '8',
         'title': 'Order Delivered',
-        'message': 'Your Total Gas cylinder order has been delivered successfully',
+        'message':
+            'Your Total Gas cylinder order has been delivered successfully',
         'timestamp': DateTime.now().subtract(const Duration(days: 5)),
         'isRead': true,
         'type': 'delivery',
@@ -107,20 +112,29 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   void _filterNotifications() {
     setState(() {
-      _filteredNotifications = _notifications.where((notification) {
-        final matchesSearch = _searchController.text.isEmpty ||
-            notification['title'].toLowerCase().contains(_searchController.text.toLowerCase()) ||
-            notification['message'].toLowerCase().contains(_searchController.text.toLowerCase());
-        
-        final matchesFilter = _selectedFilter == 'all' ||
-            (_selectedFilter == 'unread' && !notification['isRead']) ||
-            (_selectedFilter == 'read' && notification['isRead']);
-        
-        return matchesSearch && matchesFilter;
-      }).toList();
-      
+      _filteredNotifications =
+          _notifications.where((notification) {
+            final matchesSearch =
+                _searchController.text.isEmpty ||
+                notification['title'].toLowerCase().contains(
+                  _searchController.text.toLowerCase(),
+                ) ||
+                notification['message'].toLowerCase().contains(
+                  _searchController.text.toLowerCase(),
+                );
+
+            final matchesFilter =
+                _selectedFilter == 'all' ||
+                (_selectedFilter == 'unread' && !notification['isRead']) ||
+                (_selectedFilter == 'read' && notification['isRead']);
+
+            return matchesSearch && matchesFilter;
+          }).toList();
+
       // Sort by timestamp (newest first)
-      _filteredNotifications.sort((a, b) => b['timestamp'].compareTo(a['timestamp']));
+      _filteredNotifications.sort(
+        (a, b) => b['timestamp'].compareTo(a['timestamp']),
+      );
     });
   }
 
@@ -196,7 +210,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -213,7 +227,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final unreadCount = _notifications.where((n) => !n['isRead']).length;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -234,11 +248,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: const Color(0xFFE60012),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
                 child: Text(
                   'Mark All Read',
-                  style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -248,18 +268,23 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 _deleteAllRead();
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'delete_all_read',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_sweep, color: Colors.red[600], size: 20),
-                    const SizedBox(width: 8),
-                    Text('Delete All Read', style: GoogleFonts.poppins()),
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'delete_all_read',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.delete_sweep,
+                          color: Colors.red[600],
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text('Delete All Read', style: GoogleFonts.poppins()),
+                      ],
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
@@ -277,14 +302,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     hintText: 'Search notifications...',
                     hintStyle: GoogleFonts.poppins(color: Colors.grey[600]),
                     prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                    suffixIcon: _searchController.text.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.clear, color: Colors.grey[600]),
-                            onPressed: () {
-                              _searchController.clear();
-                            },
-                          )
-                        : null,
+                    suffixIcon:
+                        _searchController.text.isNotEmpty
+                            ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.grey[600]),
+                              onPressed: () {
+                                _searchController.clear();
+                              },
+                            )
+                            : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey[300]!),
@@ -307,7 +333,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       const SizedBox(width: 8),
                       _buildFilterChip('Unread', 'unread', unreadCount),
                       const SizedBox(width: 8),
-                      _buildFilterChip('Read', 'read', _notifications.length - unreadCount),
+                      _buildFilterChip(
+                        'Read',
+                        'read',
+                        _notifications.length - unreadCount,
+                      ),
                     ],
                   ),
                 ),
@@ -316,15 +346,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
           // Notifications List
           Expanded(
-            child: _filteredNotifications.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: _filteredNotifications.length,
-                    itemBuilder: (context, index) {
-                      final notification = _filteredNotifications[index];
-                      return _buildNotificationCard(notification);
-                    },
-                  ),
+            child:
+                _filteredNotifications.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                      itemCount: _filteredNotifications.length,
+                      itemBuilder: (context, index) {
+                        final notification = _filteredNotifications[index];
+                        return _buildNotificationCard(notification);
+                      },
+                    ),
           ),
         ],
       ),
@@ -384,14 +415,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final isRead = notification['isRead'] as bool;
     final priority = notification['priority'] as String;
     final type = notification['type'] as String;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
         color: isRead ? Colors.white : Colors.blue[50],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isRead ? Colors.grey[200]! : const Color(0xFFE60012).withValues(alpha: 0.3),
+          color:
+              isRead
+                  ? Colors.grey[200]!
+                  : const Color(0xFFE60012).withValues(alpha: 0.3),
           width: isRead ? 1 : 2,
         ),
         boxShadow: [
@@ -446,19 +480,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             const SizedBox(height: 4),
             Text(
               notification['message'],
-              style: GoogleFonts.poppins(
-                color: Colors.grey[700],
-                fontSize: 14,
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[700], fontSize: 14),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                Icon(
-                  Icons.access_time,
-                  size: 14,
-                  color: Colors.grey[500],
-                ),
+                Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
                 const SizedBox(width: 4),
                 Text(
                   _formatTimestamp(notification['timestamp']),
@@ -470,7 +497,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 const Spacer(),
                 if (!isRead)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE60012),
                       borderRadius: BorderRadius.circular(10),
@@ -496,29 +526,34 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               _deleteNotification(notification['id']);
             }
           },
-          itemBuilder: (context) => [
-            if (!isRead)
-              PopupMenuItem(
-                value: 'mark_read',
-                child: Row(
-                  children: [
-                    Icon(Icons.mark_email_read, color: Colors.blue[600], size: 20),
-                    const SizedBox(width: 8),
-                    Text('Mark as Read', style: GoogleFonts.poppins()),
-                  ],
+          itemBuilder:
+              (context) => [
+                if (!isRead)
+                  PopupMenuItem(
+                    value: 'mark_read',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.mark_email_read,
+                          color: Colors.blue[600],
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text('Mark as Read', style: GoogleFonts.poppins()),
+                      ],
+                    ),
+                  ),
+                PopupMenuItem(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.red[600], size: 20),
+                      const SizedBox(width: 8),
+                      Text('Delete', style: GoogleFonts.poppins()),
+                    ],
+                  ),
                 ),
-              ),
-            PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: Colors.red[600], size: 20),
-                  const SizedBox(width: 8),
-                  Text('Delete', style: GoogleFonts.poppins()),
-                ],
-              ),
-            ),
-          ],
+              ],
         ),
         onTap: () {
           if (!isRead) {
@@ -534,11 +569,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.notifications_off,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.notifications_off, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             _searchController.text.isNotEmpty
@@ -555,10 +586,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             _searchController.text.isNotEmpty
                 ? 'Try adjusting your search terms'
                 : 'You\'re all caught up!',
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
           if (_searchController.text.isNotEmpty) ...[
@@ -571,10 +599,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 backgroundColor: const Color(0xFFE60012),
                 foregroundColor: Colors.white,
               ),
-              child: Text(
-                'Clear Search',
-                style: GoogleFonts.poppins(),
-              ),
+              child: Text('Clear Search', style: GoogleFonts.poppins()),
             ),
           ],
         ],

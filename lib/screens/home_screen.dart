@@ -19,12 +19,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentBannerIndex = 0;
   late PageController _bannerController;
+  bool _hasShownNewsletterPopup = false;
 
   @override
   void initState() {
     super.initState();
     _bannerController = PageController();
     _startBannerAutoScroll();
+    _showNewsletterOptIn();
   }
 
   @override
@@ -628,5 +630,257 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const PayAtStationScreen(),
           ),
     );
+  }
+
+  void _showNewsletterOptIn() {
+    if (!_hasShownNewsletterPopup) {
+      Future.delayed(const Duration(seconds: 2), () {
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => _NewsletterOptInDialog(
+              onOptIn: () {
+                setState(() {
+                  _hasShownNewsletterPopup = true;
+                });
+                Navigator.pop(context);
+                _showOptInSuccess();
+              },
+              onSkip: () {
+                setState(() {
+                  _hasShownNewsletterPopup = true;
+                });
+                Navigator.pop(context);
+              },
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  void _showOptInSuccess() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Thank you! You\'ll receive our latest offers and news via SMS.',
+          style: GoogleFonts.poppins(),
+        ),
+        backgroundColor: const Color(0xFFE60012),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+}
+
+class _NewsletterOptInDialog extends StatefulWidget {
+  final VoidCallback onOptIn;
+  final VoidCallback onSkip;
+
+  const _NewsletterOptInDialog({
+    required this.onOptIn,
+    required this.onSkip,
+  });
+
+  @override
+  State<_NewsletterOptInDialog> createState() => _NewsletterOptInDialogState();
+}
+
+class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
+  final TextEditingController _phoneController = TextEditingController();
+  bool _isOptingIn = false;
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE60012).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.campaign,
+                size: 48,
+                color: const Color(0xFFE60012),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Title
+            Text(
+              'Stay Updated!',
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFFE60012),
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // Description
+            Text(
+              'Get the latest offers, promotions, and news from TotalEnergies delivered straight to your phone.',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                color: Colors.grey[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            
+            // Phone Number Input
+            TextField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                hintText: '+254 7XX XXX XXX',
+                prefixIcon: Icon(Icons.phone, color: const Color(0xFFE60012)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            
+            // Benefits List
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  _buildBenefitItem('🎯 Exclusive offers and discounts'),
+                  _buildBenefitItem('⛽ Latest fuel price updates'),
+                  _buildBenefitItem('🏪 New station openings'),
+                  _buildBenefitItem('🔧 Service reminders'),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: widget.onSkip,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Text(
+                      'Skip',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _isOptingIn ? null : _optIn,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE60012),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _isOptingIn
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'Opt In',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBenefitItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text(
+            text,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _optIn() {
+    if (_phoneController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please enter your phone number',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isOptingIn = true;
+    });
+
+    // Simulate opt-in process
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _isOptingIn = false;
+        });
+        widget.onOptIn();
+      }
+    });
   }
 }
