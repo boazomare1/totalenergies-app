@@ -995,29 +995,386 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   }
 
   void _submitApplication() {
+    if (_selectedCardType == 'virtual') {
+      _createVirtualCard();
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(
+            'Application Submitted',
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+          ),
+          content: Text(
+            'Your physical card application has been submitted successfully. You will receive a notification once it\'s processed and delivered.',
+            style: GoogleFonts.poppins(),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE60012),
+              ),
+              child: Text(
+                'OK',
+                style: GoogleFonts.poppins(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _createVirtualCard() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(
-          'Application Submitted',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE60012)),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Creating your virtual card...',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Please wait while we generate your card details',
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
+      ),
+    );
+
+    // Simulate card creation process
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.pop(context); // Close loading dialog
+      _showVirtualCard();
+    });
+  }
+
+  void _showVirtualCard() {
+    final cardNumber = _generateCardNumber();
+    final expiryDate = _generateExpiryDate();
+    final cvv = _generateCVV();
+    final cardHolderName = 'John Doe'; // In real app, get from form
+
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          height: 500,
+          child: Column(
+            children: [
+              // Card Front
+              Container(
+                height: 200,
+                margin: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFE60012), Color(0xFFB8000E)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFE60012).withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    // TotalEnergies Logo
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'TOTAL',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Card Number
+                    Positioned(
+                      bottom: 60,
+                      left: 20,
+                      right: 20,
+                      child: Text(
+                        cardNumber,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ),
+                    // Card Holder Name
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      child: Text(
+                        cardHolderName.toUpperCase(),
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    // Expiry Date
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: Text(
+                        expiryDate,
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              // Card Back
+              Container(
+                height: 200,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    // Magnetic strip
+                    Positioned(
+                      top: 20,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 30,
+                        color: Colors.black,
+                      ),
+                    ),
+                    // CVV
+                    Positioned(
+                      top: 70,
+                      right: 20,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'CVV: $cvv',
+                          style: GoogleFonts.poppins(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Lost Card Information
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      right: 20,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'If this card is lost or stolen:',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Call: +254 700 000 000',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 10,
+                            ),
+                          ),
+                          Text(
+                            'Email: support@totalenergies.co.ke',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 10,
+                            ),
+                          ),
+                          Text(
+                            'Visit: Any TotalEnergies Station',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white70,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 20),
+              
+              // Action Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFFE60012)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Close',
+                          style: GoogleFonts.poppins(
+                            color: const Color(0xFFE60012),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _saveCardDetails(cardNumber, expiryDate, cvv, cardHolderName);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE60012),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Save Card',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _generateCardNumber() {
+    // Generate a realistic-looking card number
+    final random = DateTime.now().millisecondsSinceEpoch;
+    final baseNumber = (random % 9000000000000000) + 1000000000000000;
+    return baseNumber.toString().replaceAllMapped(
+      RegExp(r'(\d{4})(?=\d)'),
+      (Match match) => '${match.group(1)} ',
+    );
+  }
+
+  String _generateExpiryDate() {
+    final now = DateTime.now();
+    final expiryYear = now.year + 3;
+    final month = (now.month + 6) % 12;
+    return '${month.toString().padLeft(2, '0')}/${expiryYear.toString().substring(2)}';
+  }
+
+  String _generateCVV() {
+    final random = DateTime.now().millisecondsSinceEpoch;
+    return (random % 900 + 100).toString();
+  }
+
+  void _saveCardDetails(String cardNumber, String expiryDate, String cvv, String cardHolderName) {
+    setState(() {
+      _cardBalance = 0.0; // New card starts with zero balance
+      _transactions.clear();
+      _transactions.add({
+        'id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'type': 'card_created',
+        'amount': 0.0,
+        'description': 'Virtual card created successfully',
+        'date': DateTime.now().toIso8601String().split('T')[0],
+        'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+        'status': 'completed',
+      });
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
         content: Text(
-          'Your ${_selectedCardType} card application has been submitted successfully. You will receive a notification once it\'s processed.',
+          'Virtual card created and saved successfully!',
           style: GoogleFonts.poppins(),
         ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE60012),
-            ),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ),
-        ],
+        backgroundColor: Colors.green,
+        action: SnackBarAction(
+          label: 'View Card',
+          textColor: Colors.white,
+          onPressed: () {
+            // Switch to My Card tab
+            _tabController.animateTo(0);
+          },
+        ),
       ),
     );
   }
