@@ -252,7 +252,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
 
   Widget _buildCylinderCard(Map<String, dynamic> cylinder) {
     return Container(
-      height: 120,
+      height: 170,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -300,27 +300,27 @@ class _GasProductsScreenState extends State<GasProductsScreen>
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     cylinder['description'],
                     style: GoogleFonts.poppins(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: Colors.grey[600],
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     'KES ${cylinder['price'].toStringAsFixed(2)}',
                     style: GoogleFonts.poppins(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFFE60012),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  
+                  const Spacer(),
+
                   // Action Buttons
                   Row(
                     children: [
@@ -330,36 +330,36 @@ class _GasProductsScreenState extends State<GasProductsScreen>
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => _buyNow(cylinder),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -378,7 +378,7 @@ class _GasProductsScreenState extends State<GasProductsScreen>
 
   Widget _buildAccessoryCard(Map<String, dynamic> accessory) {
     return Container(
-      height: 120,
+      height: 170,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -426,27 +426,27 @@ class _GasProductsScreenState extends State<GasProductsScreen>
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Text(
                     accessory['description'],
                     style: GoogleFonts.poppins(
-                      fontSize: 10,
+                      fontSize: 12,
                       color: Colors.grey[600],
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 8),
                   Text(
                     'KES ${accessory['price'].toStringAsFixed(2)}',
                     style: GoogleFonts.poppins(
-                      fontSize: 14,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFFE60012),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  
+                  const Spacer(),
+
                   // Action Buttons
                   Row(
                     children: [
@@ -456,36 +456,36 @@ class _GasProductsScreenState extends State<GasProductsScreen>
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: OutlinedButton(
                           onPressed: () => _buyNow(accessory),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                           ),
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 10,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
