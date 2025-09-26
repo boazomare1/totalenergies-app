@@ -276,7 +276,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.65,
+              childAspectRatio: 0.6,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -323,7 +323,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
             padding: const EdgeInsets.all(16),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.65,
+              childAspectRatio: 0.6,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
             ),
@@ -438,7 +438,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -446,7 +446,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 9,
+                              fontSize: 8,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -459,7 +459,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -467,7 +467,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 9,
+                              fontSize: 8,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -560,7 +560,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -568,7 +568,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Add to cart',
                             style: GoogleFonts.poppins(
-                              fontSize: 9,
+                              fontSize: 8,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -581,7 +581,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFFE60012),
                             side: const BorderSide(color: Color(0xFFE60012)),
-                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            padding: const EdgeInsets.symmetric(vertical: 4),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(6),
                             ),
@@ -589,7 +589,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                           child: Text(
                             'Buy Now',
                             style: GoogleFonts.poppins(
-                              fontSize: 9,
+                              fontSize: 8,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -626,7 +626,7 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
   void _addToCart(Map<String, dynamic> product) {
     setState(() {
       _cartItemCount++;
-      _cartItems.add(product);
+      _cartItems.add(Map<String, dynamic>.from(product)); // Create a copy
       _cartTotal += product['price'];
     });
     
@@ -647,15 +647,12 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
   }
 
   void _buyNow(Map<String, dynamic> product) {
-    // Add to cart first
-    _addToCart(product);
-    
-    // Navigate to checkout
+    // Navigate to checkout with single item
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CheckoutScreen(
-          cartItems: [product],
+          cartItems: [Map<String, dynamic>.from(product)],
           totalAmount: product['price'],
         ),
       ),
@@ -745,11 +742,22 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
         context,
         MaterialPageRoute(
           builder: (context) => CheckoutScreen(
-            cartItems: _cartItems,
+            cartItems: List<Map<String, dynamic>>.from(_cartItems),
             totalAmount: _cartTotal,
           ),
         ),
-      );
+      ).then((_) {
+        // Clear cart after returning from checkout
+        _clearCart();
+      });
     }
+  }
+
+  void _clearCart() {
+    setState(() {
+      _cartItemCount = 0;
+      _cartItems.clear();
+      _cartTotal = 0.0;
+    });
   }
 }
