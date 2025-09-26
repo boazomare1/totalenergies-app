@@ -4,7 +4,6 @@ import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 
 void main() {
-  print('TotalEnergies App: Starting...');
   runApp(const TotalEnergiesApp());
 }
 
@@ -23,7 +22,6 @@ class TotalEnergiesApp extends StatelessWidget {
           primary: Color(0xFFE60012),
           secondary: Color(0xFF06D6A0), // Green
           surface: Colors.white,
-          background: Colors.white,
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFFE60012),

@@ -20,8 +20,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    print('SplashScreen: initState called');
-
     // Set status bar to dark content for better visibility
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -59,7 +57,6 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Navigate to main screen after splash duration (4.5 seconds)
     Future.delayed(const Duration(milliseconds: 4500), () {
-      print('SplashScreen: Navigating to main screen');
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/main');
       }
@@ -75,7 +72,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    print('SplashScreen: build method called');
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -103,14 +99,13 @@ class _SplashScreenState extends State<SplashScreen>
                 builder: (context, child) {
                   return Transform.scale(
                     scale: _logoAnimation.value,
-                    child: Container(
+                    child: SizedBox(
                       width: 200,
                       height: 200,
                       child: Image.asset(
                         'assets/images/splash_logo.png',
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
-                          print('SplashScreen: Error loading logo: $error');
                           return Container(
                             width: 100,
                             height: 100,
@@ -155,7 +150,7 @@ class _SplashScreenState extends State<SplashScreen>
                           'Energy for Life',
                           style: GoogleFonts.poppins(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -178,7 +173,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 30,
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white.withOpacity(0.8),
+                          Colors.white.withValues(alpha: 0.8),
                         ),
                         strokeWidth: 2,
                       ),
