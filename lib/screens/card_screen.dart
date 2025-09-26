@@ -15,6 +15,12 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   double _cardBalance = 2500.0;
   final List<Map<String, dynamic>> _transactions = [];
   final TextEditingController _topUpController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _companyController = TextEditingController();
+  final TextEditingController _regNumberController = TextEditingController();
 
   @override
   void initState() {
@@ -27,6 +33,12 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   void dispose() {
     _tabController.dispose();
     _topUpController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _idController.dispose();
+    _companyController.dispose();
+    _regNumberController.dispose();
     super.dispose();
   }
 
@@ -383,6 +395,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
             child: Column(
               children: [
                 TextField(
+                  controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Full Name',
                     labelStyle: GoogleFonts.poppins(),
@@ -393,6 +406,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 16),
                 TextField(
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email Address',
                     labelStyle: GoogleFonts.poppins(),
@@ -403,6 +417,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                 ),
                 const SizedBox(height: 16),
                 TextField(
+                  controller: _phoneController,
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     labelStyle: GoogleFonts.poppins(),
@@ -414,6 +429,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                 const SizedBox(height: 16),
                 if (_selectedApplicationType == 'corporate') ...[
                   TextField(
+                    controller: _companyController,
                     decoration: InputDecoration(
                       labelText: 'Company Name',
                       labelStyle: GoogleFonts.poppins(),
@@ -424,6 +440,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 16),
                   TextField(
+                    controller: _regNumberController,
                     decoration: InputDecoration(
                       labelText: 'Company Registration Number',
                       labelStyle: GoogleFonts.poppins(),
@@ -435,6 +452,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 16),
                 ],
                 TextField(
+                  controller: _idController,
                   decoration: InputDecoration(
                     labelText: 'ID Number',
                     labelStyle: GoogleFonts.poppins(),
@@ -456,7 +474,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                       ),
                     ),
                     child: Text(
-                      'Submit Application',
+                      _selectedCardType == 'virtual' ? 'Create Virtual Card' : 'Submit Application',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 16,
@@ -1070,7 +1088,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     final cardNumber = _generateCardNumber();
     final expiryDate = _generateExpiryDate();
     final cvv = _generateCVV();
-    final cardHolderName = 'John Doe'; // In real app, get from form
+    final cardHolderName = _nameController.text.isNotEmpty ? _nameController.text : 'Card Holder';
 
     showDialog(
       context: context,
@@ -1079,182 +1097,195 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          height: 500,
+          height: 450,
           child: Column(
             children: [
-              // Card Front
-              Container(
-                height: 200,
-                margin: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFE60012), Color(0xFFB8000E)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFE60012).withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Stack(
+              // Swipeable Card
+              Expanded(
+                child: PageView(
                   children: [
-                    // TotalEnergies Logo
-                    Positioned(
-                      top: 16,
-                      right: 16,
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
+                    // Card Front
+                    Container(
+                      margin: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFE60012), Color(0xFFB8000E)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                        child: Text(
-                          'TOTAL',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFE60012).withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
                           ),
-                        ),
+                        ],
                       ),
-                    ),
-                    // Card Number
-                    Positioned(
-                      bottom: 60,
-                      left: 20,
-                      right: 20,
-                      child: Text(
-                        cardNumber,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                    ),
-                    // Card Holder Name
-                    Positioned(
-                      bottom: 20,
-                      left: 20,
-                      child: Text(
-                        cardHolderName.toUpperCase(),
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    // Expiry Date
-                    Positioned(
-                      bottom: 20,
-                      right: 20,
-                      child: Text(
-                        expiryDate,
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              // Card Back
-              Container(
-                height: 200,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Magnetic strip
-                    Positioned(
-                      top: 20,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        height: 30,
-                        color: Colors.black,
-                      ),
-                    ),
-                    // CVV
-                    Positioned(
-                      top: 70,
-                      right: 20,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'CVV: $cvv',
-                          style: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Lost Card Information
-                    Positioned(
-                      bottom: 20,
-                      left: 20,
-                      right: 20,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Stack(
                         children: [
-                          Text(
-                            'If this card is lost or stolen:',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                          // TotalEnergies Logo
+                          Positioned(
+                            top: 16,
+                            right: 16,
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Image.asset(
+                                'assets/images/totalenergies_logo_white.png',
+                                height: 20,
+                                width: 40,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Text(
+                                    'TOTAL',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Call: +254 700 000 000',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white70,
-                              fontSize: 10,
+                          // Card Number
+                          Positioned(
+                            bottom: 60,
+                            left: 20,
+                            right: 20,
+                            child: Text(
+                              cardNumber,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 2,
+                              ),
                             ),
                           ),
-                          Text(
-                            'Email: support@totalenergies.co.ke',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white70,
-                              fontSize: 10,
+                          // Card Holder Name
+                          Positioned(
+                            bottom: 20,
+                            left: 20,
+                            child: Text(
+                              cardHolderName.toUpperCase(),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                          Text(
-                            'Visit: Any TotalEnergies Station',
-                            style: GoogleFonts.poppins(
-                              color: Colors.white70,
-                              fontSize: 10,
+                          // Expiry Date
+                          Positioned(
+                            bottom: 20,
+                            right: 20,
+                            child: Text(
+                              expiryDate,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Card Back
+                    Container(
+                      margin: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withValues(alpha: 0.3),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          // Magnetic strip
+                          Positioned(
+                            top: 20,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              height: 30,
+                              color: Colors.black,
+                            ),
+                          ),
+                          // CVV
+                          Positioned(
+                            top: 70,
+                            right: 20,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                'CVV: $cvv',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Lost Card Information
+                          Positioned(
+                            bottom: 20,
+                            left: 20,
+                            right: 20,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'If this card is lost or stolen:',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Call: +254 700 000 000',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white70,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                Text(
+                                  'Email: support@totalenergies.co.ke',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white70,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                Text(
+                                  'Visit: Any TotalEnergies Station',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white70,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -1264,7 +1295,19 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                 ),
               ),
               
-              const SizedBox(height: 20),
+              // Swipe indicator
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Swipe to see card back',
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 16),
               
               // Action Buttons
               Padding(
