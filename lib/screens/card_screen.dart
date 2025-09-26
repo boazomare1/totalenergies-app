@@ -815,116 +815,11 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   }
 
   void _topUpCard() {
-    final topUpController = TextEditingController();
-
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(
-            'Top Up Card',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: topUpController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Amount (KSh)',
-                    labelStyle: GoogleFonts.poppins(),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Choose Payment Method',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          final amount = double.tryParse(topUpController.text);
-                          if (amount != null && amount > 0) {
-                            Navigator.pop(context);
-                            topUpController.dispose();
-                            _navigateToMpesaPayment(amount);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Please enter a valid amount',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
-                        icon: Icon(Icons.phone_android, size: 20),
-                        label: Text('M-Pesa', style: GoogleFonts.poppins()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          final amount = double.tryParse(topUpController.text);
-                          if (amount != null && amount > 0) {
-                            Navigator.pop(context);
-                            topUpController.dispose();
-                            _navigateToVisaPayment(amount);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Please enter a valid amount',
-                                  style: GoogleFonts.poppins(),
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
-                        icon: Icon(Icons.credit_card, size: 20),
-                        label: Text('Visa', style: GoogleFonts.poppins()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE60012),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                topUpController.dispose();
-              },
-              child: Text('Cancel', style: GoogleFonts.poppins()),
-            ),
-          ],
-        ),
+      builder: (context) => _TopUpDialog(
+        onMpesaPayment: _navigateToMpesaPayment,
+        onVisaPayment: _navigateToVisaPayment,
       ),
     );
   }
@@ -1532,6 +1427,133 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
           },
         ),
       ),
+    );
+  }
+}
+
+class _TopUpDialog extends StatefulWidget {
+  final Function(double) onMpesaPayment;
+  final Function(double) onVisaPayment;
+
+  const _TopUpDialog({
+    required this.onMpesaPayment,
+    required this.onVisaPayment,
+  });
+
+  @override
+  State<_TopUpDialog> createState() => _TopUpDialogState();
+}
+
+class _TopUpDialogState extends State<_TopUpDialog> {
+  final _topUpController = TextEditingController();
+
+  @override
+  void dispose() {
+    _topUpController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'Top Up Card',
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _topUpController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Amount (KSh)',
+                labelStyle: GoogleFonts.poppins(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Choose Payment Method',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final amount = double.tryParse(_topUpController.text);
+                      if (amount != null && amount > 0) {
+                        Navigator.pop(context);
+                        widget.onMpesaPayment(amount);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Please enter a valid amount',
+                              style: GoogleFonts.poppins(),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.phone_android, size: 20),
+                    label: Text('M-Pesa', style: GoogleFonts.poppins()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green[600],
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      final amount = double.tryParse(_topUpController.text);
+                      if (amount != null && amount > 0) {
+                        Navigator.pop(context);
+                        widget.onVisaPayment(amount);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Please enter a valid amount',
+                              style: GoogleFonts.poppins(),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.credit_card, size: 20),
+                    label: Text('Visa', style: GoogleFonts.poppins()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE60012),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancel', style: GoogleFonts.poppins()),
+        ),
+      ],
     );
   }
 }
