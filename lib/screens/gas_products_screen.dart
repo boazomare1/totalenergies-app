@@ -428,26 +428,54 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                     ),
                   ),
                   
-                  // Action Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => _addToCart(cylinder),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE60012),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+                  // Action Buttons
+                  ClipRect(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => _addToCart(cylinder),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE60012),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            child: Text(
+                              'Add to cart',
+                              style: GoogleFonts.poppins(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        'Add to cart',
-                        style: GoogleFonts.poppins(
-                          fontSize: 6,
-                          fontWeight: FontWeight.w600,
+                        const SizedBox(height: 4),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () => _buyNow(cylinder),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFFE60012),
+                              side: const BorderSide(color: Color(0xFFE60012)),
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            child: Text(
+                              'Buy Now',
+                              style: GoogleFonts.poppins(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
@@ -525,26 +553,54 @@ class _GasProductsScreenState extends State<GasProductsScreen> with TickerProvid
                     ),
                   ),
                   
-                  // Action Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () => _addToCart(accessory),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE60012),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+                  // Action Buttons
+                  ClipRect(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => _addToCart(accessory),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFE60012),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            child: Text(
+                              'Add to cart',
+                              style: GoogleFonts.poppins(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        'Add to cart',
-                        style: GoogleFonts.poppins(
-                          fontSize: 6,
-                          fontWeight: FontWeight.w600,
+                        const SizedBox(height: 4),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton(
+                            onPressed: () => _buyNow(accessory),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFFE60012),
+                              side: const BorderSide(color: Color(0xFFE60012)),
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            child: Text(
+                              'Buy Now',
+                              style: GoogleFonts.poppins(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
