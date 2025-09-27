@@ -8,6 +8,7 @@ import 'pay_at_station_screen.dart';
 import 'quartz_oil_finder_screen.dart';
 import 'settings_screen.dart';
 import 'notifications_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _bannerController = PageController();
     _startBannerAutoScroll();
     _showNewsletterOptIn();
-    
+
     // Reset preference after 5 minutes for "Show Later" users (for testing)
     if (_newsletterPreference == 'later') {
       Future.delayed(const Duration(minutes: 5), () {
@@ -62,16 +63,17 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  String _getTimeBasedGreeting() {
+  String _getTimeBasedGreeting(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) {
-      return 'Good Morning';
+      return l10n.goodMorning;
     } else if (hour >= 12 && hour < 16) {
-      return 'Good Afternoon';
+      return l10n.goodAfternoon;
     } else if (hour >= 16 && hour < 20) {
-      return 'Good Evening';
+      return l10n.goodEvening;
     } else {
-      return 'Good Night';
+      return l10n.goodNight;
     }
   }
 
@@ -127,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Row(
                             children: [
                               Text(
-                                _getTimeBasedGreeting(),
+                                _getTimeBasedGreeting(context),
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -152,7 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const NotificationsScreen(),
+                                builder:
+                                    (context) => const NotificationsScreen(),
                               ),
                             );
                           },
@@ -195,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Quick Actions',
+                        AppLocalizations.of(context)!.quickActions,
                         style: GoogleFonts.poppins(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -223,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '5 offers',
+                                '5 ${AppLocalizations.of(context)!.offers.toLowerCase()}',
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -506,7 +509,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Station Finder Card
           _buildServiceCard(
-            'Station Finder',
+            AppLocalizations.of(context)!.stationFinder,
             'Find nearby TotalEnergies stations',
             Icons.location_on,
             Colors.amber,
@@ -516,7 +519,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // TotalEnergies Gas Card
           _buildServiceCard(
-            'TotalEnergies Gas',
+            AppLocalizations.of(context)!.totalGas,
             'Order gas cylinders for home delivery',
             Icons.local_gas_station,
             Colors.green,
@@ -526,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Quartz Card
           _buildServiceCard(
-            'Quartz',
+            AppLocalizations.of(context)!.quartzOil,
             'Choose the right oil',
             Icons.oil_barrel,
             Colors.orange,
@@ -536,7 +539,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Pay at Station Card
           _buildServiceCard(
-            'Pay at Station',
+            AppLocalizations.of(context)!.payAtStation,
             'Pay for Fuel, Gas & Lub...',
             Icons.payment,
             Colors.blue,
@@ -546,7 +549,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // TotalEnergies Card
           _buildServiceCard(
-            'TotalEnergies Card',
+            AppLocalizations.of(context)!.myCard,
             'Apply | Top Up | Manage...',
             Icons.credit_card,
             const Color(0xFFE60012),
@@ -652,38 +655,39 @@ class _HomeScreenState extends State<HomeScreen> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (context) => _NewsletterOptInDialog(
-              onOptIn: () {
-                setState(() {
-                  _hasShownNewsletterPopup = true;
-                  _newsletterPreference = 'never';
-                });
-                Navigator.pop(context);
-                _showOptInSuccess();
-              },
-              onSkip: () {
-                setState(() {
-                  _hasShownNewsletterPopup = true;
-                  _newsletterPreference = 'never';
-                });
-                Navigator.pop(context);
-              },
-              onLater: () {
-                setState(() {
-                  _hasShownNewsletterPopup = true;
-                  _newsletterPreference = 'later';
-                });
-                Navigator.pop(context);
-                _showLaterMessage();
-              },
-              onNever: () {
-                setState(() {
-                  _hasShownNewsletterPopup = true;
-                  _newsletterPreference = 'never';
-                });
-                Navigator.pop(context);
-              },
-            ),
+            builder:
+                (context) => _NewsletterOptInDialog(
+                  onOptIn: () {
+                    setState(() {
+                      _hasShownNewsletterPopup = true;
+                      _newsletterPreference = 'never';
+                    });
+                    Navigator.pop(context);
+                    _showOptInSuccess();
+                  },
+                  onSkip: () {
+                    setState(() {
+                      _hasShownNewsletterPopup = true;
+                      _newsletterPreference = 'never';
+                    });
+                    Navigator.pop(context);
+                  },
+                  onLater: () {
+                    setState(() {
+                      _hasShownNewsletterPopup = true;
+                      _newsletterPreference = 'later';
+                    });
+                    Navigator.pop(context);
+                    _showLaterMessage();
+                  },
+                  onNever: () {
+                    setState(() {
+                      _hasShownNewsletterPopup = true;
+                      _newsletterPreference = 'never';
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
           );
         }
       });
@@ -694,7 +698,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Thank you! You\'ll receive our latest offers and news via SMS.',
+          AppLocalizations.of(context)!.thankYouOptIn,
           style: GoogleFonts.poppins(),
         ),
         backgroundColor: const Color(0xFFE60012),
@@ -707,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'No problem! We\'ll ask you again later.',
+          AppLocalizations.of(context)!.noProblemLater,
           style: GoogleFonts.poppins(),
         ),
         backgroundColor: Colors.orange,
@@ -748,309 +752,338 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
         padding: const EdgeInsets.all(24),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE60012).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.campaign,
-                size: 48,
-                color: const Color(0xFFE60012),
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Title
-            Text(
-              'Stay Updated!',
-              style: GoogleFonts.poppins(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFFE60012),
-              ),
-            ),
-            const SizedBox(height: 8),
-            
-            // Description
-            Text(
-              'Get the latest offers, promotions, and news from TotalEnergies delivered straight to your phone.',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            
-            // Phone Number Input
-            TextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                labelText: 'Phone Number',
-                hintText: '+254 7XX XXX XXX',
-                prefixIcon: Icon(Icons.phone, color: const Color(0xFFE60012)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            // Benefits Toggle
-            GestureDetector(
-              onTap: _toggleBenefits,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      _showBenefits ? Icons.keyboard_arrow_up : Icons.info_outline,
-                      color: const Color(0xFFE60012),
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _showBenefits ? 'Hide Benefits' : 'What you\'ll receive',
-                      style: GoogleFonts.poppins(
-                        fontSize: 14,
-                        color: const Color(0xFFE60012),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Benefits List (Expandable)
-            if (_showBenefits) ...[
-              const SizedBox(height: 12),
+              // Header
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey[50],
+                  color: const Color(0xFFE60012).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Column(
-                  children: [
-                    _buildBenefitItem('🎯 Exclusive offers and discounts'),
-                    _buildBenefitItem('⛽ Latest fuel price updates'),
-                    _buildBenefitItem('🏪 New station openings'),
-                    _buildBenefitItem('🔧 Service reminders'),
-                  ],
+                child: Icon(
+                  Icons.campaign,
+                  size: 48,
+                  color: const Color(0xFFE60012),
                 ),
               ),
-            ],
-            const SizedBox(height: 20),
-            
-            // Action Buttons
-            Column(
-              children: [
-                // Primary Action Row
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _isOptingIn ? null : _optIn,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE60012),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: _isOptingIn
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                'Opt In',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: widget.onSkip,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          side: const BorderSide(color: Color(0xFFE60012)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          'Skip',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            color: const Color(0xFFE60012),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 16),
+
+              // Title
+              Text(
+                AppLocalizations.of(context)!.newsletterOptIn,
+                style: GoogleFonts.poppins(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFFE60012),
                 ),
-                const SizedBox(height: 12),
-                
-                // Preference Selection
-                Text(
-                  'Or choose your preference:',
-                  style: GoogleFonts.poppins(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              const SizedBox(height: 8),
+
+              // Description
+              Text(
+                AppLocalizations.of(context)!.newsletterDescription,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.grey[700],
                 ),
-                const SizedBox(height: 8),
-                
-                // Radio Button Style Options
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+
+              // Phone Number Input
+              TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  hintText: '+254 7XX XXX XXX',
+                  prefixIcon: Icon(Icons.phone, color: const Color(0xFFE60012)),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Column(
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE60012),
+                      width: 2,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Benefits Toggle
+              GestureDetector(
+                onTap: _toggleBenefits,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Show Later Option
-                      InkWell(
-                        onTap: widget.onLater,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                color: Colors.orange[600],
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Show Later',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Ask me again in a few minutes',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right,
-                                color: Colors.grey[400],
-                                size: 20,
-                              ),
-                            ],
-                          ),
-                        ),
+                      Icon(
+                        _showBenefits
+                            ? Icons.keyboard_arrow_up
+                            : Icons.info_outline,
+                        color: const Color(0xFFE60012),
+                        size: 20,
                       ),
-                      // Divider
-                      Container(
-                        height: 1,
-                        color: Colors.grey[200],
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                      // Never Show Again Option
-                      InkWell(
-                        onTap: widget.onNever,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12),
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.block,
-                                color: Colors.grey[600],
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Never Show Again',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Don\'t show this popup anymore',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(
-                                Icons.chevron_right,
-                                color: Colors.grey[400],
-                                size: 20,
-                              ),
-                            ],
-                          ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _showBenefits
+                            ? AppLocalizations.of(context)!.hideBenefits
+                            : AppLocalizations.of(context)!.whatYoullReceive,
+                        style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          color: const Color(0xFFE60012),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
+
+              // Benefits List (Expandable)
+              if (_showBenefits) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildBenefitItem(
+                        AppLocalizations.of(
+                          context,
+                        )!.exclusiveOffersAndDiscounts,
+                      ),
+                      _buildBenefitItem(
+                        AppLocalizations.of(context)!.latestFuelPriceUpdates,
+                      ),
+                      _buildBenefitItem(
+                        AppLocalizations.of(context)!.newStationOpenings,
+                      ),
+                      _buildBenefitItem(
+                        AppLocalizations.of(context)!.serviceReminders,
+                      ),
+                    ],
+                  ),
+                ),
               ],
-            ),
+              const SizedBox(height: 20),
+
+              // Action Buttons
+              Column(
+                children: [
+                  // Primary Action Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _isOptingIn ? null : _optIn,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFE60012),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child:
+                              _isOptingIn
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Text(
+                                    AppLocalizations.of(context)!.optIn,
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: widget.onSkip,
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: Color(0xFFE60012)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            AppLocalizations.of(context)!.skip,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              color: const Color(0xFFE60012),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Preference Selection
+                  Text(
+                    'Or choose your preference:',
+                    style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Radio Button Style Options
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        // Show Later Option
+                        InkWell(
+                          onTap: widget.onLater,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule,
+                                  color: Colors.orange[600],
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)!.showLater,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Ask me again in a few minutes',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey[400],
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Divider
+                        Container(
+                          height: 1,
+                          color: Colors.grey[200],
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                        ),
+                        // Never Show Again Option
+                        InkWell(
+                          onTap: widget.onNever,
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.block,
+                                  color: Colors.grey[600],
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.neverShowAgain,
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Don\'t show this popup anymore',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.chevron_right,
+                                  color: Colors.grey[400],
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -1066,10 +1099,7 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
             ),
           ),
         ],

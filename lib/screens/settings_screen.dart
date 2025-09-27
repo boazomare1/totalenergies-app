@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'analytics_screen.dart';
+import 'language_selection_screen.dart';
+import '../services/language_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -21,11 +24,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _selectedCurrency = 'KSh';
 
   @override
+  void initState() {
+    super.initState();
+    _loadCurrentLanguage();
+  }
+
+  Future<void> _loadCurrentLanguage() async {
+    final languageCode = await LanguageService.getCurrentLanguage();
+    setState(() {
+      _selectedLanguage = LanguageService.getLanguageName(languageCode);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Settings',
+          l10n.settings,
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             color: Colors.white,
@@ -81,10 +99,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Icons.dark_mode,
           ),
           _buildListTile(
-            'Language',
+            AppLocalizations.of(context)!.language,
             _selectedLanguage,
             Icons.language,
-            () => _showLanguageDialog(),
+            () => _navigateToLanguageSelection(),
           ),
           _buildListTile(
             'Currency',
@@ -352,39 +370,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _showLanguageDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(
-              'Select Language',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildLanguageOption('English', 'English'),
-                _buildLanguageOption('Kiswahili', 'Kiswahili'),
-                _buildLanguageOption('Français', 'French'),
-              ],
-            ),
-          ),
+  void _navigateToLanguageSelection() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LanguageSelectionScreen()),
     );
-  }
 
-  Widget _buildLanguageOption(String name, String value) {
-    return ListTile(
-      title: Text(name, style: GoogleFonts.poppins()),
-      trailing:
-          _selectedLanguage == value
-              ? Icon(Icons.check, color: const Color(0xFFE60012))
-              : null,
-      onTap: () {
-        setState(() => _selectedLanguage = value);
-        Navigator.pop(context);
-      },
-    );
+    // Refresh language after returning from language selection
+    if (result == true || result == null) {
+      await _loadCurrentLanguage();
+    }
   }
 
   void _showCurrencyDialog() {

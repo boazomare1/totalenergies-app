@@ -1,0 +1,818 @@
+{
+  "@@locale": "en",
+  "appTitle": "TotalEnergies",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "goodMorning": "Good Morning",
+  "@goodMorning": {
+    "description": "Morning greeting"
+  },
+  "goodAfternoon": "Good Afternoon",
+  "@goodAfternoon": {
+    "description": "Afternoon greeting"
+  },
+  "goodEvening": "Good Evening",
+  "@goodEvening": {
+    "description": "Evening greeting"
+  },
+  "goodNight": "Good Night",
+  "@goodNight": {
+    "description": "Night greeting"
+  },
+  
+  "home": "Home",
+  "@home": {
+    "description": "Home tab label"
+  },
+  "myOrders": "My Orders",
+  "@myOrders": {
+    "description": "My Orders tab label"
+  },
+  "anticounterfeit": "Anticounterfeit",
+  "@anticounterfeit": {
+    "description": "Anticounterfeit tab label"
+  },
+  "myCard": "My Card",
+  "@myCard": {
+    "description": "My Card tab label"
+  },
+  "stationFinder": "Station Finder",
+  "@stationFinder": {
+    "description": "Station Finder service"
+  },
+  "payAtStation": "Pay at Station",
+  "@payAtStation": {
+    "description": "Pay at Station service"
+  },
+  "quartzOil": "Quartz Oil",
+  "@quartzOil": {
+    "description": "Quartz Oil service"
+  },
+  "totalGas": "Total Gas",
+  "@totalGas": {
+    "description": "Total Gas service"
+  },
+  "offers": "Offers",
+  "@offers": {
+    "description": "Offers and promotions"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings screen"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications screen"
+  },
+  
+  "language": "Language",
+  "@language": {
+    "description": "Language setting"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Language selection title"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "swahili": "Kiswahili",
+  "@swahili": {
+    "description": "Swahili language option"
+  },
+  "french": "Français",
+  "@french": {
+    "description": "French language option"
+  },
+  "arabic": "العربية",
+  "@arabic": {
+    "description": "Arabic language option"
+  },
+  
+  "welcomeMessage": "Welcome to TotalEnergies",
+  "@welcomeMessage": {
+    "description": "Welcome message on home screen"
+  },
+  "findStation": "Find Station",
+  "@findStation": {
+    "description": "Find station button"
+  },
+  "applyCard": "Apply for Card",
+  "@applyCard": {
+    "description": "Apply for card button"
+  },
+  "topUpCard": "Top Up Card",
+  "@topUpCard": {
+    "description": "Top up card button"
+  },
+  "manageCard": "Manage Card",
+  "@manageCard": {
+    "description": "Manage card button"
+  },
+  "linkCard": "Link Card",
+  "@linkCard": {
+    "description": "Link existing card button"
+  },
+  "checkBalance": "Check Balance",
+  "@checkBalance": {
+    "description": "Check card balance button"
+  },
+  "viewTransactions": "View Transactions",
+  "@viewTransactions": {
+    "description": "View transactions button"
+  },
+  
+  "fuelPrices": "Fuel Prices",
+  "@fuelPrices": {
+    "description": "Fuel prices section"
+  },
+  "petrol": "Petrol",
+  "@petrol": {
+    "description": "Petrol fuel type"
+  },
+  "diesel": "Diesel",
+  "@diesel": {
+    "description": "Diesel fuel type"
+  },
+  "gas": "Gas",
+  "@gas": {
+    "description": "Gas fuel type"
+  },
+  "pricePerLiter": "per liter",
+  "@pricePerLiter": {
+    "description": "Price per liter text"
+  },
+  
+  "quickActions": "Quick Actions",
+  "@quickActions": {
+    "description": "Quick actions section header"
+  },
+  "bannerCarousel": "Promotional Offers",
+  "@bannerCarousel": {
+    "description": "Banner carousel section"
+  },
+  
+  "orderNow": "Order Now",
+  "@orderNow": {
+    "description": "Order now button"
+  },
+  "findProduct": "Find Product",
+  "@findProduct": {
+    "description": "Find product button"
+  },
+  "findStore": "Find Store",
+  "@findStore": {
+    "description": "Find store button"
+  },
+  "explore": "Explore",
+  "@explore": {
+    "description": "Explore button"
+  },
+  "orderOneNow": "Order One Now",
+  "@orderOneNow": {
+    "description": "Order one now button"
+  },
+  
+  "search": "Search",
+  "@search": {
+    "description": "Search placeholder"
+  },
+  "filter": "Filter",
+  "@filter": {
+    "description": "Filter button"
+  },
+  "sort": "Sort",
+  "@sort": {
+    "description": "Sort button"
+  },
+  "navigate": "Navigate",
+  "@navigate": {
+    "description": "Navigate button"
+  },
+  "go": "Go",
+  "@go": {
+    "description": "Go button"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button"
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Submit button"
+  },
+  "continueButton": "Continue",
+  "@continueButton": {
+    "description": "Continue button"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Next button"
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Done button"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button"
+  },
+  
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading text"
+  },
+  "processing": "Processing...",
+  "@processing": {
+    "description": "Processing text"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Success message"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error message"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Warning message"
+  },
+  "info": "Information",
+  "@info": {
+    "description": "Information message"
+  },
+  
+  "noItemsFound": "No items found",
+  "@noItemsFound": {
+    "description": "No items found message"
+  },
+  "noOrders": "No orders to display!",
+  "@noOrders": {
+    "description": "No orders message"
+  },
+  "noNotifications": "No notifications",
+  "@noNotifications": {
+    "description": "No notifications message"
+  },
+  "noResults": "No results found",
+  "@noResults": {
+    "description": "No results found message"
+  },
+  
+  "cardNumber": "Card Number",
+  "@cardNumber": {
+    "description": "Card number field"
+  },
+  "expiryDate": "Expiry Date",
+  "@expiryDate": {
+    "description": "Expiry date field"
+  },
+  "cvv": "CVV",
+  "@cvv": {
+    "description": "CVV field"
+  },
+  "cardHolderName": "Cardholder Name",
+  "@cardHolderName": {
+    "description": "Cardholder name field"
+  },
+  "amount": "Amount",
+  "@amount": {
+    "description": "Amount field"
+  },
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number field"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field"
+  },
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name field"
+  },
+  "address": "Address",
+  "@address": {
+    "description": "Address field"
+  },
+  "city": "City",
+  "@city": {
+    "description": "City field"
+  },
+  "country": "Country",
+  "@country": {
+    "description": "Country field"
+  },
+  "postalCode": "Postal Code",
+  "@postalCode": {
+    "description": "Postal code field"
+  },
+  
+  "paymentMethod": "Payment Method",
+  "@paymentMethod": {
+    "description": "Payment method field"
+  },
+  "cash": "Cash",
+  "@cash": {
+    "description": "Cash payment method"
+  },
+  "mpesa": "M-Pesa",
+  "@mpesa": {
+    "description": "M-Pesa payment method"
+  },
+  "visa": "Visa",
+  "@visa": {
+    "description": "Visa payment method"
+  },
+  "mastercard": "Mastercard",
+  "@mastercard": {
+    "description": "Mastercard payment method"
+  },
+  "totalenergiesCard": "TotalEnergies Card",
+  "@totalenergiesCard": {
+    "description": "TotalEnergies Card payment method"
+  },
+  
+  "orderHistory": "Order History",
+  "@orderHistory": {
+    "description": "Order history section"
+  },
+  "activeOrders": "Active Orders",
+  "@activeOrders": {
+    "description": "Active orders section"
+  },
+  "orderDetails": "Order Details",
+  "@orderDetails": {
+    "description": "Order details section"
+  },
+  "orderStatus": "Order Status",
+  "@orderStatus": {
+    "description": "Order status field"
+  },
+  "orderDate": "Order Date",
+  "@orderDate": {
+    "description": "Order date field"
+  },
+  "orderTotal": "Order Total",
+  "@orderTotal": {
+    "description": "Order total field"
+  },
+  "deliveryAddress": "Delivery Address",
+  "@deliveryAddress": {
+    "description": "Delivery address field"
+  },
+  "deliveryTime": "Delivery Time",
+  "@deliveryTime": {
+    "description": "Delivery time field"
+  },
+  
+  "verificationCode": "Verification Code",
+  "@verificationCode": {
+    "description": "Verification code field"
+  },
+  "authenticityCheck": "Authenticity Check",
+  "@authenticityCheck": {
+    "description": "Authenticity check section"
+  },
+  "scanQRCode": "Scan QR Code",
+  "@scanQRCode": {
+    "description": "Scan QR code button"
+  },
+  "enterCodeManually": "Enter Code Manually",
+  "@enterCodeManually": {
+    "description": "Enter code manually button"
+  },
+  "productVerified": "Product Verified",
+  "@productVerified": {
+    "description": "Product verified message"
+  },
+  "productNotVerified": "Product Not Verified",
+  "@productNotVerified": {
+    "description": "Product not verified message"
+  },
+  
+  "cardType": "Card Type",
+  "@cardType": {
+    "description": "Card type field"
+  },
+  "physicalCard": "Physical Card",
+  "@physicalCard": {
+    "description": "Physical card option"
+  },
+  "virtualCard": "Virtual Card",
+  "@virtualCard": {
+    "description": "Virtual card option"
+  },
+  "individual": "Individual",
+  "@individual": {
+    "description": "Individual card type"
+  },
+  "corporate": "Corporate",
+  "@corporate": {
+    "description": "Corporate card type"
+  },
+  "cardBalance": "Card Balance",
+  "@cardBalance": {
+    "description": "Card balance field"
+  },
+  "transactions": "Transactions",
+  "@transactions": {
+    "description": "Transactions section"
+  },
+  "transactionHistory": "Transaction History",
+  "@transactionHistory": {
+    "description": "Transaction history section"
+  },
+  "transactionDate": "Transaction Date",
+  "@transactionDate": {
+    "description": "Transaction date field"
+  },
+  "transactionAmount": "Amount",
+  "@transactionAmount": {
+    "description": "Transaction amount field"
+  },
+  "transactionType": "Type",
+  "@transactionType": {
+    "description": "Transaction type field"
+  },
+  "transactionStatus": "Status",
+  "@transactionStatus": {
+    "description": "Transaction status field"
+  },
+  
+  "gasCylinders": "Gas Cylinders",
+  "@gasCylinders": {
+    "description": "Gas cylinders section"
+  },
+  "cylinder": "Cylinder",
+  "@cylinder": {
+    "description": "Cylinder product"
+  },
+  "refill": "Refill",
+  "@refill": {
+    "description": "Refill product"
+  },
+  "addToCart": "Add to Cart",
+  "@addToCart": {
+    "description": "Add to cart button"
+  },
+  "buyNow": "Buy Now",
+  "@buyNow": {
+    "description": "Buy now button"
+  },
+  "cart": "Cart",
+  "@cart": {
+    "description": "Shopping cart"
+  },
+  "checkout": "Checkout",
+  "@checkout": {
+    "description": "Checkout button"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Total amount"
+  },
+  "quantity": "Quantity",
+  "@quantity": {
+    "description": "Quantity field"
+  },
+  "price": "Price",
+  "@price": {
+    "description": "Price field"
+  },
+  "subtotal": "Subtotal",
+  "@subtotal": {
+    "description": "Subtotal amount"
+  },
+  "tax": "Tax",
+  "@tax": {
+    "description": "Tax amount"
+  },
+  "deliveryFee": "Delivery Fee",
+  "@deliveryFee": {
+    "description": "Delivery fee"
+  },
+  
+  "offersAndPromos": "Offers & Promos",
+  "@offersAndPromos": {
+    "description": "Offers and promotions title"
+  },
+  "exclusiveOffers": "Exclusive Offers",
+  "@exclusiveOffers": {
+    "description": "Exclusive offers section"
+  },
+  "discounts": "Discounts",
+  "@discounts": {
+    "description": "Discounts section"
+  },
+  "specialDeals": "Special Deals",
+  "@specialDeals": {
+    "description": "Special deals section"
+  },
+  "limitedTime": "Limited Time",
+  "@limitedTime": {
+    "description": "Limited time offer"
+  },
+  "validUntil": "Valid Until",
+  "@validUntil": {
+    "description": "Valid until date"
+  },
+  "termsAndConditions": "Terms & Conditions",
+  "@termsAndConditions": {
+    "description": "Terms and conditions"
+  },
+  
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile section"
+  },
+  "personalInfo": "Personal Information",
+  "@personalInfo": {
+    "description": "Personal information section"
+  },
+  "accountSettings": "Account Settings",
+  "@accountSettings": {
+    "description": "Account settings section"
+  },
+  "privacySettings": "Privacy Settings",
+  "@privacySettings": {
+    "description": "Privacy settings section"
+  },
+  "notificationSettings": "Notification Settings",
+  "@notificationSettings": {
+    "description": "Notification settings section"
+  },
+  "securitySettings": "Security Settings",
+  "@securitySettings": {
+    "description": "Security settings section"
+  },
+  "about": "About",
+  "@about": {
+    "description": "About section"
+  },
+  "help": "Help",
+  "@help": {
+    "description": "Help section"
+  },
+  "support": "Support",
+  "@support": {
+    "description": "Support section"
+  },
+  "contactUs": "Contact Us",
+  "@contactUs": {
+    "description": "Contact us section"
+  },
+  "feedback": "Feedback",
+  "@feedback": {
+    "description": "Feedback section"
+  },
+  "rateApp": "Rate App",
+  "@rateApp": {
+    "description": "Rate app section"
+  },
+  "shareApp": "Share App",
+  "@shareApp": {
+    "description": "Share app section"
+  },
+  "version": "Version",
+  "@version": {
+    "description": "App version"
+  },
+  
+  "analytics": "Analytics",
+  "@analytics": {
+    "description": "Analytics section"
+  },
+  "usageStats": "Usage Statistics",
+  "@usageStats": {
+    "description": "Usage statistics section"
+  },
+  "spendingAnalysis": "Spending Analysis",
+  "@spendingAnalysis": {
+    "description": "Spending analysis section"
+  },
+  "environmentalImpact": "Environmental Impact",
+  "@environmentalImpact": {
+    "description": "Environmental impact section"
+  },
+  "fuelConsumption": "Fuel Consumption",
+  "@fuelConsumption": {
+    "description": "Fuel consumption metric"
+  },
+  "carbonFootprint": "Carbon Footprint",
+  "@carbonFootprint": {
+    "description": "Carbon footprint metric"
+  },
+  "savings": "Savings",
+  "@savings": {
+    "description": "Savings metric"
+  },
+  "rewards": "Rewards",
+  "@rewards": {
+    "description": "Rewards section"
+  },
+  "points": "Points",
+  "@points": {
+    "description": "Loyalty points"
+  },
+  "tier": "Tier",
+  "@tier": {
+    "description": "Loyalty tier"
+  },
+  
+  "newsletterOptIn": "Stay Updated",
+  "@newsletterOptIn": {
+    "description": "Newsletter opt-in title"
+  },
+  "newsletterDescription": "Get the latest offers, fuel price updates, and news from TotalEnergies",
+  "@newsletterDescription": {
+    "description": "Newsletter opt-in description"
+  },
+  "optIn": "Opt In",
+  "@optIn": {
+    "description": "Opt in button"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button"
+  },
+  "showLater": "Show Later",
+  "@showLater": {
+    "description": "Show later option"
+  },
+  "neverShowAgain": "Never Show Again",
+  "@neverShowAgain": {
+    "description": "Never show again option"
+  },
+  "whatYoullReceive": "What you'll receive",
+  "@whatYoullReceive": {
+    "description": "Benefits toggle text"
+  },
+  "hideBenefits": "Hide Benefits",
+  "@hideBenefits": {
+    "description": "Hide benefits text"
+  },
+  "exclusiveOffersAndDiscounts": "🎯 Exclusive offers and discounts",
+  "@exclusiveOffersAndDiscounts": {
+    "description": "Newsletter benefit 1"
+  },
+  "latestFuelPriceUpdates": "⛽ Latest fuel price updates",
+  "@latestFuelPriceUpdates": {
+    "description": "Newsletter benefit 2"
+  },
+  "newStationOpenings": "🏪 New station openings",
+  "@newStationOpenings": {
+    "description": "Newsletter benefit 3"
+  },
+  "serviceReminders": "🔧 Service reminders",
+  "@serviceReminders": {
+    "description": "Newsletter benefit 4"
+  },
+  "thankYouOptIn": "Thank you! You'll receive our latest offers and news via SMS.",
+  "@thankYouOptIn": {
+    "description": "Thank you message for opt-in"
+  },
+  "noProblemLater": "No problem! We'll ask you again later.",
+  "@noProblemLater": {
+    "description": "Show later message"
+  },
+  
+  "required": "Required",
+  "@required": {
+    "description": "Required field indicator"
+  },
+  "optional": "Optional",
+  "@optional": {
+    "description": "Optional field indicator"
+  },
+  "invalidInput": "Invalid input",
+  "@invalidInput": {
+    "description": "Invalid input error"
+  },
+  "fieldRequired": "This field is required",
+  "@fieldRequired": {
+    "description": "Field required error"
+  },
+  "invalidEmail": "Please enter a valid email address",
+  "@invalidEmail": {
+    "description": "Invalid email error"
+  },
+  "invalidPhone": "Please enter a valid phone number",
+  "@invalidPhone": {
+    "description": "Invalid phone error"
+  },
+  "passwordTooShort": "Password must be at least 6 characters",
+  "@passwordTooShort": {
+    "description": "Password too short error"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Passwords do not match error"
+  },
+  "invalidCardNumber": "Please enter a valid card number",
+  "@invalidCardNumber": {
+    "description": "Invalid card number error"
+  },
+  "invalidExpiryDate": "Please enter a valid expiry date",
+  "@invalidExpiryDate": {
+    "description": "Invalid expiry date error"
+  },
+  "invalidCVV": "Please enter a valid CVV",
+  "@invalidCVV": {
+    "description": "Invalid CVV error"
+  },
+  
+  "networkError": "Network error. Please check your connection.",
+  "@networkError": {
+    "description": "Network error message"
+  },
+  "serverError": "Server error. Please try again later.",
+  "@serverError": {
+    "description": "Server error message"
+  },
+  "timeoutError": "Request timeout. Please try again.",
+  "@timeoutError": {
+    "description": "Timeout error message"
+  },
+  "unknownError": "An unknown error occurred. Please try again.",
+  "@unknownError": {
+    "description": "Unknown error message"
+  },
+  
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes option"
+  },
+  "no": "No",
+  "@no": {
+    "description": "No option"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button"
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": "Clear button"
+  },
+  "reset": "Reset",
+  "@reset": {
+    "description": "Reset button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button"
+  },
+  "update": "Update",
+  "@update": {
+    "description": "Update button"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "Create button"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Add button"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove button"
+  }
+}
