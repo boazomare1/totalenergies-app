@@ -3,8 +3,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
+import 'screens/auth_screen.dart';
 import 'services/language_service.dart';
 import 'services/language_notifier.dart';
+import 'services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -57,6 +59,7 @@ class TotalEnergiesApp extends StatelessWidget {
             initialRoute: '/',
             routes: {
               '/': (context) => const SplashScreen(),
+              '/auth': (context) => const AuthScreen(),
               '/main': (context) => const MainScreen(),
             },
           );

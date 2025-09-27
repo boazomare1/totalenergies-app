@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -55,10 +56,10 @@ class _SplashScreenState extends State<SplashScreen>
       _fadeController.forward();
     });
 
-    // Navigate to main screen after splash duration (4.5 seconds)
+    // Navigate to appropriate screen after splash duration (4.5 seconds)
     Future.delayed(const Duration(milliseconds: 4500), () {
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed('/main');
+        _navigateToNextScreen();
       }
     });
   }
@@ -68,6 +69,20 @@ class _SplashScreenState extends State<SplashScreen>
     _logoController.dispose();
     _fadeController.dispose();
     super.dispose();
+  }
+
+  Future<void> _navigateToNextScreen() async {
+    // Load user data and check authentication
+    await AuthService.loadUserData();
+    final isLoggedIn = await AuthService.isLoggedIn();
+    
+    if (mounted) {
+      if (isLoggedIn) {
+        Navigator.of(context).pushReplacementNamed('/main');
+      } else {
+        Navigator.of(context).pushReplacementNamed('/auth');
+      }
+    }
   }
 
   @override

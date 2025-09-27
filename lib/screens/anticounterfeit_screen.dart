@@ -861,27 +861,22 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                 const SizedBox(height: 12),
 
                               // Image Previews or Upload Button
-                              // Debug: Show current image count
-                              Text(
-                                'Debug: ${_selectedImages.length} images selected',
-                                style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
-                              ),
-                              const SizedBox(height: 8),
                               if (_selectedImages.isNotEmpty)
                                 Column(
                                   children: [
                                     // Image grid
-                                    GridView.builder(
-                                      shrinkWrap: true,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        crossAxisSpacing: 8,
-                                        mainAxisSpacing: 8,
-                                        childAspectRatio: 1,
-                                      ),
-                                      itemCount: _selectedImages.length,
-                                      itemBuilder: (context, index) {
+                                    SizedBox(
+                                      height: _selectedImages.length <= 3 ? 120 : 240,
+                                      child: GridView.builder(
+                                        physics: const NeverScrollableScrollPhysics(),
+                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          crossAxisSpacing: 8,
+                                          mainAxisSpacing: 8,
+                                          childAspectRatio: 1,
+                                        ),
+                                        itemCount: _selectedImages.length,
+                                        itemBuilder: (context, index) {
                                         return Stack(
                                           children: [
                                             Container(
@@ -926,7 +921,8 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                             ),
                                           ],
                                         );
-                                      },
+                                        },
+                                      ),
                                     ),
                                     const SizedBox(height: 12),
                                     // Add more button if less than 3 images
