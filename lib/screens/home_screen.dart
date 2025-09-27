@@ -129,12 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: Row(
                             children: [
-                              Text(
-                                _getTimeBasedGreeting(context),
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
+                              Expanded(
+                                child: Text(
+                                  _getTimeBasedGreeting(context),
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(width: 8),
