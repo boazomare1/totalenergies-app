@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'food_order_screen.dart';
 
 class BeyondFuelScreen extends StatefulWidget {
   const BeyondFuelScreen({Key? key}) : super(key: key);
@@ -466,23 +467,10 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
   }
 
   void _orderFood(Map<String, dynamic> option) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Order from ${option['name']}',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Text(
-          'This feature will be available soon! You can visit ${option['station']} to place your order.',
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FoodOrderScreen(restaurant: option),
       ),
     );
   }
