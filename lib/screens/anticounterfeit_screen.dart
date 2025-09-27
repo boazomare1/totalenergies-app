@@ -1068,6 +1068,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                       label: 'Camera',
                       onTap: () {
                         Navigator.pop(context);
+                        print('Camera option selected');
                         _pickImageFromCamera();
                       },
                     ),
@@ -1076,16 +1077,48 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                       label: 'Gallery',
                       onTap: () {
                         Navigator.pop(context);
+                        print('Gallery option selected');
                         _pickImageFromGallery();
                       },
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
+                // Add a test button
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _testImagePicker();
+                  },
+                  child: Text('Test Image Picker'),
+                ),
               ],
             ),
           ),
     );
+  }
+
+  void _testImagePicker() async {
+    try {
+      print('Testing image picker...');
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      print('Test result: ${image?.path}');
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Test result: ${image?.path ?? "No image selected"}'),
+          backgroundColor: image != null ? Colors.green : Colors.orange,
+        ),
+      );
+    } catch (e) {
+      print('Test error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Test error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildImageSourceOption({
@@ -1121,36 +1154,19 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
 
   void _pickImageFromCamera() async {
     try {
-      // Check camera permission
-      final cameraStatus = await Permission.camera.request();
-      if (cameraStatus != PermissionStatus.granted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Camera permission is required to take photos',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.orange,
-            action: SnackBarAction(
-              label: 'Settings',
-              textColor: Colors.white,
-              onPressed: () => openAppSettings(),
-            ),
-          ),
-        );
-        return;
-      }
-
       setState(() {
         _isUploadingImage = true;
       });
 
+      print('Attempting to open camera...');
       final XFile? image = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 80, // Reduce quality to save space
+        imageQuality: 80,
         maxWidth: 1920,
         maxHeight: 1080,
       );
+      
+      print('Camera picker result: ${image?.path}');
 
       setState(() {
         _isUploadingImage = false;
@@ -1171,12 +1187,24 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
             duration: const Duration(seconds: 2),
           ),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No photo was taken',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       setState(() {
         _isUploadingImage = false;
       });
       
+      print('Camera error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1192,36 +1220,19 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
 
   void _pickImageFromGallery() async {
     try {
-      // Check storage permission
-      final storageStatus = await Permission.storage.request();
-      if (storageStatus != PermissionStatus.granted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Storage permission is required to access photos',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.orange,
-            action: SnackBarAction(
-              label: 'Settings',
-              textColor: Colors.white,
-              onPressed: () => openAppSettings(),
-            ),
-          ),
-        );
-        return;
-      }
-
       setState(() {
         _isUploadingImage = true;
       });
 
+      print('Attempting to open gallery...');
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80, // Reduce quality to save space
+        imageQuality: 80,
         maxWidth: 1920,
         maxHeight: 1080,
       );
+      
+      print('Gallery picker result: ${image?.path}');
 
       setState(() {
         _isUploadingImage = false;
@@ -1242,12 +1253,24 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
             duration: const Duration(seconds: 2),
           ),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No photo was selected',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       setState(() {
         _isUploadingImage = false;
       });
       
+      print('Gallery error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
