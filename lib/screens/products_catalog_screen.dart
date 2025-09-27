@@ -478,245 +478,232 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
       ),
       body: Column(
         children: [
-            // Search and Filter Bar
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Search Bar
-                  TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value;
-                      });
-                      _applyFilters();
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search products...',
-                      hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        color: Color(0xFFE60012),
-                      ),
-                      suffixIcon:
-                          _searchQuery.isNotEmpty
-                              ? IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _searchQuery = '';
-                                  });
-                                  _applyFilters();
-                                },
-                                icon: const Icon(
-                                  Icons.clear,
-                                  color: Colors.grey,
-                                ),
-                              )
-                              : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFE60012),
-                          width: 2,
-                        ),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[50],
+          // Search and Filter Bar
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Search Bar
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                    _applyFilters();
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Search products...',
+                    hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Color(0xFFE60012),
                     ),
+                    suffixIcon:
+                        _searchQuery.isNotEmpty
+                            ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                                _applyFilters();
+                              },
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                            )
+                            : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE60012),
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
                   ),
-                  const SizedBox(height: 12),
-                  // Filter Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedCategory,
-                          decoration: InputDecoration(
-                            hintText: 'Category',
-                            hintStyle: GoogleFonts.poppins(
-                              color: Colors.grey[400],
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE60012),
-                                width: 2,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[50],
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
+                ),
+                const SizedBox(height: 12),
+                // Filter Row
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedCategory,
+                        decoration: InputDecoration(
+                          hintText: 'Category',
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE60012),
+                              width: 2,
                             ),
                           ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'all',
-                              child: Text(
-                                'All Categories',
-                                style: GoogleFonts.poppins(),
-                              ),
-                            ),
-                            ...ProductsService.getCategories().map((category) {
-                              final categoryNames =
-                                  ProductsService.getCategoryDisplayNames();
-                              return DropdownMenuItem(
-                                value: category,
-                                child: Text(
-                                  categoryNames[category] ?? category,
-                                  style: GoogleFonts.poppins(),
-                                ),
-                              );
-                            }),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedCategory = value!;
-                              _selectedSubcategory = 'all';
-                            });
-                            _applyFilters();
-                          },
+                          filled: true,
+                          fillColor: Colors.grey[50],
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          value: _sortBy,
-                          decoration: InputDecoration(
-                            hintText: 'Sort by',
-                            hintStyle: GoogleFonts.poppins(
-                              color: Colors.grey[400],
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: const BorderSide(
-                                color: Color(0xFFE60012),
-                                width: 2,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[50],
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'all',
+                            child: Text(
+                              'All Categories',
+                              style: GoogleFonts.poppins(),
                             ),
                           ),
-                          items: [
-                            DropdownMenuItem(
-                              value: 'name',
-                              child: Text('Name', style: GoogleFonts.poppins()),
-                            ),
-                            DropdownMenuItem(
-                              value: 'price',
+                          ...ProductsService.getCategories().map((category) {
+                            final categoryNames =
+                                ProductsService.getCategoryDisplayNames();
+                            return DropdownMenuItem(
+                              value: category,
                               child: Text(
-                                'Price',
+                                categoryNames[category] ?? category,
                                 style: GoogleFonts.poppins(),
                               ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'rating',
-                              child: Text(
-                                'Rating',
-                                style: GoogleFonts.poppins(),
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'stock',
-                              child: Text(
-                                'Stock',
-                                style: GoogleFonts.poppins(),
-                              ),
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() {
-                              _sortBy = value!;
-                            });
-                            _applyFilters();
-                          },
-                        ),
+                            );
+                          }),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategory = value!;
+                            _selectedSubcategory = 'all';
+                          });
+                          _applyFilters();
+                        },
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  // Filter Options
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilterChip(
-                          label: Text(
-                            'Available Only',
-                            style: GoogleFonts.poppins(),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _sortBy,
+                        decoration: InputDecoration(
+                          hintText: 'Sort by',
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400],
                           ),
-                          selected: _showOnlyAvailable,
-                          onSelected: (selected) {
-                            setState(() {
-                              _showOnlyAvailable = selected;
-                            });
-                            _applyFilters();
-                          },
-                          selectedColor: const Color(
-                            0xFFE60012,
-                          ).withValues(alpha: 0.2),
-                          checkmarkColor: const Color(0xFFE60012),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE60012),
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey[50],
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                         ),
+                        items: [
+                          DropdownMenuItem(
+                            value: 'name',
+                            child: Text('Name', style: GoogleFonts.poppins()),
+                          ),
+                          DropdownMenuItem(
+                            value: 'price',
+                            child: Text('Price', style: GoogleFonts.poppins()),
+                          ),
+                          DropdownMenuItem(
+                            value: 'rating',
+                            child: Text('Rating', style: GoogleFonts.poppins()),
+                          ),
+                          DropdownMenuItem(
+                            value: 'stock',
+                            child: Text('Stock', style: GoogleFonts.poppins()),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _sortBy = value!;
+                          });
+                          _applyFilters();
+                        },
                       ),
-                      const Spacer(),
-                      Text(
-                        '${_filteredProducts.length} products',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                // Filter Options
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilterChip(
+                        label: Text(
+                          'Available Only',
+                          style: GoogleFonts.poppins(),
                         ),
+                        selected: _showOnlyAvailable,
+                        onSelected: (selected) {
+                          setState(() {
+                            _showOnlyAvailable = selected;
+                          });
+                          _applyFilters();
+                        },
+                        selectedColor: const Color(
+                          0xFFE60012,
+                        ).withValues(alpha: 0.2),
+                        checkmarkColor: const Color(0xFFE60012),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${_filteredProducts.length} products',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            // Tab Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildProductsList(),
-                  _buildProductsList('fuel'),
-                  _buildProductsList('lubricants'),
-                  _buildProductsList('car_care'),
-                  _buildProductsList('services'),
-                ],
-              ),
+          ),
+          // Tab Content
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildProductsList(),
+                _buildProductsList('fuel'),
+                _buildProductsList('lubricants'),
+                _buildProductsList('car_care'),
+                _buildProductsList('services'),
+              ],
             ),
-          ],
-        ),
-      )
-    ;
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildProductsList([String? category]) {
