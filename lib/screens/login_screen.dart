@@ -18,13 +18,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
   bool _isPasswordVisible = false;
-  bool _biometricEnabled = true; // Default to enabled
   bool _rememberMe = false;
+  bool _isFirstTimeLogin = true;
+  bool _hasFingerprint = false;
 
   @override
   void initState() {
     super.initState();
-    _checkBiometricAvailability();
+    _checkUserState();
   }
 
   @override
@@ -34,22 +35,38 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _checkBiometricAvailability() async {
+  Future<void> _checkUserState() async {
     try {
-      final isAvailable = await BiometricService.isBiometricAvailable();
-      final biometricInfo = await BiometricService.getBiometricInfo();
+      // Check if user is already logged in
+      final isLoggedIn = await AuthService.isLoggedIn();
+      final hasBiometricEnabled = await AuthService.isBiometricEnabled();
 
-      print('Login screen biometric check:');
-      print('- Available: $isAvailable');
-      print('- Info: $biometricInfo');
+      // Check if device has fingerprint capability
+      final biometricInfo = await BiometricService.getBiometricInfo();
+      final hasFingerprint =
+          biometricInfo['availableBiometrics']?.contains(
+                'BiometricType.strong',
+              ) ==
+              true ||
+          biometricInfo['availableBiometrics']?.contains(
+                'BiometricType.fingerprint',
+              ) ==
+              true;
+
+      print('User state check:');
+      print('- Is logged in: $isLoggedIn');
+      print('- Has biometric enabled: $hasBiometricEnabled');
+      print('- Has fingerprint: $hasFingerprint');
 
       setState(() {
-        _biometricEnabled = isAvailable;
+        _isFirstTimeLogin = !isLoggedIn;
+        _hasFingerprint = hasFingerprint;
       });
     } catch (e) {
-      print('Error checking biometric availability: $e');
+      print('Error checking user state: $e');
       setState(() {
-        _biometricEnabled = false;
+        _isFirstTimeLogin = true;
+        _hasFingerprint = false;
       });
     }
   }
@@ -115,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Welcome Back',
+                      _isFirstTimeLogin ? 'Welcome' : 'Welcome Back',
                       style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -123,7 +140,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     Text(
-                      'Sign in to your account',
+                      _isFirstTimeLogin
+                          ? 'Sign in to your account'
+                          : 'Choose your preferred login method',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -136,163 +155,9 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 40),
 
               // Login Form
-              Form(
-                key: _loginFormKey,
-                child: Column(
-                  children: [
-                    // Phone/Email Field
-                    _buildInputField(
-                      controller: _phoneEmailController,
-                      label: 'Phone Number or Email',
-                      hint: 'Enter your phone number or email',
-                      icon: Icons.person_outline,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number or email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Password Field
-                    _buildInputField(
-                      controller: _passwordController,
-                      label: 'Password',
-                      hint: 'Enter your password',
-                      icon: Icons.lock_outline,
-                      isPassword: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Remember Me & Forgot Password
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
-                                setState(() {
-                                  _rememberMe = value ?? false;
-                                });
-                              },
-                              activeColor: const Color(0xFFE60012),
-                            ),
-                            Text(
-                              'Remember me',
-                              style: GoogleFonts.poppins(fontSize: 14),
-                            ),
-                          ],
-                        ),
-                        TextButton(
-                          onPressed: _forgotPassword,
-                          child: Text(
-                            'Forgot Password?',
-                            style: GoogleFonts.poppins(
-                              color: const Color(0xFFE60012),
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-
-                    // Login Button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFE60012),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                        child:
-                            _isLoading
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                                : Text(
-                                  'Sign In',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Biometric Login
-                    if (_biometricEnabled) ...[
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: OutlinedButton.icon(
-                          onPressed: _isLoading ? null : _handleBiometricLogin,
-                          icon: const Icon(Icons.fingerprint, size: 20),
-                          label: Text(
-                            'Sign in with Biometric',
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFE60012)),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // Register Button (More Prominent)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton.icon(
-                        onPressed: _goToRegister,
-                        icon: const Icon(Icons.person_add, size: 20),
-                        label: Text(
-                          'Create New Account',
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(
-                            color: Color(0xFFE60012),
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _isFirstTimeLogin
+                  ? _buildFirstTimeLoginForm()
+                  : _buildReturningUserForm(),
             ],
           ),
         ),
@@ -378,6 +243,17 @@ class _LoginScreenState extends State<LoginScreen> {
         phoneOrEmail: _phoneEmailController.text.trim(),
         password: _passwordController.text,
       );
+
+      // If this is first time login and device has fingerprint, enable biometric
+      if (_isFirstTimeLogin && _hasFingerprint) {
+        try {
+          await AuthService.enableBiometric('fingerprint');
+          print('Fingerprint authentication enabled for user');
+        } catch (e) {
+          print('Failed to enable fingerprint: $e');
+          // Don't show error to user, just log it
+        }
+      }
 
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/main');
@@ -484,6 +360,269 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
+    );
+  }
+
+  Widget _buildFirstTimeLoginForm() {
+    return Form(
+      key: _loginFormKey,
+      child: Column(
+        children: [
+          // Phone/Email Field
+          _buildInputField(
+            controller: _phoneEmailController,
+            label: 'Phone Number or Email',
+            hint: 'Enter your phone number or email',
+            icon: Icons.person_outline,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your phone number or email';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 20),
+
+          // Password Field
+          _buildInputField(
+            controller: _passwordController,
+            label: 'Password',
+            hint: 'Enter your password',
+            icon: Icons.lock_outline,
+            isPassword: true,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your password';
+              }
+              if (value.length < 6) {
+                return 'Password must be at least 6 characters';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+
+          // Remember Me & Forgot Password
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Checkbox(
+                    value: _rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberMe = value ?? false;
+                      });
+                    },
+                    activeColor: const Color(0xFFE60012),
+                  ),
+                  Text('Remember me', style: GoogleFonts.poppins(fontSize: 14)),
+                ],
+              ),
+              TextButton(
+                onPressed: _forgotPassword,
+                child: Text(
+                  'Forgot Password?',
+                  style: GoogleFonts.poppins(
+                    color: const Color(0xFFE60012),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 30),
+
+          // Login Button
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _handleLogin,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE60012),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+              child:
+                  _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                        'Sign In',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Register Link
+          Center(
+            child: TextButton(
+              onPressed: _goToRegister,
+              child: RichText(
+                text: TextSpan(
+                  text: "Don't have an account? ",
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Sign Up',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFFE60012),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReturningUserForm() {
+    return Column(
+      children: [
+        // Welcome message
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE60012).withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: const Color(0xFFE60012).withValues(alpha: 0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.waving_hand, color: const Color(0xFFE60012), size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Welcome back! Choose how you\'d like to sign in.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFFE60012),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 30),
+
+        // Fingerprint Login (if available)
+        if (_hasFingerprint) ...[
+          SizedBox(
+            width: double.infinity,
+            height: 60,
+            child: ElevatedButton.icon(
+              onPressed: _isLoading ? null : _handleBiometricLogin,
+              icon: const Icon(Icons.fingerprint, size: 24),
+              label: Text(
+                'Login with Fingerprint',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFE60012),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'OR',
+            style: GoogleFonts.poppins(
+              color: Colors.grey[500],
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+
+        // Password Field
+        _buildInputField(
+          controller: _passwordController,
+          label: 'Enter your password',
+          hint: 'Enter your password',
+          icon: Icons.lock_outline,
+          isPassword: true,
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your password';
+            }
+            if (value.length < 6) {
+              return 'Password must be at least 6 characters';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 20),
+
+        // Continue Button
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: _isLoading ? null : _handleLogin,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE60012),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+            child:
+                _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                      'Continue',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Forgot Password
+        Center(
+          child: TextButton(
+            onPressed: _forgotPassword,
+            child: Text(
+              'Forgot Password?',
+              style: GoogleFonts.poppins(
+                color: const Color(0xFFE60012),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

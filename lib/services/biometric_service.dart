@@ -5,21 +5,31 @@ import 'package:flutter/services.dart';
 class BiometricService {
   static final LocalAuthentication _localAuth = LocalAuthentication();
 
-  /// Check if biometric authentication is available
+  /// Check if fingerprint authentication is available
   static Future<bool> isBiometricAvailable() async {
     try {
       final isAvailable = await _localAuth.canCheckBiometrics;
       final isDeviceSupported = await _localAuth.isDeviceSupported();
       final hasEnrolledBiometrics = await isBiometricEnrolled();
+      final availableBiometrics = await getAvailableBiometrics();
 
-      print('Biometric check:');
+      // Only allow fingerprint authentication
+      final hasFingerprint =
+          availableBiometrics.contains(BiometricType.fingerprint) ||
+          availableBiometrics.contains(BiometricType.strong);
+
+      print('Fingerprint check:');
       print('- Can check biometrics: $isAvailable');
       print('- Device supported: $isDeviceSupported');
       print('- Has enrolled biometrics: $hasEnrolledBiometrics');
+      print('- Has fingerprint: $hasFingerprint');
 
-      return isAvailable && isDeviceSupported && hasEnrolledBiometrics;
+      return isAvailable &&
+          isDeviceSupported &&
+          hasEnrolledBiometrics &&
+          hasFingerprint;
     } catch (e) {
-      print('Error checking biometric availability: $e');
+      print('Error checking fingerprint availability: $e');
       return false;
     }
   }
@@ -34,20 +44,20 @@ class BiometricService {
     }
   }
 
-  /// Authenticate with biometric
+  /// Authenticate with fingerprint only
   static Future<bool> authenticateWithBiometric({
-    String reason = 'Authenticate to access your account',
+    String reason = 'Authenticate with your fingerprint',
   }) async {
     try {
       final isAvailable = await isBiometricAvailable();
       if (!isAvailable) {
-        throw Exception('Biometric authentication is not available');
+        throw Exception('Fingerprint authentication is not available');
       }
 
       final result = await _localAuth.authenticate(
         localizedReason: reason,
         options: const AuthenticationOptions(
-          biometricOnly: false, // Allow fallback to device credentials
+          biometricOnly: true, // Only use biometric, no fallback
           stickyAuth: true,
           sensitiveTransaction: true,
         ),

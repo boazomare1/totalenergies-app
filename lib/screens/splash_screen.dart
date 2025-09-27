@@ -78,9 +78,11 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (mounted) {
       if (isLoggedIn) {
+        // User is already logged in, go to main screen
         Navigator.of(context).pushReplacementNamed('/main');
       } else {
-        Navigator.of(context).pushReplacementNamed('/login');
+        // User is not logged in, go to register screen first
+        Navigator.of(context).pushReplacementNamed('/register');
       }
     }
   }
