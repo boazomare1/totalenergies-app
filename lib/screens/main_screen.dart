@@ -6,6 +6,7 @@ import 'card_screen.dart';
 import 'enhanced_station_locator_screen.dart';
 import 'promotions_screen.dart';
 import 'products_catalog_screen.dart';
+import 'support_center_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -25,6 +26,7 @@ class _MainScreenState extends State<MainScreen> {
     const EnhancedStationLocatorScreen(),
     const PromotionsScreen(),
     const ProductsCatalogScreen(),
+    const SupportCenterScreen(),
   ];
 
   @override
@@ -96,6 +98,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.inventory_2_outlined),
               activeIcon: Icon(Icons.inventory_2),
               label: 'Products',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.help_outline),
+              activeIcon: Icon(Icons.help),
+              label: 'Support',
             ),
           ],
         ),
