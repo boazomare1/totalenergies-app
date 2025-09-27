@@ -560,7 +560,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                           filled: true,
                           fillColor: Colors.grey[50],
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 12,
+                            horizontal: 8,
                             vertical: 8,
                           ),
                         ),
@@ -568,8 +568,9 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                           DropdownMenuItem(
                             value: 'all',
                             child: Text(
-                              'All Categories',
-                              style: GoogleFonts.poppins(),
+                              'All',
+                              style: GoogleFonts.poppins(fontSize: 11),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           ...ProductsService.getCategories().map((category) {
@@ -579,7 +580,8 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                               value: category,
                               child: Text(
                                 categoryNames[category] ?? category,
-                                style: GoogleFonts.poppins(),
+                                style: GoogleFonts.poppins(fontSize: 11),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             );
                           }),
