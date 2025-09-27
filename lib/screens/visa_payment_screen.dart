@@ -108,7 +108,6 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
                     ),
                     const SizedBox(height: 8),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'Payment Method:',
@@ -117,23 +116,30 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
                             color: Colors.grey[600],
                           ),
                         ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.credit_card,
-                              color: const Color(0xFFE60012),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Visa/Mastercard',
-                              style: GoogleFonts.poppins(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(
+                                Icons.credit_card,
                                 color: const Color(0xFFE60012),
+                                size: 20,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  'Visa/Mastercard',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFFE60012),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
