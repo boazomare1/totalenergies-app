@@ -187,7 +187,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                
+
                 // Scratch Code Area - Centered
                 Center(
                   child: Column(
@@ -202,10 +202,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                         ),
                       ),
                       const SizedBox(height: 20),
-                      Container(
-                        width: 250,
-                        child: _buildScratchCodeArea(),
-                      ),
+                      Container(width: 250, child: _buildScratchCodeArea()),
                       const SizedBox(height: 20),
                       Text(
                         'Tap and drag to scratch off the silver coating',
@@ -1052,25 +1049,6 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                 ),
               ),
 
-            // Scratch instruction
-            if (!_isCodeRevealed)
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.touch_app, color: Colors.grey[600], size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Scratch here to reveal code',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[600],
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
           ],
         ),
       ),
