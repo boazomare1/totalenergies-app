@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/dashboard_service.dart';
+import '../services/otp_service.dart';
+import '../widgets/otp_verification_dialog.dart';
 
 class BankTransferScreen extends StatefulWidget {
   final double amount;
@@ -370,21 +372,56 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (!_isOTPVerified) {
-      // First step: Confirm transfer
+      // First step: Confirm transfer and send OTP
       setState(() {
         _isProcessing = true;
       });
 
-      // Simulate processing
-      await Future.delayed(const Duration(seconds: 2));
+      try {
+        // For bank transfer, use a demo phone number
+        const demoPhoneNumber = '+254700000000';
+        
+        // Send OTP for transfer verification
+        await OTPService.sendOTP(demoPhoneNumber, 'Bank Transfer');
+        
+        setState(() {
+          _isProcessing = false;
+          _isOTPVerified = true;
+        });
 
-      setState(() {
-        _isProcessing = false;
-        _isOTPVerified = true;
-      });
+        // Show OTP verification dialog
+        final otpVerified = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => OTPVerificationDialog(
+            phoneNumber: demoPhoneNumber,
+            purpose: 'Bank Transfer',
+            onSuccess: () {
+              // Complete transfer after OTP verification
+              _verifyOTPAndComplete();
+            },
+          ),
+        );
 
-      // Show OTP dialog
-      _showOTPDialog();
+        if (otpVerified == true) {
+          // Transfer completed successfully
+          Navigator.pop(context, true);
+        }
+      } catch (e) {
+        setState(() {
+          _isProcessing = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to send OTP. Please try again.',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } else {
       // Second step: Verify OTP and complete
       await _verifyOTPAndComplete();

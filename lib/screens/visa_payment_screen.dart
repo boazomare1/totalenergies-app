@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/otp_service.dart';
+import '../widgets/otp_verification_dialog.dart';
 
 class VisaPaymentScreen extends StatefulWidget {
   final double amount;
@@ -439,37 +441,79 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
 
   void _processPayment() async {
     if (_formKey.currentState!.validate()) {
+      // For Visa payments, we'll use a demo phone number for OTP
+      // In a real app, this would be the user's registered phone number
+      const demoPhoneNumber = '+254700000000';
+      
       setState(() {
         _isProcessing = true;
       });
 
-      // Simulate payment processing
-      await Future.delayed(const Duration(seconds: 3));
+      try {
+        // Send OTP for payment verification
+        await OTPService.sendOTP(demoPhoneNumber, 'Visa Payment');
+        
+        setState(() {
+          _isProcessing = false;
+        });
 
-      setState(() {
-        _isProcessing = false;
-      });
-
-      // Call success callback
-      widget.onPaymentSuccess(
-        _cardNumberController.text.replaceAll(' ', ''),
-        _expiryDateController.text,
-        _cvvController.text,
-        _cardHolderNameController.text,
-      );
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Payment successful! Card topped up with KSh ${widget.amount.toStringAsFixed(2)}',
-            style: GoogleFonts.poppins(),
+        // Show OTP verification dialog
+        final otpVerified = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => OTPVerificationDialog(
+            phoneNumber: demoPhoneNumber,
+            purpose: 'Visa Payment',
+            onSuccess: () {
+              // Process payment after OTP verification
+              _completePayment();
+            },
           ),
-          backgroundColor: Colors.green,
-        ),
-      );
+        );
 
-      Navigator.pop(context);
+        if (otpVerified == true) {
+          // Payment completed successfully
+          Navigator.pop(context);
+        }
+      } catch (e) {
+        setState(() {
+          _isProcessing = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to send OTP. Please try again.',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
+  }
+
+  void _completePayment() async {
+    // Simulate payment processing
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Call success callback
+    widget.onPaymentSuccess(
+      _cardNumberController.text.replaceAll(' ', ''),
+      _expiryDateController.text,
+      _cvvController.text,
+      _cardHolderNameController.text,
+    );
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Payment successful! Card topped up with KSh ${widget.amount.toStringAsFixed(2)}',
+          style: GoogleFonts.poppins(),
+        ),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 }
