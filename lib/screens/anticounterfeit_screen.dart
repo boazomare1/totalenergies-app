@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
 
 class AnticounterfeitScreen extends StatefulWidget {
   const AnticounterfeitScreen({super.key});
@@ -1159,46 +1160,56 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
       });
 
       print('Attempting to open camera...');
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-        maxWidth: 1920,
-        maxHeight: 1080,
-      );
       
-      print('Camera picker result: ${image?.path}');
+      // Try image picker first
+      try {
+        final XFile? image = await _picker.pickImage(
+          source: ImageSource.camera,
+          imageQuality: 80,
+          maxWidth: 1920,
+          maxHeight: 1080,
+        );
+        
+        print('Camera picker result: ${image?.path}');
 
+        if (image != null) {
+          setState(() {
+            _selectedImage = File(image.path);
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Photo captured successfully!',
+                style: GoogleFonts.poppins(),
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+      } catch (e) {
+        print('Image picker camera failed: $e');
+        // Fall back to file picker for Linux
+        await _pickImageWithFilePicker('Camera not available, please select an image file');
+        return;
+      }
+      
       setState(() {
         _isUploadingImage = false;
       });
 
-      if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Photo captured successfully!',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No photo was taken',
+            style: GoogleFonts.poppins(),
           ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'No photo was taken',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.orange,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
       setState(() {
         _isUploadingImage = false;
@@ -1225,28 +1236,97 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
       });
 
       print('Attempting to open gallery...');
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-        maxWidth: 1920,
-        maxHeight: 1080,
-      );
       
-      print('Gallery picker result: ${image?.path}');
+      // Try image picker first
+      try {
+        final XFile? image = await _picker.pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 80,
+          maxWidth: 1920,
+          maxHeight: 1080,
+        );
+        
+        print('Gallery picker result: ${image?.path}');
+
+        if (image != null) {
+          setState(() {
+            _selectedImage = File(image.path);
+          });
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Photo selected successfully!',
+                style: GoogleFonts.poppins(),
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+      } catch (e) {
+        print('Image picker gallery failed: $e');
+        // Fall back to file picker for Linux
+        await _pickImageWithFilePicker('Gallery not available, please select an image file');
+        return;
+      }
+      
+      setState(() {
+        _isUploadingImage = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'No photo was selected',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      setState(() {
+        _isUploadingImage = false;
+      });
+      
+      print('Gallery error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error selecting photo: ${e.toString()}',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _pickImageWithFilePicker(String message) async {
+    try {
+      print('Using file picker fallback...');
+      
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowMultiple: false,
+      );
 
       setState(() {
         _isUploadingImage = false;
       });
 
-      if (image != null) {
+      if (result != null && result.files.single.path != null) {
         setState(() {
-          _selectedImage = File(image.path);
+          _selectedImage = File(result.files.single.path!);
         });
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Photo selected successfully!',
+              'Image selected successfully!',
               style: GoogleFonts.poppins(),
             ),
             backgroundColor: Colors.green,
@@ -1257,7 +1337,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'No photo was selected',
+              message,
               style: GoogleFonts.poppins(),
             ),
             backgroundColor: Colors.orange,
@@ -1270,11 +1350,11 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
         _isUploadingImage = false;
       });
       
-      print('Gallery error: $e');
+      print('File picker error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Error selecting photo: ${e.toString()}',
+            'Error selecting image: ${e.toString()}',
             style: GoogleFonts.poppins(),
           ),
           backgroundColor: Colors.red,
