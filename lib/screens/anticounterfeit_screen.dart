@@ -8,11 +8,12 @@ class AnticounterfeitScreen extends StatefulWidget {
   State<AnticounterfeitScreen> createState() => _AnticounterfeitScreenState();
 }
 
-class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with TickerProviderStateMixin {
+class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   String _scannedCode = '';
   List<Map<String, dynamic>> _verificationHistory = [];
-  
+
   // Scratch code variables
   String _hiddenCode = 'GAS2024TE001';
   String _revealedCode = '';
@@ -23,7 +24,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    
+
     // Sample verification history
     _verificationHistory = [
       {
@@ -102,11 +103,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildScanTab(),
-          _buildHistoryTab(),
-          _buildReportTab(),
-        ],
+        children: [_buildScanTab(), _buildHistoryTab(), _buildReportTab()],
       ),
     );
   }
@@ -159,9 +156,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Cylinder Scratching Interface
           Container(
             height: 400,
@@ -190,18 +187,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                     ),
                     child: Stack(
                       children: [
-                        // Cylinder Background
+                        // Cylinder Background with Authenticity Banner
                         Container(
                           width: double.infinity,
                           height: double.infinity,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.grey[300]!,
-                                Colors.grey[400]!,
-                              ],
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/banner_authenticity.png'),
+                              fit: BoxFit.cover,
                             ),
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(16),
@@ -210,6 +203,19 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                           ),
                         ),
                         
+                        // Semi-transparent overlay for better visibility
+                        Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
+                            ),
+                          ),
+                        ),
+
                         // Cylinder Shape
                         Center(
                           child: Container(
@@ -254,7 +260,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                                     ),
                                   ),
                                 ),
-                                
+
                                 // Scratch Code Area
                                 Positioned(
                                   top: 80,
@@ -262,7 +268,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                                   right: 20,
                                   child: _buildScratchCodeArea(),
                                 ),
-                                
+
                                 // Safety Instructions
                                 Positioned(
                                   bottom: 20,
@@ -271,7 +277,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                                   child: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withValues(alpha: 0.7),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.7,
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -293,7 +301,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                     ),
                   ),
                 ),
-                
+
                 // Instructions
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -340,9 +348,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Code Verification
           Container(
             padding: const EdgeInsets.all(16),
@@ -364,7 +372,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   children: [
                     Icon(
                       _isCodeRevealed ? Icons.check_circle : Icons.info_outline,
-                      color: _isCodeRevealed ? Colors.green : const Color(0xFFE60012),
+                      color:
+                          _isCodeRevealed
+                              ? Colors.green
+                              : const Color(0xFFE60012),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -379,7 +390,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Revealed code display
                 if (_isCodeRevealed)
                   Container(
@@ -388,7 +399,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                     decoration: BoxDecoration(
                       color: Colors.green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: Colors.green.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -413,18 +426,26 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                       ],
                     ),
                   ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Manual entry field
                 TextField(
-                  controller: TextEditingController(text: _isCodeRevealed ? _revealedCode : _scannedCode),
+                  controller: TextEditingController(
+                    text: _isCodeRevealed ? _revealedCode : _scannedCode,
+                  ),
                   decoration: InputDecoration(
-                    hintText: _isCodeRevealed ? 'Code automatically filled' : 'Enter product code manually',
+                    hintText:
+                        _isCodeRevealed
+                            ? 'Code automatically filled'
+                            : 'Enter product code manually',
                     hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
                     prefixIcon: Icon(
                       _isCodeRevealed ? Icons.verified : Icons.edit,
-                      color: _isCodeRevealed ? Colors.green : const Color(0xFFE60012),
+                      color:
+                          _isCodeRevealed
+                              ? Colors.green
+                              : const Color(0xFFE60012),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -433,7 +454,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(
-                        color: _isCodeRevealed ? Colors.green : const Color(0xFFE60012),
+                        color:
+                            _isCodeRevealed
+                                ? Colors.green
+                                : const Color(0xFFE60012),
                       ),
                     ),
                   ),
@@ -444,7 +468,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   },
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Reset button if code is revealed
                 if (_isCodeRevealed)
                   Row(
@@ -470,7 +494,8 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _scannedCode.isNotEmpty ? _verifyProduct : null,
+                          onPressed:
+                              _scannedCode.isNotEmpty ? _verifyProduct : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFE60012),
                             foregroundColor: Colors.white,
@@ -481,7 +506,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                           ),
                           child: Text(
                             'Verify Product',
-                            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -491,7 +518,8 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _scannedCode.isNotEmpty ? _verifyProduct : null,
+                      onPressed:
+                          _scannedCode.isNotEmpty ? _verifyProduct : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE60012),
                         foregroundColor: Colors.white,
@@ -520,11 +548,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.history,
-              size: 80,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.history, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No verification history',
@@ -537,10 +561,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
             const SizedBox(height: 8),
             Text(
               'Your verification history will appear here',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[500]),
             ),
           ],
         ),
@@ -560,7 +581,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
   Widget _buildVerificationCard(Map<String, dynamic> verification) {
     Color statusColor;
     IconData statusIcon;
-    
+
     switch (verification['status']) {
       case 'Authentic':
         statusColor = Colors.green;
@@ -603,11 +624,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    statusIcon,
-                    color: statusColor,
-                    size: 24,
-                  ),
+                  child: Icon(statusIcon, color: statusColor, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -642,7 +659,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -659,7 +679,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
               ],
             ),
           ),
-          
+
           // Details
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -667,7 +687,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
               children: [
                 _buildDetailRow('Station', verification['station']),
                 _buildDetailRow('Batch Number', verification['batch']),
-                _buildDetailRow('Manufacture Date', verification['manufactureDate']),
+                _buildDetailRow(
+                  'Manufacture Date',
+                  verification['manufactureDate'],
+                ),
                 _buildDetailRow('Expiry Date', verification['expiryDate']),
                 if (verification['warning'] != null)
                   Container(
@@ -676,7 +699,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                      border: Border.all(
+                        color: Colors.red.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -697,9 +722,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Actions
           Padding(
             padding: const EdgeInsets.all(16),
@@ -763,10 +788,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
           Expanded(
             child: Text(
               value,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.black87,
-              ),
+              style: GoogleFonts.poppins(fontSize: 12, color: Colors.black87),
             ),
           ),
         ],
@@ -798,7 +820,11 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
               children: [
                 Row(
                   children: [
-                    Icon(Icons.report_problem, color: Colors.red[600], size: 24),
+                    Icon(
+                      Icons.report_problem,
+                      color: Colors.red[600],
+                      size: 24,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -845,142 +871,96 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
     );
   }
 
-
   void _verifyProduct() {
     if (_scannedCode.isEmpty) return;
-    
+
     // Simulate verification
     _showVerificationResult();
   }
 
-  void _showScanResult() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Scan Result',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.check_circle,
-              color: Colors.green,
-              size: 48,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Product Verified Successfully!',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'This is an authentic TotalEnergies product.',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showVerificationResult() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Verification Result',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.check_circle,
-              color: Colors.green,
-              size: 48,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Verification Result',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Product Code: $_scannedCode',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ).copyWith(fontFamily: 'monospace'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle, color: Colors.green, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  'Product Code: $_scannedCode',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ).copyWith(fontFamily: 'monospace'),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Status: Authentic',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Status: Authentic',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.green,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
-            ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _viewVerificationDetails(Map<String, dynamic> verification) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Verification Details',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDetailRow('Product', verification['product']),
-              _buildDetailRow('Code', verification['code']),
-              _buildDetailRow('Status', verification['status']),
-              _buildDetailRow('Station', verification['station']),
-              _buildDetailRow('Batch', verification['batch']),
-              _buildDetailRow('Manufacture Date', verification['manufactureDate']),
-              _buildDetailRow('Expiry Date', verification['expiryDate']),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Verification Details',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDetailRow('Product', verification['product']),
+                  _buildDetailRow('Code', verification['code']),
+                  _buildDetailRow('Status', verification['status']),
+                  _buildDetailRow('Station', verification['station']),
+                  _buildDetailRow('Batch', verification['batch']),
+                  _buildDetailRow(
+                    'Manufacture Date',
+                    verification['manufactureDate'],
+                  ),
+                  _buildDetailRow('Expiry Date', verification['expiryDate']),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Close',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -1001,137 +981,139 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
+      builder:
+          (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.8,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              children: [
+                // Handle
+                Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Report Counterfeit',
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Content
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Product Name',
+                            hintText: 'Enter product name',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Product Code',
+                            hintText: 'Enter product code',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Station Location',
+                            hintText: 'Where did you find this product?',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          maxLines: 3,
+                          decoration: InputDecoration(
+                            labelText: 'Description',
+                            hintText:
+                                'Describe why you think this is counterfeit',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Submit Button
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Report submitted successfully!',
+                              style: GoogleFonts.poppins(),
+                            ),
+                            backgroundColor: const Color(0xFFE60012),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[600],
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Text(
+                        'Submit Report',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          children: [
-            // Handle
-            Container(
-              margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Text(
-                    'Report Counterfeit',
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Content
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Product Name',
-                        hintText: 'Enter product name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Product Code',
-                        hintText: 'Enter product code',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Station Location',
-                        hintText: 'Where did you find this product?',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        labelText: 'Description',
-                        hintText: 'Describe why you think this is counterfeit',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Submit Button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Report submitted successfully!',
-                          style: GoogleFonts.poppins(),
-                        ),
-                        backgroundColor: const Color(0xFFE60012),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red[600],
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    'Submit Report',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -1176,14 +1158,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
-            
+
             // Scratch effect overlay
             if (_scratchPoints.isNotEmpty)
               CustomPaint(
                 size: const Size(double.infinity, 60),
                 painter: ScratchPainter(_scratchPoints),
               ),
-            
+
             // Revealed code
             if (_isCodeRevealed)
               Center(
@@ -1197,18 +1179,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
                   ),
                 ),
               ),
-            
+
             // Scratch instruction
             if (!_isCodeRevealed)
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.touch_app,
-                      color: Colors.grey[600],
-                      size: 16,
-                    ),
+                    Icon(Icons.touch_app, color: Colors.grey[600], size: 16),
                     const SizedBox(width: 8),
                     Text(
                       'Scratch here to reveal code',
@@ -1229,14 +1207,16 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
 
   void _checkScratchProgress() {
     // Calculate scratch coverage (simplified)
-    double coverage = _scratchPoints.length / 50.0; // Adjust threshold as needed
-    
-    if (coverage > 0.3 && !_isCodeRevealed) { // 30% scratched
+    double coverage =
+        _scratchPoints.length / 50.0; // Adjust threshold as needed
+
+    if (coverage > 0.3 && !_isCodeRevealed) {
+      // 30% scratched
       setState(() {
         _isCodeRevealed = true;
         _revealedCode = _hiddenCode;
       });
-      
+
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1255,10 +1235,11 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen> with Tick
 class ScannerFramePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFE60012)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = const Color(0xFFE60012)
+          ..strokeWidth = 2
+          ..style = PaintingStyle.stroke;
 
     final centerX = size.width / 2;
     final centerY = size.height / 2;
@@ -1276,52 +1257,52 @@ class ScannerFramePainter extends CustomPainter {
 
     // Draw corner brackets
     final bracketLength = 20.0;
-    
+
     // Top-left
     canvas.drawLine(
-      Offset(centerX - frameSize/2, centerY - frameSize/2),
-      Offset(centerX - frameSize/2 + bracketLength, centerY - frameSize/2),
+      Offset(centerX - frameSize / 2, centerY - frameSize / 2),
+      Offset(centerX - frameSize / 2 + bracketLength, centerY - frameSize / 2),
       paint,
     );
     canvas.drawLine(
-      Offset(centerX - frameSize/2, centerY - frameSize/2),
-      Offset(centerX - frameSize/2, centerY - frameSize/2 + bracketLength),
+      Offset(centerX - frameSize / 2, centerY - frameSize / 2),
+      Offset(centerX - frameSize / 2, centerY - frameSize / 2 + bracketLength),
       paint,
     );
 
     // Top-right
     canvas.drawLine(
-      Offset(centerX + frameSize/2, centerY - frameSize/2),
-      Offset(centerX + frameSize/2 - bracketLength, centerY - frameSize/2),
+      Offset(centerX + frameSize / 2, centerY - frameSize / 2),
+      Offset(centerX + frameSize / 2 - bracketLength, centerY - frameSize / 2),
       paint,
     );
     canvas.drawLine(
-      Offset(centerX + frameSize/2, centerY - frameSize/2),
-      Offset(centerX + frameSize/2, centerY - frameSize/2 + bracketLength),
+      Offset(centerX + frameSize / 2, centerY - frameSize / 2),
+      Offset(centerX + frameSize / 2, centerY - frameSize / 2 + bracketLength),
       paint,
     );
 
     // Bottom-left
     canvas.drawLine(
-      Offset(centerX - frameSize/2, centerY + frameSize/2),
-      Offset(centerX - frameSize/2 + bracketLength, centerY + frameSize/2),
+      Offset(centerX - frameSize / 2, centerY + frameSize / 2),
+      Offset(centerX - frameSize / 2 + bracketLength, centerY + frameSize / 2),
       paint,
     );
     canvas.drawLine(
-      Offset(centerX - frameSize/2, centerY + frameSize/2),
-      Offset(centerX - frameSize/2, centerY + frameSize/2 - bracketLength),
+      Offset(centerX - frameSize / 2, centerY + frameSize / 2),
+      Offset(centerX - frameSize / 2, centerY + frameSize / 2 - bracketLength),
       paint,
     );
 
     // Bottom-right
     canvas.drawLine(
-      Offset(centerX + frameSize/2, centerY + frameSize/2),
-      Offset(centerX + frameSize/2 - bracketLength, centerY + frameSize/2),
+      Offset(centerX + frameSize / 2, centerY + frameSize / 2),
+      Offset(centerX + frameSize / 2 - bracketLength, centerY + frameSize / 2),
       paint,
     );
     canvas.drawLine(
-      Offset(centerX + frameSize/2, centerY + frameSize/2),
-      Offset(centerX + frameSize/2, centerY + frameSize/2 - bracketLength),
+      Offset(centerX + frameSize / 2, centerY + frameSize / 2),
+      Offset(centerX + frameSize / 2, centerY + frameSize / 2 - bracketLength),
       paint,
     );
   }
@@ -1337,9 +1318,10 @@ class ScratchPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.transparent
-      ..style = PaintingStyle.fill;
+    final paint =
+        Paint()
+          ..color = Colors.transparent
+          ..style = PaintingStyle.fill;
 
     // Create scratch effect by drawing transparent circles at touch points
     for (int i = 0; i < scratchPoints.length; i++) {
@@ -1353,17 +1335,14 @@ class ScratchPainter extends CustomPainter {
 
     // Draw scratch lines between consecutive points
     if (scratchPoints.length > 1) {
-      final linePaint = Paint()
-        ..color = Colors.transparent
-        ..strokeWidth = 6.0
-        ..strokeCap = StrokeCap.round;
+      final linePaint =
+          Paint()
+            ..color = Colors.transparent
+            ..strokeWidth = 6.0
+            ..strokeCap = StrokeCap.round;
 
       for (int i = 1; i < scratchPoints.length; i++) {
-        canvas.drawLine(
-          scratchPoints[i - 1],
-          scratchPoints[i],
-          linePaint,
-        );
+        canvas.drawLine(scratchPoints[i - 1], scratchPoints[i], linePaint);
       }
     }
   }
