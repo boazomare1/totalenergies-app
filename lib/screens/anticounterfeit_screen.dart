@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
 
 class AnticounterfeitScreen extends StatefulWidget {
@@ -1192,7 +1191,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
       } catch (e) {
         print('Image picker camera failed: $e');
         // Fall back to file picker for Linux
-        await _pickImageWithFilePicker('Camera not available, please select an image file');
+        _pickImageWithFilePicker('Camera not available, please select an image file');
         return;
       }
       
@@ -1268,7 +1267,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
       } catch (e) {
         print('Image picker gallery failed: $e');
         // Fall back to file picker for Linux
-        await _pickImageWithFilePicker('Gallery not available, please select an image file');
+        _pickImageWithFilePicker('Gallery not available, please select an image file');
         return;
       }
       
