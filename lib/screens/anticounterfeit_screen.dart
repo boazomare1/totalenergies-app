@@ -861,6 +861,12 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                 const SizedBox(height: 12),
 
                               // Image Previews or Upload Button
+                              // Debug: Show current image count
+                              Text(
+                                'Debug: ${_selectedImages.length} images selected',
+                                style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
+                              ),
+                              const SizedBox(height: 8),
                               if (_selectedImages.isNotEmpty)
                                 Column(
                                   children: [
@@ -1212,7 +1218,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
         if (image != null) {
           setState(() {
             _selectedImages.add(File(image.path));
+            _isUploadingImage = false;
           });
+          
+          print('Camera: Added image. Total images: ${_selectedImages.length}');
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -1288,7 +1297,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
         if (image != null) {
           setState(() {
             _selectedImages.add(File(image.path));
+            _isUploadingImage = false;
           });
+          
+          print('Gallery: Added image. Total images: ${_selectedImages.length}');
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -1358,7 +1370,10 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
       if (result != null && result.files.single.path != null) {
         setState(() {
           _selectedImages.add(File(result.files.single.path!));
+          _isUploadingImage = false;
         });
+        
+        print('File picker: Added image. Total images: ${_selectedImages.length}');
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
