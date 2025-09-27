@@ -159,11 +159,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
 
           const SizedBox(height: 24),
 
-          // Cylinder Scratching Interface
+          // Authenticity Banner with Scratch Code
           Container(
-            height: 400,
+            height: 300,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              image: const DecorationImage(
+                image: AssetImage('assets/images/banner_authenticity.png'),
+                fit: BoxFit.cover,
+              ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -173,174 +176,44 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                 ),
               ],
             ),
-            child: Column(
+            child: Stack(
               children: [
-                // Cylinder Image
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        // Cylinder Background with Authenticity Banner
-                        Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                            image: const DecorationImage(
-                              image: AssetImage('assets/images/banner_authenticity.png'),
-                              fit: BoxFit.cover,
-                            ),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            ),
-                          ),
-                        ),
-                        
-                        // Semi-transparent overlay for better visibility
-                        Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            ),
-                          ),
-                        ),
-
-                        // Cylinder Shape
-                        Center(
-                          child: Container(
-                            width: 200,
-                            height: 300,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[600],
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 5),
-                                ),
-                              ],
-                            ),
-                            child: Stack(
-                              children: [
-                                // TotalEnergies Logo
-                                Positioned(
-                                  top: 20,
-                                  left: 0,
-                                  right: 0,
-                                  child: Center(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFE60012),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        'TOTALENERGIES',
-                                        style: GoogleFonts.poppins(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-
-                                // Scratch Code Area
-                                Positioned(
-                                  top: 80,
-                                  left: 20,
-                                  right: 20,
-                                  child: _buildScratchCodeArea(),
-                                ),
-
-                                // Safety Instructions
-                                Positioned(
-                                  bottom: 20,
-                                  left: 10,
-                                  right: 10,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'GAS CYLINDER\nHandle with Care',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                // Semi-transparent overlay for better visibility
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-
-                // Instructions
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(16),
-                      bottomRight: Radius.circular(16),
-                    ),
-                  ),
+                
+                // Scratch Code Area - Centered
+                Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Scratch the silver coating to reveal your verification code',
+                        'Scratch to Verify',
                         style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black87,
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Container(
+                        width: 250,
+                        child: _buildScratchCodeArea(),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Tap and drag to scratch off the silver coating',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 12,
                         ),
                         textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.touch_app,
-                            color: Colors.grey[600],
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Tap and drag to scratch',
-                            style: GoogleFonts.poppins(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
@@ -877,7 +750,6 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     // Simulate verification
     _showVerificationResult();
   }
-
 
   void _showVerificationResult() {
     showDialog(
