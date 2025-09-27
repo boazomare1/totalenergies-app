@@ -51,32 +51,37 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
 
   void _applyFilters() {
     setState(() {
-      _filteredProducts = _products.where((product) {
-        // Filter by category
-        if (_selectedCategory != 'all' && product['category'] != _selectedCategory) {
-          return false;
-        }
+      _filteredProducts =
+          _products.where((product) {
+            // Filter by category
+            if (_selectedCategory != 'all' &&
+                product['category'] != _selectedCategory) {
+              return false;
+            }
 
-        // Filter by subcategory
-        if (_selectedSubcategory != 'all' && product['subcategory'] != _selectedSubcategory) {
-          return false;
-        }
+            // Filter by subcategory
+            if (_selectedSubcategory != 'all' &&
+                product['subcategory'] != _selectedSubcategory) {
+              return false;
+            }
 
-        // Filter by availability
-        if (_showOnlyAvailable && !product['isAvailable']) {
-          return false;
-        }
+            // Filter by availability
+            if (_showOnlyAvailable && !product['isAvailable']) {
+              return false;
+            }
 
-        // Filter by search query
-        if (_searchQuery.isNotEmpty) {
-          final query = _searchQuery.toLowerCase();
-          return product['name'].toString().toLowerCase().contains(query) ||
-                 product['description'].toString().toLowerCase().contains(query);
-        }
+            // Filter by search query
+            if (_searchQuery.isNotEmpty) {
+              final query = _searchQuery.toLowerCase();
+              return product['name'].toString().toLowerCase().contains(query) ||
+                  product['description'].toString().toLowerCase().contains(
+                    query,
+                  );
+            }
 
-        return true;
-      }).toList();
-      
+            return true;
+          }).toList();
+
       _sortProducts();
     });
   }
@@ -114,99 +119,106 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Pre-order ${product['name']}',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              product['description'],
-              style: GoogleFonts.poppins(),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Pre-order ${product['name']}',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: quantityController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Quantity',
-                hintText: 'Enter quantity',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: notesController,
-              decoration: InputDecoration(
-                labelText: 'Notes (Optional)',
-                hintText: 'Special instructions...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 16),
-            Row(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Preferred Date:',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 30)),
-                    );
-                    if (date != null) {
-                      setState(() {
-                        selectedDate = date;
-                      });
-                    }
-                  },
-                  child: Text(
-                    '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                    style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                Text(product['description'], style: GoogleFonts.poppins()),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Quantity',
+                    hintText: 'Enter quantity',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(
+                    labelText: 'Notes (Optional)',
+                    hintText: 'Special instructions...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Text(
+                      'Preferred Date:',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () async {
+                        final date = await showDatePicker(
+                          context: context,
+                          initialDate: selectedDate,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 30),
+                          ),
+                        );
+                        if (date != null) {
+                          setState(() {
+                            selectedDate = date;
+                          });
+                        }
+                      },
+                      child: Text(
+                        '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFFE60012),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.poppins(color: Colors.grey[600]),
-            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(color: Colors.grey[600]),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final quantity = int.tryParse(quantityController.text) ?? 1;
+                  if (quantity > 0) {
+                    _createPreOrder(
+                      product,
+                      quantity,
+                      selectedDate,
+                      notesController.text,
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE60012),
+                ),
+                child: Text(
+                  'Pre-order',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              final quantity = int.tryParse(quantityController.text) ?? 1;
-              if (quantity > 0) {
-                _createPreOrder(product, quantity, selectedDate, notesController.text);
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE60012),
-            ),
-            child: Text(
-              'Pre-order',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -217,107 +229,117 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Reserve ${product['name']}',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              product['description'],
-              style: GoogleFonts.poppins(),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Reserve ${product['name']}',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: quantityController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Quantity',
-                hintText: 'Enter quantity',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: notesController,
-              decoration: InputDecoration(
-                labelText: 'Notes (Optional)',
-                hintText: 'Special instructions...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 16),
-            Row(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Reservation Time:',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () async {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.fromDateTime(selectedDate),
-                    );
-                    if (time != null) {
-                      setState(() {
-                        selectedDate = DateTime(
-                          selectedDate.year,
-                          selectedDate.month,
-                          selectedDate.day,
-                          time.hour,
-                          time.minute,
-                        );
-                      });
-                    }
-                  },
-                  child: Text(
-                    '${selectedDate.hour.toString().padLeft(2, '0')}:${selectedDate.minute.toString().padLeft(2, '0')}',
-                    style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                Text(product['description'], style: GoogleFonts.poppins()),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Quantity',
+                    hintText: 'Enter quantity',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(
+                    labelText: 'Notes (Optional)',
+                    hintText: 'Special instructions...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Text(
+                      'Reservation Time:',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: () async {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.fromDateTime(selectedDate),
+                        );
+                        if (time != null) {
+                          setState(() {
+                            selectedDate = DateTime(
+                              selectedDate.year,
+                              selectedDate.month,
+                              selectedDate.day,
+                              time.hour,
+                              time.minute,
+                            );
+                          });
+                        }
+                      },
+                      child: Text(
+                        '${selectedDate.hour.toString().padLeft(2, '0')}:${selectedDate.minute.toString().padLeft(2, '0')}',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFFE60012),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.poppins(color: Colors.grey[600]),
-            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(color: Colors.grey[600]),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final quantity = int.tryParse(quantityController.text) ?? 1;
+                  if (quantity > 0) {
+                    _createReservation(
+                      product,
+                      quantity,
+                      selectedDate,
+                      notesController.text,
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE60012),
+                ),
+                child: Text(
+                  'Reserve',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              final quantity = int.tryParse(quantityController.text) ?? 1;
-              if (quantity > 0) {
-                _createReservation(product, quantity, selectedDate, notesController.text);
-                Navigator.pop(context);
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE60012),
-            ),
-            child: Text(
-              'Reserve',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
-  void _createPreOrder(Map<String, dynamic> product, int quantity, DateTime date, String notes) {
+  void _createPreOrder(
+    Map<String, dynamic> product,
+    int quantity,
+    DateTime date,
+    String notes,
+  ) {
     final result = ProductsService.preOrderProduct(
       productId: product['id'],
       userId: 'current_user', // In real app, get from auth service
@@ -340,17 +362,19 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            result['message'],
-            style: GoogleFonts.poppins(),
-          ),
+          content: Text(result['message'], style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  void _createReservation(Map<String, dynamic> product, int quantity, DateTime date, String notes) {
+  void _createReservation(
+    Map<String, dynamic> product,
+    int quantity,
+    DateTime date,
+    String notes,
+  ) {
     final result = ProductsService.reserveProduct(
       productId: product['id'],
       userId: 'current_user', // In real app, get from auth service
@@ -373,10 +397,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            result['message'],
-            style: GoogleFonts.poppins(),
-          ),
+          content: Text(result['message'], style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
         ),
       );
@@ -457,182 +478,245 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
       ),
       body: Column(
         children: [
-          // Search and Filter Bar
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Search Bar
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                    _applyFilters();
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Search products...',
-                    hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFFE60012)),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _searchQuery = '';
-                              });
-                              _applyFilters();
-                            },
-                            icon: const Icon(Icons.clear, color: Colors.grey),
-                          )
-                        : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
+            // Search and Filter Bar
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  // Search Bar
+                  TextField(
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value;
+                      });
+                      _applyFilters();
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Search products...',
+                      hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFFE60012),
+                      ),
+                      suffixIcon:
+                          _searchQuery.isNotEmpty
+                              ? IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _searchQuery = '';
+                                  });
+                                  _applyFilters();
+                                },
+                                icon: const Icon(
+                                  Icons.clear,
+                                  color: Colors.grey,
+                                ),
+                              )
+                              : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE60012),
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
                   ),
-                ),
-                const SizedBox(height: 12),
-                // Filter Row
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _selectedCategory,
-                        decoration: InputDecoration(
-                          hintText: 'Category',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                  const SizedBox(height: 12),
+                  // Filter Row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedCategory,
+                          decoration: InputDecoration(
+                            hintText: 'Category',
+                            hintStyle: GoogleFonts.poppins(
+                              color: Colors.grey[400],
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE60012),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[50],
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          items: [
+                            DropdownMenuItem(
+                              value: 'all',
+                              child: Text(
+                                'All Categories',
+                                style: GoogleFonts.poppins(),
+                              ),
+                            ),
+                            ...ProductsService.getCategories().map((category) {
+                              final categoryNames =
+                                  ProductsService.getCategoryDisplayNames();
+                              return DropdownMenuItem(
+                                value: category,
+                                child: Text(
+                                  categoryNames[category] ?? category,
+                                  style: GoogleFonts.poppins(),
+                                ),
+                              );
+                            }),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCategory = value!;
+                              _selectedSubcategory = 'all';
+                            });
+                            _applyFilters();
+                          },
                         ),
-                        items: [
-                          DropdownMenuItem(value: 'all', child: Text('All Categories', style: GoogleFonts.poppins())),
-                          ...ProductsService.getCategories().map((category) {
-                            final categoryNames = ProductsService.getCategoryDisplayNames();
-                            return DropdownMenuItem(
-                              value: category,
-                              child: Text(categoryNames[category] ?? category, style: GoogleFonts.poppins()),
-                            );
-                          }),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedCategory = value!;
-                            _selectedSubcategory = 'all';
-                          });
-                          _applyFilters();
-                        },
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        value: _sortBy,
-                        decoration: InputDecoration(
-                          hintText: 'Sort by',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          value: _sortBy,
+                          decoration: InputDecoration(
+                            hintText: 'Sort by',
+                            hintStyle: GoogleFonts.poppins(
+                              color: Colors.grey[400],
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(color: Colors.grey[300]!),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE60012),
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[50],
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                           ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(color: Colors.grey[300]!),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
-                          ),
-                          filled: true,
-                          fillColor: Colors.grey[50],
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          items: [
+                            DropdownMenuItem(
+                              value: 'name',
+                              child: Text('Name', style: GoogleFonts.poppins()),
+                            ),
+                            DropdownMenuItem(
+                              value: 'price',
+                              child: Text(
+                                'Price',
+                                style: GoogleFonts.poppins(),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'rating',
+                              child: Text(
+                                'Rating',
+                                style: GoogleFonts.poppins(),
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'stock',
+                              child: Text(
+                                'Stock',
+                                style: GoogleFonts.poppins(),
+                              ),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() {
+                              _sortBy = value!;
+                            });
+                            _applyFilters();
+                          },
                         ),
-                        items: [
-                          DropdownMenuItem(value: 'name', child: Text('Name', style: GoogleFonts.poppins())),
-                          DropdownMenuItem(value: 'price', child: Text('Price', style: GoogleFonts.poppins())),
-                          DropdownMenuItem(value: 'rating', child: Text('Rating', style: GoogleFonts.poppins())),
-                          DropdownMenuItem(value: 'stock', child: Text('Stock', style: GoogleFonts.poppins())),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _sortBy = value!;
-                          });
-                          _applyFilters();
-                        },
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                // Filter Options
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilterChip(
-                        label: Text('Available Only', style: GoogleFonts.poppins()),
-                        selected: _showOnlyAvailable,
-                        onSelected: (selected) {
-                          setState(() {
-                            _showOnlyAvailable = selected;
-                          });
-                          _applyFilters();
-                        },
-                        selectedColor: const Color(0xFFE60012).withValues(alpha: 0.2),
-                        checkmarkColor: const Color(0xFFE60012),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Filter Options
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilterChip(
+                          label: Text(
+                            'Available Only',
+                            style: GoogleFonts.poppins(),
+                          ),
+                          selected: _showOnlyAvailable,
+                          onSelected: (selected) {
+                            setState(() {
+                              _showOnlyAvailable = selected;
+                            });
+                            _applyFilters();
+                          },
+                          selectedColor: const Color(
+                            0xFFE60012,
+                          ).withValues(alpha: 0.2),
+                          checkmarkColor: const Color(0xFFE60012),
+                        ),
                       ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${_filteredProducts.length} products',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.grey[600],
+                      const Spacer(),
+                      Text(
+                        '${_filteredProducts.length} products',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildProductsList(),
-                _buildProductsList('fuel'),
-                _buildProductsList('lubricants'),
-                _buildProductsList('car_care'),
-                _buildProductsList('services'),
-              ],
+            // Tab Content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildProductsList(),
+                  _buildProductsList('fuel'),
+                  _buildProductsList('lubricants'),
+                  _buildProductsList('car_care'),
+                  _buildProductsList('services'),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      )
+    ;
   }
 
   Widget _buildProductsList([String? category]) {
@@ -644,7 +728,10 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
 
     List<Map<String, dynamic>> products = _filteredProducts;
     if (category != null) {
-      products = _filteredProducts.where((product) => product['category'] == category).toList();
+      products =
+          _filteredProducts
+              .where((product) => product['category'] == category)
+              .toList();
     }
 
     if (products.isEmpty) {
@@ -652,11 +739,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.inventory_2_outlined,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No products found',
@@ -669,9 +752,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
             const SizedBox(height: 8),
             Text(
               'Try adjusting your filters or search terms',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[500],
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -692,7 +773,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
     final categoryNames = ProductsService.getCategoryDisplayNames();
     final categoryIcons = ProductsService.getCategoryIcons();
     final isLowStock = product['stock'] > 0 && product['stock'] <= 10;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -732,7 +813,8 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          categoryNames[product['category']] ?? product['category'],
+                          categoryNames[product['category']] ??
+                              product['category'],
                           style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: const Color(0xFFE60012),
@@ -747,11 +829,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber[600],
-                            size: 16,
-                          ),
+                          Icon(Icons.star, color: Colors.amber[600], size: 16),
                           const SizedBox(width: 4),
                           Text(
                             product['rating'].toString(),
@@ -805,7 +883,9 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      isLowStock ? 'Low stock (${product['stock']})' : 'In stock (${product['stock']})',
+                      isLowStock
+                          ? 'Low stock (${product['stock']})'
+                          : 'In stock (${product['stock']})',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: isLowStock ? Colors.orange : Colors.green,
@@ -813,11 +893,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                       ),
                     ),
                   ] else if (product['category'] == 'services') ...[
-                    Icon(
-                      Icons.schedule,
-                      color: Colors.blue,
-                      size: 16,
-                    ),
+                    Icon(Icons.schedule, color: Colors.blue, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       'Service available',
@@ -846,7 +922,10 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                   const Spacer(),
                   if (product['canPreOrder'])
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.blue[100],
                         borderRadius: BorderRadius.circular(12),
@@ -862,7 +941,10 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                     ),
                   if (product['canReserve'])
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green[100],
                         borderRadius: BorderRadius.circular(12),
@@ -880,47 +962,42 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
               ),
               const SizedBox(height: 12),
               // Action Buttons
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _showProductDetails(product),
-                      icon: const Icon(Icons.info_outline, size: 16),
-                      label: Text('Details', style: GoogleFonts.poppins()),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFFE60012)),
+                  OutlinedButton.icon(
+                    onPressed: () => _showProductDetails(product),
+                    icon: const Icon(Icons.info_outline, size: 16),
+                    label: Text('Details', style: GoogleFonts.poppins()),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFFE60012)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  if (product['canPreOrder'])
+                    ElevatedButton.icon(
+                      onPressed: () => _showPreOrderDialog(product),
+                      icon: const Icon(Icons.schedule, size: 16),
+                      label: Text('Pre-order', style: GoogleFonts.poppins()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[600],
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  if (product['canPreOrder'])
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _showPreOrderDialog(product),
-                        icon: const Icon(Icons.schedule, size: 16),
-                        label: Text('Pre-order', style: GoogleFonts.poppins()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[600],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
                   if (product['canReserve'])
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () => _showReserveDialog(product),
-                        icon: const Icon(Icons.bookmark, size: 16),
-                        label: Text('Reserve', style: GoogleFonts.poppins()),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[600],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                    ElevatedButton.icon(
+                      onPressed: () => _showReserveDialog(product),
+                      icon: const Icon(Icons.bookmark, size: 16),
+                      label: Text('Reserve', style: GoogleFonts.poppins()),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[600],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
@@ -936,7 +1013,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
   Widget _buildProductDetailsSheet(Map<String, dynamic> product) {
     final categoryNames = ProductsService.getCategoryDisplayNames();
     final categoryIcons = ProductsService.getCategoryIcons();
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: const BoxDecoration(
@@ -1003,10 +1080,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
           // Description
           Text(
             product['description'],
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.grey[700],
-            ),
+            style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[700]),
           ),
           const SizedBox(height: 20),
           // Price and Rating
@@ -1065,7 +1139,9 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
               ),
             ),
             const SizedBox(height: 8),
-            ...(product['specifications'] as Map<String, dynamic>).entries.map((entry) {
+            ...(product['specifications'] as Map<String, dynamic>).entries.map((
+              entry,
+            ) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
@@ -1131,43 +1207,39 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
           ),
           const Spacer(),
           // Action Buttons
-          Row(
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
             children: [
               if (product['canPreOrder'])
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showPreOrderDialog(product);
-                    },
-                    icon: const Icon(Icons.schedule, size: 20),
-                    label: Text('Pre-order', style: GoogleFonts.poppins()),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.blue),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showPreOrderDialog(product);
+                  },
+                  icon: const Icon(Icons.schedule, size: 20),
+                  label: Text('Pre-order', style: GoogleFonts.poppins()),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.blue),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
-              if (product['canPreOrder'] && product['canReserve'])
-                const SizedBox(width: 12),
               if (product['canReserve'])
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showReserveDialog(product);
-                    },
-                    icon: const Icon(Icons.bookmark, size: 20),
-                    label: Text('Reserve', style: GoogleFonts.poppins()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showReserveDialog(product);
+                  },
+                  icon: const Icon(Icons.bookmark, size: 20),
+                  label: Text('Reserve', style: GoogleFonts.poppins()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE60012),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),

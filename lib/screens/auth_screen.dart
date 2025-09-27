@@ -11,12 +11,12 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   late TabController _tabController;
-  final _formKey = GlobalKey<FormState>();
+  final _authFormKey = GlobalKey<FormState>();
   final _phoneEmailController = TextEditingController();
   final _nameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _otpController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _isOTPSent = false;
   bool _isPasswordVisible = false;
@@ -51,16 +51,27 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                 children: [
                   // Logo
                   Container(
-                    width: 80,
-                    height: 80,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE60012),
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    child: const Icon(
-                      Icons.local_gas_station,
                       color: Colors.white,
-                      size: 40,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.2),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        'assets/images/totalenergies_logo.png',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -99,10 +110,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                 labelColor: Colors.white,
                 unselectedLabelColor: Colors.grey[600],
                 labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                tabs: const [
-                  Tab(text: 'Login'),
-                  Tab(text: 'Register'),
-                ],
+                tabs: const [Tab(text: 'Login'), Tab(text: 'Register')],
               ),
             ),
 
@@ -112,10 +120,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [
-                  _buildLoginTab(),
-                  _buildRegisterTab(),
-                ],
+                children: [_buildLoginTab(), _buildRegisterTab()],
               ),
             ),
           ],
@@ -128,87 +133,90 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome Back',
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Sign in to your account',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 30),
-
-            // Phone/Email Field
-            _buildInputField(
-              controller: _phoneEmailController,
-              label: 'Phone Number or Email',
-              hint: 'Enter your phone number or email',
-              icon: Icons.person_outline,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your phone number or email';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // Password Field
-            _buildInputField(
-              controller: _passwordController,
-              label: 'Password',
-              hint: 'Enter your password',
-              icon: Icons.lock_outline,
-              isPassword: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 30),
-
-            // Login Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : _handleLogin,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE60012),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
+        key: _authFormKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Welcome Back',
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        'Sign In',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'Sign in to your account',
+                style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Phone/Email Field
+              _buildInputField(
+                controller: _phoneEmailController,
+                label: 'Phone Number or Email',
+                hint: 'Enter your phone number or email',
+                icon: Icons.person_outline,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number or email';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // Password Field
+              _buildInputField(
+                controller: _passwordController,
+                label: 'Password',
+                hint: 'Enter your password',
+                icon: Icons.lock_outline,
+                isPassword: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 30),
+
+              // Login Button
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleLogin,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE60012),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                            'Sign In',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -218,19 +226,20 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Create Account',
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
+        key: _authFormKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Create Account',
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 'Join TotalEnergies today',
                 style: GoogleFonts.poppins(
@@ -238,103 +247,110 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                   color: Colors.grey[600],
                 ),
               ),
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            // Name Field
-            _buildInputField(
-              controller: _nameController,
-              label: 'Full Name',
-              hint: 'Enter your full name',
-              icon: Icons.person_outline,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your full name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // Phone/Email Field
-            _buildInputField(
-              controller: _phoneEmailController,
-              label: 'Phone Number or Email',
-              hint: 'Enter your phone number or email',
-              icon: Icons.contact_phone_outlined,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your phone number or email';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // Password Field
-            _buildInputField(
-              controller: _passwordController,
-              label: 'Password',
-              hint: 'Create a strong password',
-              icon: Icons.lock_outline,
-              isPassword: true,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a password';
-                }
-                if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // OTP Section (shown after registration)
-            if (_isOTPSent) ...[
+              // Name Field
               _buildInputField(
-                controller: _otpController,
-                label: 'Verification Code',
-                hint: 'Enter 6-digit code sent to your phone/email',
-                icon: Icons.verified_user_outlined,
-                keyboardType: TextInputType.number,
+                controller: _nameController,
+                label: 'Full Name',
+                hint: 'Enter your full name',
+                icon: Icons.person_outline,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the verification code';
-                  }
-                  if (value.length != 6) {
-                    return 'Please enter a valid 6-digit code';
+                    return 'Please enter your full name';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-            ],
 
-            // Register/Verify Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: _isLoading ? null : (_isOTPSent ? _handleOTPVerification : _handleRegister),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE60012),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(
-                        _isOTPSent ? 'Verify Account' : 'Create Account',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+              // Phone/Email Field
+              _buildInputField(
+                controller: _phoneEmailController,
+                label: 'Phone Number or Email',
+                hint: 'Enter your phone number or email',
+                icon: Icons.contact_phone_outlined,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your phone number or email';
+                  }
+                  return null;
+                },
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+
+              // Password Field
+              _buildInputField(
+                controller: _passwordController,
+                label: 'Password',
+                hint: 'Create a strong password',
+                icon: Icons.lock_outline,
+                isPassword: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a password';
+                  }
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // OTP Section (shown after registration)
+              if (_isOTPSent) ...[
+                _buildInputField(
+                  controller: _otpController,
+                  label: 'Verification Code',
+                  hint: 'Enter 6-digit code sent to your phone/email',
+                  icon: Icons.verified_user_outlined,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter the verification code';
+                    }
+                    if (value.length != 6) {
+                      return 'Please enter a valid 6-digit code';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              // Register/Verify Button
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed:
+                      _isLoading
+                          ? null
+                          : (_isOTPSent
+                              ? _handleOTPVerification
+                              : _handleRegister),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE60012),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  child:
+                      _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                            _isOTPSent ? 'Verify Account' : 'Create Account',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -370,19 +386,22 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
             hintText: hint,
             hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
             prefixIcon: Icon(icon, color: const Color(0xFFE60012)),
-            suffixIcon: isPassword
-                ? IconButton(
-                    icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.grey[400],
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
-                  )
-                : null,
+            suffixIcon:
+                isPassword
+                    ? IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey[400],
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    )
+                    : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey[300]!),
@@ -404,7 +423,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_authFormKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -422,10 +441,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -438,7 +454,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _handleRegister() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_authFormKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -462,7 +478,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Verification code sent to ${_phoneEmailController.text}'),
+            content: Text(
+              'Verification code sent to ${_phoneEmailController.text}',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -470,10 +488,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
         setState(() {
           _isLoading = false;
@@ -483,7 +498,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _handleOTPVerification() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_authFormKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -512,10 +527,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {

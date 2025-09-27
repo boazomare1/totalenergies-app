@@ -48,21 +48,27 @@ class _PromotionsScreenState extends State<PromotionsScreen>
 
   void _applyFilters() {
     setState(() {
-      _filteredPromotions = _promotions.where((promotion) {
-        // Filter by type
-        if (_selectedFilter != 'all' && promotion['type'] != _selectedFilter) {
-          return false;
-        }
+      _filteredPromotions =
+          _promotions.where((promotion) {
+            // Filter by type
+            if (_selectedFilter != 'all' &&
+                promotion['type'] != _selectedFilter) {
+              return false;
+            }
 
-        // Filter by search query
-        if (_searchQuery.isNotEmpty) {
-          final query = _searchQuery.toLowerCase();
-          return promotion['title'].toString().toLowerCase().contains(query) ||
-                 promotion['description'].toString().toLowerCase().contains(query);
-        }
+            // Filter by search query
+            if (_searchQuery.isNotEmpty) {
+              final query = _searchQuery.toLowerCase();
+              return promotion['title'].toString().toLowerCase().contains(
+                    query,
+                  ) ||
+                  promotion['description'].toString().toLowerCase().contains(
+                    query,
+                  );
+            }
 
-        return true;
-      }).toList();
+            return true;
+          }).toList();
     });
   }
 
@@ -78,91 +84,92 @@ class _PromotionsScreenState extends State<PromotionsScreen>
   void _showQRCodeScanner() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Scan QR Code',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 200,
-              width: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.qr_code_scanner,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'QR Code Scanner',
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Position QR code within the frame',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Scan QR Code',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Demo QR Code: FUEL2024WEEKEND',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFFE60012),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 200,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.qr_code_scanner,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'QR Code Scanner',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Position QR code within the frame',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Demo QR Code: FUEL2024WEEKEND',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFFE60012),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(color: Colors.grey[600]),
+                ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Cancel',
-              style: GoogleFonts.poppins(color: Colors.grey[600]),
-            ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _validateQRCode('FUEL2024WEEKEND');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE60012),
+                ),
+                child: Text(
+                  'Scan Demo Code',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _validateQRCode('FUEL2024WEEKEND');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE60012),
-            ),
-            child: Text(
-              'Scan Demo Code',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
   void _validateQRCode(String qrCode) {
     final result = PromotionsService.validateQRCode(qrCode);
-    
+
     if (result['valid']) {
       final promotion = result['promotion'];
       ScaffoldMessenger.of(context).showSnackBar(
@@ -178,10 +185,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            result['message'],
-            style: GoogleFonts.poppins(),
-          ),
+          content: Text(result['message'], style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
         ),
       );
@@ -216,30 +220,33 @@ class _PromotionsScreenState extends State<PromotionsScreen>
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.local_offer, size: 20),
-                  const SizedBox(width: 8),
-                  Text('All Offers', style: GoogleFonts.poppins()),
+                  const Icon(Icons.local_offer, size: 18),
+                  const SizedBox(width: 4),
+                  Text('All', style: GoogleFonts.poppins(fontSize: 12)),
                 ],
               ),
             ),
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.favorite, size: 20),
-                  const SizedBox(width: 8),
-                  Text('Favorites', style: GoogleFonts.poppins()),
+                  const Icon(Icons.favorite, size: 18),
+                  const SizedBox(width: 4),
+                  Text('Favorites', style: GoogleFonts.poppins(fontSize: 12)),
                 ],
               ),
             ),
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.history, size: 20),
-                  const SizedBox(width: 8),
-                  Text('History', style: GoogleFonts.poppins()),
+                  const Icon(Icons.history, size: 18),
+                  const SizedBox(width: 4),
+                  Text('History', style: GoogleFonts.poppins(fontSize: 12)),
                 ],
               ),
             ),
@@ -265,18 +272,22 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                   decoration: InputDecoration(
                     hintText: 'Search promotions...',
                     hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFFE60012)),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _searchQuery = '';
-                              });
-                              _applyFilters();
-                            },
-                            icon: const Icon(Icons.clear, color: Colors.grey),
-                          )
-                        : null,
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Color(0xFFE60012),
+                    ),
+                    suffixIcon:
+                        _searchQuery.isNotEmpty
+                            ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                                _applyFilters();
+                              },
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                            )
+                            : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey[300]!),
@@ -287,7 +298,10 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE60012),
+                        width: 2,
+                      ),
                     ),
                     filled: true,
                     fillColor: Colors.grey[50],
@@ -302,7 +316,8 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                       _buildFilterChip('all', 'All'),
                       const SizedBox(width: 8),
                       ...PromotionsService.getPromotionTypes().map((type) {
-                        final typeNames = PromotionsService.getPromotionTypeNames();
+                        final typeNames =
+                            PromotionsService.getPromotionTypeNames();
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
                           child: _buildFilterChip(type, typeNames[type]!),
@@ -342,11 +357,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.local_offer_outlined,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.local_offer_outlined, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No promotions found',
@@ -359,9 +370,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
             const SizedBox(height: 8),
             Text(
               'Try adjusting your filters or search terms',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[500],
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -382,7 +391,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
     final typeNames = PromotionsService.getPromotionTypeNames();
     final typeIcons = PromotionsService.getPromotionTypeIcons();
     final isExpiringSoon = PromotionsService.isPromotionExpiringSoon(promotion);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -434,7 +443,10 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                   ),
                   if (isExpiringSoon)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.orange[100],
                         borderRadius: BorderRadius.circular(12),
@@ -459,11 +471,16 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                 ),
               ),
               const SizedBox(height: 12),
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
                 children: [
                   if (promotion['discount'] > 0) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green[100],
                         borderRadius: BorderRadius.circular(8),
@@ -477,11 +494,13 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
                   ],
                   if (promotion['isLocationBased'] == true) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.blue[100],
                         borderRadius: BorderRadius.circular(8),
@@ -489,7 +508,11 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.location_on, size: 12, color: Colors.blue[800]),
+                          Icon(
+                            Icons.location_on,
+                            size: 12,
+                            color: Colors.blue[800],
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Location Specific',
@@ -502,14 +525,22 @@ class _PromotionsScreenState extends State<PromotionsScreen>
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
                   ],
-                  const Spacer(),
-                  Text(
-                    'Valid until ${_formatDate(promotion['validUntil'])}',
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.grey[500],
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Valid until ${_formatDate(promotion['validUntil'])}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
                     ),
                   ),
                 ],
@@ -518,26 +549,46 @@ class _PromotionsScreenState extends State<PromotionsScreen>
               Row(
                 children: [
                   Expanded(
+                    flex: 2,
                     child: OutlinedButton.icon(
                       onPressed: () => _showPromotionDetails(promotion),
                       icon: const Icon(Icons.info_outline, size: 16),
-                      label: Text('View Details', style: GoogleFonts.poppins()),
+                      label: Text(
+                        'View Details',
+                        style: GoogleFonts.poppins(fontSize: 12),
+                      ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFFE60012)),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 12,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
+                    flex: 3,
                     child: ElevatedButton.icon(
                       onPressed: () => _redeemPromotion(promotion),
                       icon: const Icon(Icons.qr_code, size: 16),
-                      label: Text('Redeem', style: GoogleFonts.poppins()),
+                      label: Text(
+                        'Redeem',
+                        style: GoogleFonts.poppins(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE60012),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -558,11 +609,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.favorite_outline,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.favorite_outline, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'No favorites yet',
@@ -575,9 +622,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           const SizedBox(height: 8),
           Text(
             'Tap the heart icon on promotions to add them to favorites',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[500],
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -590,11 +635,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.history,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.history, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'No redemption history',
@@ -607,9 +648,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           const SizedBox(height: 8),
           Text(
             'Your redeemed promotions will appear here',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[500],
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -636,7 +675,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
   Widget _buildPromotionDetailsSheet(Map<String, dynamic> promotion) {
     final typeNames = PromotionsService.getPromotionTypeNames();
     final typeIcons = PromotionsService.getPromotionTypeIcons();
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: const BoxDecoration(
@@ -703,10 +742,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           // Description
           Text(
             promotion['description'],
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              color: Colors.grey[700],
-            ),
+            style: GoogleFonts.poppins(fontSize: 16, color: Colors.grey[700]),
           ),
           const SizedBox(height: 20),
           // Discount Info
@@ -745,10 +781,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
           const SizedBox(height: 8),
           Text(
             promotion['terms'],
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
           ),
           const SizedBox(height: 20),
           // Validity Period
@@ -831,10 +864,7 @@ class _PromotionsScreenState extends State<PromotionsScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            result['message'],
-            style: GoogleFonts.poppins(),
-          ),
+          content: Text(result['message'], style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
         ),
       );

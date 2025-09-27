@@ -43,28 +43,32 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     setState(() {
       _faqs = SupportService.getAllFAQs();
       _filteredFAQs = _faqs;
-      _tickets = SupportService.getUserTickets('current_user'); // In real app, get from auth
+      _tickets = SupportService.getUserTickets(
+        'current_user',
+      ); // In real app, get from auth
       _isLoading = false;
     });
   }
 
   void _applyFilters() {
     setState(() {
-      _filteredFAQs = _faqs.where((faq) {
-        // Filter by category
-        if (_selectedCategory != 'all' && faq['category'] != _selectedCategory) {
-          return false;
-        }
+      _filteredFAQs =
+          _faqs.where((faq) {
+            // Filter by category
+            if (_selectedCategory != 'all' &&
+                faq['category'] != _selectedCategory) {
+              return false;
+            }
 
-        // Filter by search query
-        if (_searchQuery.isNotEmpty) {
-          final query = _searchQuery.toLowerCase();
-          return faq['question'].toString().toLowerCase().contains(query) ||
-                 faq['answer'].toString().toLowerCase().contains(query);
-        }
+            // Filter by search query
+            if (_searchQuery.isNotEmpty) {
+              final query = _searchQuery.toLowerCase();
+              return faq['question'].toString().toLowerCase().contains(query) ||
+                  faq['answer'].toString().toLowerCase().contains(query);
+            }
 
-        return true;
-      }).toList();
+            return true;
+          }).toList();
     });
   }
 
@@ -76,120 +80,141 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
 
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text(
-            'Create Support Ticket',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+      builder:
+          (context) => StatefulBuilder(
+            builder:
+                (context, setState) => AlertDialog(
+                  title: Text(
+                    'Create Support Ticket',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
+                  ),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          controller: subjectController,
+                          decoration: InputDecoration(
+                            labelText: 'Subject',
+                            hintText: 'Brief description of your issue',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: selectedCategory,
+                          decoration: InputDecoration(
+                            labelText: 'Category',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          items:
+                              SupportService.getTicketCategories().map((
+                                category,
+                              ) {
+                                final categoryNames =
+                                    SupportService.getTicketCategoriesDisplayNames();
+                                return DropdownMenuItem(
+                                  value: category,
+                                  child: Text(
+                                    categoryNames[category] ?? category,
+                                  ),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedCategory = value!;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          value: selectedPriority,
+                          decoration: InputDecoration(
+                            labelText: 'Priority',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          items:
+                              SupportService.getTicketPriorities().map((
+                                priority,
+                              ) {
+                                final priorityNames =
+                                    SupportService.getTicketPrioritiesDisplayNames();
+                                return DropdownMenuItem(
+                                  value: priority,
+                                  child: Text(
+                                    priorityNames[priority] ?? priority,
+                                  ),
+                                );
+                              }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedPriority = value!;
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: descriptionController,
+                          decoration: InputDecoration(
+                            labelText: 'Description',
+                            hintText:
+                                'Please provide detailed information about your issue',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          maxLines: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Cancel',
+                        style: GoogleFonts.poppins(color: Colors.grey[600]),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (subjectController.text.isNotEmpty &&
+                            descriptionController.text.isNotEmpty) {
+                          _createTicket(
+                            subjectController.text,
+                            descriptionController.text,
+                            selectedCategory,
+                            selectedPriority,
+                          );
+                          Navigator.pop(context);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE60012),
+                      ),
+                      child: Text(
+                        'Create Ticket',
+                        style: GoogleFonts.poppins(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
           ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: subjectController,
-                  decoration: InputDecoration(
-                    labelText: 'Subject',
-                    hintText: 'Brief description of your issue',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedCategory,
-                  decoration: InputDecoration(
-                    labelText: 'Category',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  items: SupportService.getTicketCategories().map((category) {
-                    final categoryNames = SupportService.getTicketCategoriesDisplayNames();
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(categoryNames[category] ?? category),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedPriority,
-                  decoration: InputDecoration(
-                    labelText: 'Priority',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  items: SupportService.getTicketPriorities().map((priority) {
-                    final priorityNames = SupportService.getTicketPrioritiesDisplayNames();
-                    return DropdownMenuItem(
-                      value: priority,
-                      child: Text(priorityNames[priority] ?? priority),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedPriority = value!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'Please provide detailed information about your issue',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  maxLines: 4,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: GoogleFonts.poppins(color: Colors.grey[600]),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (subjectController.text.isNotEmpty && descriptionController.text.isNotEmpty) {
-                  _createTicket(
-                    subjectController.text,
-                    descriptionController.text,
-                    selectedCategory,
-                    selectedPriority,
-                  );
-                  Navigator.pop(context);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE60012),
-              ),
-              child: Text(
-                'Create Ticket',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
-  void _createTicket(String subject, String description, String category, String priority) {
+  void _createTicket(
+    String subject,
+    String description,
+    String category,
+    String priority,
+  ) {
     final result = SupportService.createTicket(
       userId: 'current_user', // In real app, get from auth service
       subject: subject,
@@ -202,7 +227,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       setState(() {
         _tickets.insert(0, result['ticket']);
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -215,10 +240,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            result['message'],
-            style: GoogleFonts.poppins(),
-          ),
+          content: Text(result['message'], style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
         ),
       );
@@ -236,87 +258,85 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
 
   void _showLiveChatDialog() {
     final availability = SupportService.getLiveChatAvailability();
-    
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Live Chat',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              availability['isAvailable'] ? Icons.chat : Icons.schedule,
-              size: 48,
-              color: availability['isAvailable'] ? Colors.green : Colors.orange,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Live Chat',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 16),
-            Text(
-              availability['isAvailable'] 
-                  ? 'Live chat is available now!'
-                  : 'Live chat is not available at the moment.',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.center,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  availability['isAvailable'] ? Icons.chat : Icons.schedule,
+                  size: 48,
+                  color:
+                      availability['isAvailable']
+                          ? Colors.green
+                          : Colors.orange,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  availability['isAvailable']
+                      ? 'Live chat is available now!'
+                      : 'Live chat is not available at the moment.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                if (availability['isAvailable']) ...[
+                  Text(
+                    'Average wait time: ${availability['currentWaitTime']} minutes',
+                    style: GoogleFonts.poppins(color: Colors.grey[600]),
+                  ),
+                  Text(
+                    'Operators online: ${availability['operatorsOnline']}',
+                    style: GoogleFonts.poppins(color: Colors.grey[600]),
+                  ),
+                ] else ...[
+                  Text(
+                    'Available: 8 AM - 8 PM',
+                    style: GoogleFonts.poppins(color: Colors.grey[600]),
+                  ),
+                ],
+              ],
             ),
-            const SizedBox(height: 8),
-            if (availability['isAvailable']) ...[
-              Text(
-                'Average wait time: ${availability['currentWaitTime']} minutes',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[600],
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.poppins(color: Colors.grey[600]),
                 ),
               ),
-              Text(
-                'Operators online: ${availability['operatorsOnline']}',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[600],
+              if (availability['isAvailable'])
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _startLiveChat();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE60012),
+                  ),
+                  child: Text(
+                    'Start Chat',
+                    style: GoogleFonts.poppins(color: Colors.white),
+                  ),
                 ),
-              ),
-            ] else ...[
-              Text(
-                'Available: 8 AM - 8 PM',
-                style: GoogleFonts.poppins(
-                  color: Colors.grey[600],
-                ),
-              ),
             ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Close',
-              style: GoogleFonts.poppins(color: Colors.grey[600]),
-            ),
           ),
-          if (availability['isAvailable'])
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _startLiveChat();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE60012),
-              ),
-              child: Text(
-                'Start Chat',
-                style: GoogleFonts.poppins(color: Colors.white),
-              ),
-            ),
-        ],
-      ),
     );
   }
 
   void _startLiveChat() {
     final result = SupportService.startLiveChatSession('current_user');
-    
+
     if (result['success']) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -330,10 +350,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            result['message'],
-            style: GoogleFonts.poppins(),
-          ),
+          content: Text(result['message'], style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
         ),
       );
@@ -400,92 +417,103 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildFAQsTab(),
-          _buildTicketsTab(),
-          _buildNewTicketTab(),
-        ],
+        children: [_buildFAQsTab(), _buildTicketsTab(), _buildNewTicketTab()],
       ),
     );
   }
 
   Widget _buildFAQsTab() {
-    return Column(
-      children: [
-        // Search and Filter Bar
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Search Bar
-              TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                  _applyFilters();
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search FAQs...',
-                  hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                  prefixIcon: const Icon(Icons.search, color: Color(0xFFE60012)),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _searchQuery = '';
-                            });
-                            _applyFilters();
-                          },
-                          icon: const Icon(Icons.clear, color: Colors.grey),
-                        )
-                      : null,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Search and Filter Bar
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Search Bar
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                    });
+                    _applyFilters();
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Search FAQs...',
+                    hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Color(0xFFE60012),
+                    ),
+                    suffixIcon:
+                        _searchQuery.isNotEmpty
+                            ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                                _applyFilters();
+                              },
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                            )
+                            : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey[300]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE60012),
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[50],
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
                 ),
-              ),
-              const SizedBox(height: 12),
-              // Category Filter
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _buildCategoryChip('all', 'All'),
-                    const SizedBox(width: 8),
-                    ...SupportService.getFAQCategories().map((category) {
-                      final categoryNames = SupportService.getFAQCategoriesDisplayNames();
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: _buildCategoryChip(category, categoryNames[category]!),
-                      );
-                    }),
-                  ],
+                const SizedBox(height: 12),
+                // Category Filter
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildCategoryChip('all', 'All'),
+                      const SizedBox(width: 8),
+                      ...SupportService.getFAQCategories().map((category) {
+                        final categoryNames =
+                            SupportService.getFAQCategoriesDisplayNames();
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: _buildCategoryChip(
+                            category,
+                            categoryNames[category]!,
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        // FAQs List
-        Expanded(
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: Color(0xFFE60012)),
-                )
-              : _filteredFAQs.isEmpty
-                  ? Center(
+          // FAQs List
+          Expanded(
+            child:
+                _isLoading
+                    ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFE60012),
+                      ),
+                    )
+                    : _filteredFAQs.isEmpty
+                    ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -506,14 +534,12 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                           const SizedBox(height: 8),
                           Text(
                             'Try adjusting your search or filters',
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[500],
-                            ),
+                            style: GoogleFonts.poppins(color: Colors.grey[500]),
                           ),
                         ],
                       ),
                     )
-                  : ListView.builder(
+                    : ListView.builder(
                       padding: const EdgeInsets.all(16),
                       itemCount: _filteredFAQs.length,
                       itemBuilder: (context, index) {
@@ -521,53 +547,48 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                         return _buildFAQCard(faq);
                       },
                     ),
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildTicketsTab() {
     return _isLoading
         ? const Center(
-            child: CircularProgressIndicator(color: Color(0xFFE60012)),
-          )
+          child: CircularProgressIndicator(color: Color(0xFFE60012)),
+        )
         : _tickets.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.support_agent,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No support tickets',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Create a new ticket to get help',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
+        ? Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.support_agent, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              Text(
+                'No support tickets',
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600],
                 ),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: _tickets.length,
-                itemBuilder: (context, index) {
-                  final ticket = _tickets[index];
-                  return _buildTicketCard(ticket);
-                },
-              );
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Create a new ticket to get help',
+                style: GoogleFonts.poppins(color: Colors.grey[500]),
+              ),
+            ],
+          ),
+        )
+        : ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: _tickets.length,
+          itemBuilder: (context, index) {
+            final ticket = _tickets[index];
+            return _buildTicketCard(ticket);
+          },
+        );
   }
 
   Widget _buildNewTicketTab() {
@@ -681,7 +702,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   Widget _buildFAQCard(Map<String, dynamic> faq) {
     final categoryNames = SupportService.getFAQCategoriesDisplayNames();
     final categoryIcons = SupportService.getFAQCategoriesIcons();
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -689,10 +710,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       child: ExpansionTile(
         title: Text(
           faq['question'],
-          style: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         subtitle: Row(
           children: [
@@ -795,7 +813,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                           );
                         },
                         icon: const Icon(Icons.thumb_down, size: 16),
-                        label: Text('Not Helpful', style: GoogleFonts.poppins()),
+                        label: Text(
+                          'Not Helpful',
+                          style: GoogleFonts.poppins(),
+                        ),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: Colors.orange),
                           shape: RoundedRectangleBorder(
@@ -818,7 +839,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     final statusNames = SupportService.getTicketStatusesDisplayNames();
     final categoryNames = SupportService.getTicketCategoriesDisplayNames();
     final priorityNames = SupportService.getTicketPrioritiesDisplayNames();
-    
+
     Color statusColor;
     switch (ticket['status']) {
       case 'open':
@@ -836,7 +857,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       default:
         statusColor = Colors.grey;
     }
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
@@ -861,7 +882,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: statusColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -891,7 +915,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(8),
@@ -907,7 +934,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
                       borderRadius: BorderRadius.circular(8),
@@ -954,11 +984,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Icon(
-                icon,
-                size: 32,
-                color: const Color(0xFFE60012),
-              ),
+              Icon(icon, size: 32, color: const Color(0xFFE60012)),
               const SizedBox(height: 8),
               Text(
                 title,
@@ -1001,11 +1027,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(
-                icon,
-                size: 24,
-                color: const Color(0xFFE60012),
-              ),
+              Icon(icon, size: 24, color: const Color(0xFFE60012)),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -1049,7 +1071,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     final statusNames = SupportService.getTicketStatusesDisplayNames();
     final categoryNames = SupportService.getTicketCategoriesDisplayNames();
     final priorityNames = SupportService.getTicketPrioritiesDisplayNames();
-    
+
     return Container(
       height: MediaQuery.of(context).size.height * 0.8,
       decoration: const BoxDecoration(
@@ -1085,7 +1107,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
@@ -1105,9 +1130,15 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
           // Ticket Info
           Row(
             children: [
-              _buildInfoChip('Category', categoryNames[ticket['category']] ?? ticket['category']),
+              _buildInfoChip(
+                'Category',
+                categoryNames[ticket['category']] ?? ticket['category'],
+              ),
               const SizedBox(width: 8),
-              _buildInfoChip('Priority', priorityNames[ticket['priority']] ?? ticket['priority']),
+              _buildInfoChip(
+                'Priority',
+                priorityNames[ticket['priority']] ?? ticket['priority'],
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -1122,10 +1153,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
           const SizedBox(height: 8),
           Text(
             ticket['description'],
-            style: GoogleFonts.poppins(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
+            style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[700]),
           ),
           const SizedBox(height: 20),
           // Messages
@@ -1171,11 +1199,12 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
 
   Widget _buildMessageBubble(Map<String, dynamic> message) {
     final isUser = message['sender'] == 'user';
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           Container(
             constraints: BoxConstraints(
@@ -1215,7 +1244,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays > 0) {
       return '${difference.inDays} days ago';
     } else if (difference.inHours > 0) {

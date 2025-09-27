@@ -6,13 +6,14 @@ class EnhancedStationLocatorScreen extends StatefulWidget {
   const EnhancedStationLocatorScreen({super.key});
 
   @override
-  State<EnhancedStationLocatorScreen> createState() => _EnhancedStationLocatorScreenState();
+  State<EnhancedStationLocatorScreen> createState() =>
+      _EnhancedStationLocatorScreenState();
 }
 
-class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScreen>
+class _EnhancedStationLocatorScreenState
+    extends State<EnhancedStationLocatorScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  List<Map<String, dynamic>> _stations = [];
   List<Map<String, dynamic>> _filteredStations = [];
   String _searchQuery = '';
   bool _isLoading = false;
@@ -29,7 +30,6 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
   };
   String _sortBy = 'distance'; // distance, rating, name
   Map<String, double>? _currentLocation;
-  Map<String, dynamic>? _selectedStation;
   Map<String, dynamic>? _routeInfo;
 
   @override
@@ -51,53 +51,71 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
       _isLoading = true;
     });
 
-    // Simulate loading delay
-    await Future.delayed(const Duration(seconds: 1));
+    // Load stations without artificial delay
+    final stations = StationService.getAllStations();
 
-    setState(() {
-      _stations = StationService.getAllStations();
-      _filteredStations = _stations;
-      _isLoading = false;
-    });
+    if (mounted) {
+      setState(() {
+        _filteredStations = stations;
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _getCurrentLocation() async {
-    // Simulate getting current location
-    await Future.delayed(const Duration(milliseconds: 500));
-    setState(() {
-      _currentLocation = StationService.getCurrentLocation();
-    });
+    // Get current location without artificial delay
+    final location = StationService.getCurrentLocation();
+    if (mounted) {
+      setState(() {
+        _currentLocation = location;
+      });
+    }
   }
 
   void _applyFilters() {
-    setState(() {
-      _filteredStations = StationService.getStationsByFilters(
-        is24Hours: _selectedFilters['is24Hours'] ? true : null,
-        hasEVCharging: _selectedFilters['hasEVCharging'] ? true : null,
-        hasLPG: _selectedFilters['hasLPG'] ? true : null,
-        requiredServices: _getSelectedServices(),
-      );
-      
-      if (_searchQuery.isNotEmpty) {
-        _filteredStations = StationService.searchStations(_searchQuery);
-      }
-      
-      _sortStations();
-    });
+    // Perform filtering operations without setState first
+    List<Map<String, dynamic>> filteredStations =
+        StationService.getStationsByFilters(
+          is24Hours: _selectedFilters['is24Hours'] == true ? true : null,
+          hasEVCharging:
+              _selectedFilters['hasEVCharging'] == true ? true : null,
+          hasLPG: _selectedFilters['hasLPG'] == true ? true : null,
+          requiredServices: _getSelectedServices(),
+        );
+
+    if (_searchQuery.isNotEmpty) {
+      filteredStations = StationService.searchStations(_searchQuery);
+    }
+
+    // Sort the filtered stations
+    filteredStations = _sortStationsList(filteredStations);
+
+    // Update state once with all changes
+    if (mounted) {
+      setState(() {
+        _filteredStations = filteredStations;
+      });
+    }
   }
 
   List<String> _getSelectedServices() {
     return _selectedFilters.entries
-        .where((entry) => entry.key != 'is24Hours' && 
-                          entry.key != 'hasEVCharging' && 
-                          entry.key != 'hasLPG' && 
-                          entry.value)
+        .where(
+          (entry) =>
+              entry.key != 'is24Hours' &&
+              entry.key != 'hasEVCharging' &&
+              entry.key != 'hasLPG' &&
+              entry.value,
+        )
         .map((entry) => entry.key)
         .toList();
   }
 
-  void _sortStations() {
-    _filteredStations.sort((a, b) {
+  List<Map<String, dynamic>> _sortStationsList(
+    List<Map<String, dynamic>> stations,
+  ) {
+    final sortedStations = List<Map<String, dynamic>>.from(stations);
+    sortedStations.sort((a, b) {
       switch (_sortBy) {
         case 'distance':
           return (a['distance'] as double).compareTo(b['distance'] as double);
@@ -109,13 +127,14 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
           return 0;
       }
     });
+    return sortedStations;
   }
 
   void _showStationDetails(Map<String, dynamic> station) {
     setState(() {
-      _selectedStation = station;
+      // Station details will be shown in the modal
     });
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -126,81 +145,90 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
 
   void _getDirections(Map<String, dynamic> station) {
     if (_currentLocation == null) return;
-    
+
     setState(() {
       _routeInfo = StationService.getRouteDirections(
-        fromLat: _currentLocation!['latitude'],
-        fromLon: _currentLocation!['longitude'],
-        toLat: station['latitude'],
-        toLon: station['longitude'],
+        fromLat: _currentLocation!['latitude']?.toDouble() ?? 0.0,
+        fromLon: _currentLocation!['longitude']?.toDouble() ?? 0.0,
+        toLat: station['latitude']?.toDouble() ?? 0.0,
+        toLon: station['longitude']?.toDouble() ?? 0.0,
       );
     });
-    
+
     _showRouteDialog(station);
   }
 
   void _showRouteDialog(Map<String, dynamic> station) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Directions to ${station['name']}',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (_routeInfo != null) ...[
-              _buildRouteInfo('Distance', '${_routeInfo!['distance'].toStringAsFixed(1)} km'),
-              _buildRouteInfo('Estimated Time', '${_routeInfo!['estimatedTime']} minutes'),
-              const SizedBox(height: 16),
-              Text(
-                'Route Instructions:',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 8),
-              ...(_routeInfo!['route'] as List).map((step) => Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  '• ${step['instruction']}',
-                  style: GoogleFonts.poppins(fontSize: 14),
-                ),
-              )),
-            ],
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'Close',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Directions to ${station['name']}',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // In a real app, open external maps app
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    'Opening in Maps app...',
-                    style: GoogleFonts.poppins(),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_routeInfo != null) ...[
+                  _buildRouteInfo(
+                    'Distance',
+                    '${_routeInfo!['distance'].toStringAsFixed(1)} km',
                   ),
+                  _buildRouteInfo(
+                    'Estimated Time',
+                    '${_routeInfo!['estimatedTime']} minutes',
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Route Instructions:',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  ...(_routeInfo!['route'] as List).map(
+                    (step) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        '• ${step['instruction']}',
+                        style: GoogleFonts.poppins(fontSize: 14),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
                 ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE60012),
-            ),
-            child: Text(
-              'Open in Maps',
-              style: GoogleFonts.poppins(color: Colors.white),
-            ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // In a real app, open external maps app
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Opening in Maps app...',
+                        style: GoogleFonts.poppins(),
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE60012),
+                ),
+                child: Text(
+                  'Open in Maps',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -210,10 +238,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
-          ),
+          Text(label, style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
           Text(
             value,
             style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
@@ -283,18 +308,22 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                   decoration: InputDecoration(
                     hintText: 'Search stations...',
                     hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFFE60012)),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _searchQuery = '';
-                              });
-                              _applyFilters();
-                            },
-                            icon: const Icon(Icons.clear, color: Colors.grey),
-                          )
-                        : null,
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      color: Color(0xFFE60012),
+                    ),
+                    suffixIcon:
+                        _searchQuery.isNotEmpty
+                            ? IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                                _applyFilters();
+                              },
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                            )
+                            : null,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(color: Colors.grey[300]!),
@@ -305,7 +334,10 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
+                      borderSide: const BorderSide(
+                        color: Color(0xFFE60012),
+                        width: 2,
+                      ),
                     ),
                     filled: true,
                     fillColor: Colors.grey[50],
@@ -334,7 +366,9 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                         value: _sortBy,
                         decoration: InputDecoration(
                           hintText: 'Sort by',
-                          hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                          hintStyle: GoogleFonts.poppins(
+                            color: Colors.grey[400],
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                             borderSide: BorderSide(color: Colors.grey[300]!),
@@ -345,16 +379,34 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE60012),
+                              width: 2,
+                            ),
                           ),
                           filled: true,
                           fillColor: Colors.grey[50],
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                         ),
                         items: [
-                          DropdownMenuItem(value: 'distance', child: Text('Distance', style: GoogleFonts.poppins())),
-                          DropdownMenuItem(value: 'rating', child: Text('Rating', style: GoogleFonts.poppins())),
-                          DropdownMenuItem(value: 'name', child: Text('Name', style: GoogleFonts.poppins())),
+                          DropdownMenuItem(
+                            value: 'distance',
+                            child: Text(
+                              'Distance',
+                              style: GoogleFonts.poppins(),
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: 'rating',
+                            child: Text('Rating', style: GoogleFonts.poppins()),
+                          ),
+                          DropdownMenuItem(
+                            value: 'name',
+                            child: Text('Name', style: GoogleFonts.poppins()),
+                          ),
                         ],
                         onChanged: (value) {
                           setState(() {
@@ -373,10 +425,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildStationList(),
-                _buildStationMap(),
-              ],
+              children: [_buildStationList(), _buildStationMap()],
             ),
           ),
         ],
@@ -396,11 +445,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.location_off,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.location_off, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No stations found',
@@ -413,9 +458,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
             const SizedBox(height: 8),
             Text(
               'Try adjusting your filters or search terms',
-              style: GoogleFonts.poppins(
-                color: Colors.grey[500],
-              ),
+              style: GoogleFonts.poppins(color: Colors.grey[500]),
             ),
           ],
         ),
@@ -474,11 +517,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                     children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber[600],
-                            size: 16,
-                          ),
+                          Icon(Icons.star, color: Colors.amber[600], size: 16),
                           const SizedBox(width: 4),
                           Text(
                             station['rating'].toString(),
@@ -505,35 +544,40 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
               Wrap(
                 spacing: 8,
                 runSpacing: 4,
-                children: (station['services'] as List).map((service) {
-                  final serviceNames = StationService.getServiceDisplayNames();
-                  final serviceIcons = StationService.getServiceIcons();
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE60012).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          serviceIcons[service] ?? '📍',
-                          style: const TextStyle(fontSize: 12),
+                children:
+                    (station['services'] as List).map((service) {
+                      final serviceNames =
+                          StationService.getServiceDisplayNames();
+                      final serviceIcons = StationService.getServiceIcons();
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          serviceNames[service] ?? service,
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: const Color(0xFFE60012),
-                            fontWeight: FontWeight.w500,
-                          ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE60012).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              serviceIcons[service] ?? '📍',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              serviceNames[service] ?? service,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: const Color(0xFFE60012),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 12),
               // Action Buttons
@@ -592,11 +636,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.map,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
+                    Icon(Icons.map, size: 64, color: Colors.grey[400]),
                     const SizedBox(height: 16),
                     Text(
                       'Interactive Map',
@@ -609,9 +649,7 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
                     const SizedBox(height: 8),
                     Text(
                       'Map integration would show here\nwith station markers and routes',
-                      style: GoogleFonts.poppins(
-                        color: Colors.grey[500],
-                      ),
+                      style: GoogleFonts.poppins(color: Colors.grey[500]),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -639,13 +677,11 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
               children: [
                 Text(
                   '${_filteredStations.length} stations found',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                 ),
                 if (_currentLocation != null)
                   Text(
-                    'Location: ${_currentLocation!['latitude'].toStringAsFixed(2)}, ${_currentLocation!['longitude'].toStringAsFixed(2)}',
+                    'Location: ${_currentLocation!['latitude']?.toStringAsFixed(2) ?? 'N/A'}, ${_currentLocation!['longitude']?.toStringAsFixed(2) ?? 'N/A'}',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -916,34 +952,38 @@ class _EnhancedStationLocatorScreenState extends State<EnhancedStationLocatorScr
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: (station['services'] as List).map((service) {
-              final serviceNames = StationService.getServiceDisplayNames();
-              final serviceIcons = StationService.getServiceIcons();
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE60012).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      serviceIcons[service] ?? '📍',
-                      style: const TextStyle(fontSize: 16),
+            children:
+                (station['services'] as List).map((service) {
+                  final serviceNames = StationService.getServiceDisplayNames();
+                  final serviceIcons = StationService.getServiceIcons();
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      serviceNames[service] ?? service,
-                      style: GoogleFonts.poppins(
-                        color: const Color(0xFFE60012),
-                        fontWeight: FontWeight.w500,
-                      ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE60012).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                  ],
-                ),
-              );
-            }).toList(),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          serviceIcons[service] ?? '📍',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          serviceNames[service] ?? service,
+                          style: GoogleFonts.poppins(
+                            color: const Color(0xFFE60012),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
           ),
           const SizedBox(height: 20),
           // Contact Info

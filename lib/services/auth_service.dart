@@ -37,7 +37,7 @@ class AuthService {
 
     // Check if it's email or phone
     bool isEmail = phoneOrEmail.contains('@');
-    
+
     if (isEmail && !_isValidEmail(phoneOrEmail)) {
       throw Exception('Invalid email format');
     }
@@ -62,7 +62,7 @@ class AuthService {
     await prefs.setBool(_isLoggedInKey, true);
     await prefs.setString(_userKey, _currentUser.toString());
     await prefs.setString(_nameKey, name);
-    
+
     if (isEmail) {
       await prefs.setString(_emailKey, phoneOrEmail);
     } else {
@@ -80,20 +80,35 @@ class AuthService {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 1));
 
-    // In a real app, this would validate against a backend
-    // For now, we'll check against stored data
-    final prefs = await SharedPreferences.getInstance();
-    final storedName = prefs.getString(_nameKey);
-    
-    if (storedName == null) {
-      throw Exception('User not found. Please register first.');
+    // Validate input
+    if (phoneOrEmail.isEmpty || password.isEmpty) {
+      throw Exception('Phone/Email and password are required');
     }
 
-    // Create user data from stored info
+    // Check if it's email or phone
     bool isEmail = phoneOrEmail.contains('@');
+
+    if (isEmail && !_isValidEmail(phoneOrEmail)) {
+      throw Exception('Invalid email format');
+    }
+
+    if (!isEmail && !_isValidPhone(phoneOrEmail)) {
+      throw Exception('Invalid phone number format');
+    }
+
+    if (password.length < 6) {
+      throw Exception('Password must be at least 6 characters');
+    }
+
+    // In a real app, this would validate against a backend
+    // For demo purposes, we'll create a user if they don't exist
+    final prefs = await SharedPreferences.getInstance();
+    final storedName = prefs.getString(_nameKey);
+
+    // Create user data
     _currentUser = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'name': storedName,
+      'name': storedName ?? 'Demo User',
       'phone': isEmail ? null : phoneOrEmail,
       'email': isEmail ? phoneOrEmail : null,
       'password': password,
@@ -103,6 +118,12 @@ class AuthService {
 
     await prefs.setBool(_isLoggedInKey, true);
     await prefs.setString(_userKey, _currentUser.toString());
+    await prefs.setString(_nameKey, _currentUser!['name']);
+    if (isEmail) {
+      await prefs.setString(_emailKey, phoneOrEmail);
+    } else {
+      await prefs.setString(_phoneKey, phoneOrEmail);
+    }
 
     return _currentUser!;
   }
@@ -111,13 +132,14 @@ class AuthService {
   static Future<String> sendOTP(String phoneOrEmail) async {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // Generate random 6-digit OTP
-    String otp = (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
-    
+    String otp =
+        (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
+
     // In a real app, this would be sent via SMS or email
     print('OTP sent to $phoneOrEmail: $otp');
-    
+
     return otp;
   }
 
@@ -125,7 +147,7 @@ class AuthService {
   static Future<bool> verifyOTP(String phoneOrEmail, String otp) async {
     // Simulate API call
     await Future.delayed(const Duration(seconds: 1));
-    
+
     // In a real app, this would verify against the backend
     // For demo purposes, accept any 6-digit OTP
     if (otp.length == 6 && RegExp(r'^\d+$').hasMatch(otp)) {
@@ -137,7 +159,7 @@ class AuthService {
       }
       return true;
     }
-    
+
     return false;
   }
 
@@ -156,12 +178,12 @@ class AuthService {
   static Future<void> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool(_isLoggedInKey) ?? false;
-    
+
     if (isLoggedIn) {
       final name = prefs.getString(_nameKey);
       final phone = prefs.getString(_phoneKey);
       final email = prefs.getString(_emailKey);
-      
+
       if (name != null) {
         _currentUser = {
           'id': DateTime.now().millisecondsSinceEpoch.toString(),

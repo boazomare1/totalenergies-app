@@ -18,7 +18,7 @@ class MpesaPaymentScreen extends StatefulWidget {
 }
 
 class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _mpesaPaymentFormKey = GlobalKey<FormState>();
   final _phoneNumberController = TextEditingController();
 
   bool _isProcessing = false;
@@ -45,7 +45,7 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
-          key: _formKey,
+          key: _mpesaPaymentFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -400,9 +400,9 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
   }
 
   void _processPayment() async {
-    if (_formKey.currentState!.validate()) {
+    if (_mpesaPaymentFormKey.currentState!.validate()) {
       final phoneNumber = _phoneNumberController.text.replaceAll(' ', '');
-      
+
       setState(() {
         _isProcessing = true;
       });
@@ -410,7 +410,7 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
       try {
         // Send OTP for payment verification
         await OTPService.sendOTP(phoneNumber, 'M-Pesa Payment');
-        
+
         setState(() {
           _isProcessing = false;
         });
@@ -419,14 +419,15 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
         final otpVerified = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => OTPVerificationDialog(
-            phoneNumber: phoneNumber,
-            purpose: 'M-Pesa Payment',
-            onSuccess: () {
-              // Process payment after OTP verification
-              _completePayment(phoneNumber);
-            },
-          ),
+          builder:
+              (context) => OTPVerificationDialog(
+                phoneNumber: phoneNumber,
+                purpose: 'M-Pesa Payment',
+                onSuccess: () {
+                  // Process payment after OTP verification
+                  _completePayment(phoneNumber);
+                },
+              ),
         );
 
         if (otpVerified == true) {
@@ -437,7 +438,7 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
         setState(() {
           _isProcessing = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'orders_screen.dart';
-import 'anticounterfeit_screen.dart';
 import 'card_screen.dart';
 import 'enhanced_station_locator_screen.dart';
-import 'promotions_screen.dart';
-import 'products_catalog_screen.dart';
-import 'support_center_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -21,12 +17,8 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const OrdersScreen(),
-    const AnticounterfeitScreen(),
     const CardScreen(),
     const EnhancedStationLocatorScreen(),
-    const PromotionsScreen(),
-    const ProductsCatalogScreen(),
-    const SupportCenterScreen(),
   ];
 
   @override
@@ -75,11 +67,6 @@ class _MainScreenState extends State<MainScreen> {
               label: 'My Orders',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.verified_user_outlined),
-              activeIcon: Icon(Icons.verified_user),
-              label: 'Anticounterfeit',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.credit_card_outlined),
               activeIcon: Icon(Icons.credit_card),
               label: 'My Card',
@@ -88,21 +75,6 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.location_on_outlined),
               activeIcon: Icon(Icons.location_on),
               label: 'Stations',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.local_offer_outlined),
-              activeIcon: Icon(Icons.local_offer),
-              label: 'Promotions',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined),
-              activeIcon: Icon(Icons.inventory_2),
-              label: 'Products',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.help_outline),
-              activeIcon: Icon(Icons.help),
-              label: 'Support',
             ),
           ],
         ),

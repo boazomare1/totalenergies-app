@@ -14,11 +14,11 @@ class BankTransferScreen extends StatefulWidget {
 }
 
 class _BankTransferScreenState extends State<BankTransferScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _bankTransferFormKey = GlobalKey<FormState>();
   final _accountNumberController = TextEditingController();
   final _bankController = TextEditingController();
   final _referenceController = TextEditingController();
-  
+
   String _selectedBank = '';
   bool _isProcessing = false;
   bool _isOTPVerified = false;
@@ -64,7 +64,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
-          key: _formKey,
+          key: _bankTransferFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -119,7 +119,10 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                 decoration: InputDecoration(
                   hintText: 'Choose your bank',
                   hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                  prefixIcon: const Icon(Icons.account_balance, color: Color(0xFFE60012)),
+                  prefixIcon: const Icon(
+                    Icons.account_balance,
+                    color: Color(0xFFE60012),
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: Colors.grey[300]!),
@@ -130,24 +133,32 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE60012),
+                      width: 2,
+                    ),
                   ),
                   filled: true,
                   fillColor: Colors.grey[50],
                 ),
-                items: _banks.map((bank) {
-                  return DropdownMenuItem<String>(
-                    value: bank['code'],
-                    child: Text(
-                      bank['name']!,
-                      style: GoogleFonts.poppins(),
-                    ),
-                  );
-                }).toList(),
+                items:
+                    _banks.map((bank) {
+                      return DropdownMenuItem<String>(
+                        value: bank['code'],
+                        child: Text(
+                          bank['name']!,
+                          style: GoogleFonts.poppins(),
+                        ),
+                      );
+                    }).toList(),
                 onChanged: (value) {
                   setState(() {
                     _selectedBank = value ?? '';
-                    _bankController.text = _banks.firstWhere((bank) => bank['code'] == value)['name'] ?? '';
+                    _bankController.text =
+                        _banks.firstWhere(
+                          (bank) => bank['code'] == value,
+                        )['name'] ??
+                        '';
                   });
                 },
                 validator: (value) {
@@ -206,7 +217,11 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.blue[700],
+                          size: 20,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'Transfer Instructions',
@@ -265,7 +280,8 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _isProcessing ? null : () => Navigator.pop(context),
+                      onPressed:
+                          _isProcessing ? null : () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         side: const BorderSide(color: Color(0xFFE60012)),
@@ -294,21 +310,24 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: _isProcessing
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
+                      child:
+                          _isProcessing
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Text(
+                                _isOTPVerified
+                                    ? 'Verify & Complete'
+                                    : 'I have transferred',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            )
-                          : Text(
-                              _isOTPVerified ? 'Verify & Complete' : 'I have transferred',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
                     ),
                   ),
                 ],
@@ -369,7 +388,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
   }
 
   Future<void> _handleTransfer() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_bankTransferFormKey.currentState!.validate()) return;
 
     if (!_isOTPVerified) {
       // First step: Confirm transfer and send OTP
@@ -380,10 +399,10 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
       try {
         // For bank transfer, use a demo phone number
         const demoPhoneNumber = '+254700000000';
-        
+
         // Send OTP for transfer verification
         await OTPService.sendOTP(demoPhoneNumber, 'Bank Transfer');
-        
+
         setState(() {
           _isProcessing = false;
           _isOTPVerified = true;
@@ -393,14 +412,15 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
         final otpVerified = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => OTPVerificationDialog(
-            phoneNumber: demoPhoneNumber,
-            purpose: 'Bank Transfer',
-            onSuccess: () {
-              // Complete transfer after OTP verification
-              _verifyOTPAndComplete();
-            },
-          ),
+          builder:
+              (context) => OTPVerificationDialog(
+                phoneNumber: demoPhoneNumber,
+                purpose: 'Bank Transfer',
+                onSuccess: () {
+                  // Complete transfer after OTP verification
+                  _verifyOTPAndComplete();
+                },
+              ),
         );
 
         if (otpVerified == true) {
@@ -411,7 +431,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
         setState(() {
           _isProcessing = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -426,53 +446,6 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
       // Second step: Verify OTP and complete
       await _verifyOTPAndComplete();
     }
-  }
-
-  void _showOTPDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'OTP Sent',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.message,
-              color: Colors.green,
-              size: 48,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'We have sent a 6-digit OTP to your registered phone number. Please check your messages and enter the code below.',
-              style: GoogleFonts.poppins(),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'OTP: 123456', // Demo OTP
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFFE60012),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              'OK',
-              style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Future<void> _verifyOTPAndComplete() async {
@@ -492,7 +465,9 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
 
     // Update balance
     final currentBalance = await DashboardService.getFuelCardBalance();
-    await DashboardService.updateFuelCardBalance(currentBalance + widget.amount);
+    await DashboardService.updateFuelCardBalance(
+      currentBalance + widget.amount,
+    );
 
     setState(() {
       _isProcessing = false;
@@ -500,7 +475,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
 
     if (mounted) {
       Navigator.pop(context, true); // Return true to indicate success
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

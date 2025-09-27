@@ -9,8 +9,11 @@ import 'quartz_oil_finder_screen.dart';
 import 'beyond_fuel_screen.dart';
 import 'settings_screen.dart';
 import 'notifications_screen.dart';
+import 'anticounterfeit_screen.dart';
+import 'promotions_screen.dart';
+import 'products_catalog_screen.dart';
+import 'support_center_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../services/auth_service.dart';
 import '../services/dashboard_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,11 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
   late PageController _bannerController;
   bool _hasShownNewsletterPopup = false;
   String _newsletterPreference = 'show'; // 'show', 'later', 'never'
-  
+
   // Dashboard data
   double _fuelCardBalance = 0.0;
   String _cardNumber = '**** **** **** 1234';
-  List<Map<String, dynamic>> _recentTransactions = [];
   bool _isLoadingDashboard = true;
 
   @override
@@ -104,16 +106,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadDashboardData() async {
     try {
       await DashboardService.initializeSampleData();
-      
+
       final balance = await DashboardService.getFuelCardBalance();
       final cardNumber = await DashboardService.getCardNumber();
-      final transactions = await DashboardService.getRecentTransactions();
-      
+
       if (mounted) {
         setState(() {
           _fuelCardBalance = balance;
           _cardNumber = cardNumber;
-          _recentTransactions = transactions;
           _isLoadingDashboard = false;
         });
       }
@@ -618,6 +618,46 @@ class _HomeScreenState extends State<HomeScreen> {
             const Color(0xFFE60012),
             () => _navigateToScreen(const CardScreen()),
           ),
+          const SizedBox(height: 12),
+
+          // Anticounterfeit Card
+          _buildServiceCard(
+            'Anticounterfeit',
+            'Verify product authenticity',
+            Icons.verified_user,
+            Colors.teal,
+            () => _navigateToScreen(const AnticounterfeitScreen()),
+          ),
+          const SizedBox(height: 12),
+
+          // Promotions Card
+          _buildServiceCard(
+            'Promotions',
+            'View latest offers and deals',
+            Icons.local_offer,
+            Colors.pink,
+            () => _navigateToScreen(const PromotionsScreen()),
+          ),
+          const SizedBox(height: 12),
+
+          // Products Card
+          _buildServiceCard(
+            'Products',
+            'Browse our product catalog',
+            Icons.inventory_2,
+            Colors.indigo,
+            () => _navigateToScreen(const ProductsCatalogScreen()),
+          ),
+          const SizedBox(height: 12),
+
+          // Support Card
+          _buildServiceCard(
+            'Support',
+            'Get help and contact us',
+            Icons.help_outline,
+            Colors.brown,
+            () => _navigateToScreen(const SupportCenterScreen()),
+          ),
         ],
       ),
     );
@@ -801,6 +841,149 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.orange,
         duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  // Build fuel card balance widget
+  Widget _buildFuelCardBalance() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE60012), Color(0xFFFF6B35)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFE60012).withValues(alpha: 0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TotalEnergies Card',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _cardNumber,
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const CardScreen()),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.credit_card,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Available Balance',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  if (_isLoadingDashboard)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  else
+                    Text(
+                      'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                ],
+              ),
+              GestureDetector(
+                onTap: _refreshDashboard,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.refresh,
+                        color: const Color(0xFFE60012),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Refresh',
+                        style: GoogleFonts.poppins(
+                          color: const Color(0xFFE60012),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1225,150 +1408,5 @@ class _NewsletterOptInDialogState extends State<_NewsletterOptInDialog> {
         widget.onOptIn();
       }
     });
-  }
-
-  // Build fuel card balance widget
-  Widget _buildFuelCardBalance() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFE60012), Color(0xFFFF6B35)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE60012).withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'TotalEnergies Card',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _cardNumber,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CardScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.credit_card,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Available Balance',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  if (_isLoadingDashboard)
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  else
-                    Text(
-                      'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                ],
-              ),
-              GestureDetector(
-                onTap: _refreshDashboard,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.refresh,
-                        color: const Color(0xFFE60012),
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Refresh',
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFFE60012),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }

@@ -24,7 +24,7 @@ class VisaPaymentScreen extends StatefulWidget {
 }
 
 class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _visaPaymentFormKey = GlobalKey<FormState>();
   final _cardNumberController = TextEditingController();
   final _expiryDateController = TextEditingController();
   final _cvvController = TextEditingController();
@@ -57,7 +57,7 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
-          key: _formKey,
+          key: _visaPaymentFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -440,11 +440,11 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
   }
 
   void _processPayment() async {
-    if (_formKey.currentState!.validate()) {
+    if (_visaPaymentFormKey.currentState!.validate()) {
       // For Visa payments, we'll use a demo phone number for OTP
       // In a real app, this would be the user's registered phone number
       const demoPhoneNumber = '+254700000000';
-      
+
       setState(() {
         _isProcessing = true;
       });
@@ -452,7 +452,7 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
       try {
         // Send OTP for payment verification
         await OTPService.sendOTP(demoPhoneNumber, 'Visa Payment');
-        
+
         setState(() {
           _isProcessing = false;
         });
@@ -461,14 +461,15 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
         final otpVerified = await showDialog<bool>(
           context: context,
           barrierDismissible: false,
-          builder: (context) => OTPVerificationDialog(
-            phoneNumber: demoPhoneNumber,
-            purpose: 'Visa Payment',
-            onSuccess: () {
-              // Process payment after OTP verification
-              _completePayment();
-            },
-          ),
+          builder:
+              (context) => OTPVerificationDialog(
+                phoneNumber: demoPhoneNumber,
+                purpose: 'Visa Payment',
+                onSuccess: () {
+                  // Process payment after OTP verification
+                  _completePayment();
+                },
+              ),
         );
 
         if (otpVerified == true) {
@@ -479,7 +480,7 @@ class _VisaPaymentScreenState extends State<VisaPaymentScreen> {
         setState(() {
           _isProcessing = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
