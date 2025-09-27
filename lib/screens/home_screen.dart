@@ -6,6 +6,7 @@ import 'offers_screen.dart';
 import 'gas_products_screen.dart';
 import 'pay_at_station_screen.dart';
 import 'quartz_oil_finder_screen.dart';
+import 'beyond_fuel_screen.dart';
 import 'settings_screen.dart';
 import 'notifications_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -547,6 +548,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 12),
 
+          // Beyond Fuel Card
+          _buildServiceCard(
+            AppLocalizations.of(context)!.beyondFuel,
+            AppLocalizations.of(context)!.beyondFuelSubtitle,
+            Icons.restaurant,
+            Colors.purple,
+            () => _navigateToScreen(const BeyondFuelScreen()),
+          ),
+          const SizedBox(height: 12),
+
           // TotalEnergies Card
           _buildServiceCard(
             AppLocalizations.of(context)!.myCard,
@@ -634,10 +645,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _navigateToScreen(const QuartzOilFinderScreen());
         break;
       case 1: // Enjoy Store
-        _navigateToScreen(const StationFinderScreen());
+        _navigateToScreen(const BeyondFuelScreen());
         break;
       case 2: // KFC
-        _navigateToScreen(const StationFinderScreen());
+        _navigateToScreen(const BeyondFuelScreen());
         break;
       case 3: // TotalEnergies Card
         _navigateToScreen(const CardScreen());

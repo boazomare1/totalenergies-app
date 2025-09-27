@@ -38,6 +38,14 @@
   "@myCard": {
     "description": "My Card tab label"
   },
+  "beyondFuel": "Beyond Fuel",
+  "@beyondFuel": {
+    "description": "Beyond Fuel service for food and dining"
+  },
+  "beyondFuelSubtitle": "Food & Dining at our stations",
+  "@beyondFuelSubtitle": {
+    "description": "Beyond Fuel service subtitle"
+  },
   "stationFinder": "Station Finder",
   "@stationFinder": {
     "description": "Station Finder service"
