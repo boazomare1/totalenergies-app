@@ -5,6 +5,7 @@ import 'anticounterfeit_screen.dart';
 import 'card_screen.dart';
 import 'enhanced_station_locator_screen.dart';
 import 'promotions_screen.dart';
+import 'products_catalog_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,6 +24,7 @@ class _MainScreenState extends State<MainScreen> {
     const CardScreen(),
     const EnhancedStationLocatorScreen(),
     const PromotionsScreen(),
+    const ProductsCatalogScreen(),
   ];
 
   @override
@@ -89,6 +91,11 @@ class _MainScreenState extends State<MainScreen> {
               icon: Icon(Icons.local_offer_outlined),
               activeIcon: Icon(Icons.local_offer),
               label: 'Promotions',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.inventory_2_outlined),
+              activeIcon: Icon(Icons.inventory_2),
+              label: 'Products',
             ),
           ],
         ),
