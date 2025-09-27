@@ -385,30 +385,51 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.help_outline, size: 20),
-                  const SizedBox(width: 8),
-                  Text('FAQs', style: GoogleFonts.poppins()),
+                  const Icon(Icons.help_outline, size: 18),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      'FAQs',
+                      style: GoogleFonts.poppins(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.support_agent, size: 20),
-                  const SizedBox(width: 8),
-                  Text('My Tickets', style: GoogleFonts.poppins()),
+                  const Icon(Icons.support_agent, size: 18),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      'Tickets',
+                      style: GoogleFonts.poppins(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
             Tab(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.add, size: 20),
-                  const SizedBox(width: 8),
-                  Text('New Ticket', style: GoogleFonts.poppins()),
+                  const Icon(Icons.add, size: 18),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      'New',
+                      style: GoogleFonts.poppins(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -423,133 +444,129 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   }
 
   Widget _buildFAQsTab() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Search and Filter Bar
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Search Bar
-                TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                    _applyFilters();
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Search FAQs...',
-                    hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                    prefixIcon: const Icon(
-                      Icons.search,
+    return Column(
+      children: [
+        // Search and Filter Bar
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // Search Bar
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                  _applyFilters();
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search FAQs...',
+                  hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: Color(0xFFE60012),
+                  ),
+                  suffixIcon:
+                      _searchQuery.isNotEmpty
+                          ? IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _searchQuery = '';
+                              });
+                              _applyFilters();
+                            },
+                            icon: const Icon(Icons.clear, color: Colors.grey),
+                          )
+                          : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
                       color: Color(0xFFE60012),
+                      width: 2,
                     ),
-                    suffixIcon:
-                        _searchQuery.isNotEmpty
-                            ? IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _searchQuery = '';
-                                });
-                                _applyFilters();
-                              },
-                              icon: const Icon(Icons.clear, color: Colors.grey),
-                            )
-                            : null,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFE60012),
-                        width: 2,
-                      ),
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
                   ),
+                  filled: true,
+                  fillColor: Colors.grey[50],
                 ),
-                const SizedBox(height: 12),
-                // Category Filter
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildCategoryChip('all', 'All'),
-                      const SizedBox(width: 8),
-                      ...SupportService.getFAQCategories().map((category) {
-                        final categoryNames =
-                            SupportService.getFAQCategoriesDisplayNames();
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: _buildCategoryChip(
-                            category,
-                            categoryNames[category]!,
-                          ),
-                        );
-                      }),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 12),
+              // Category Filter
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildCategoryChip('all', 'All'),
+                    const SizedBox(width: 8),
+                    ...SupportService.getFAQCategories().map((category) {
+                      final categoryNames =
+                          SupportService.getFAQCategoriesDisplayNames();
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: _buildCategoryChip(
+                          category,
+                          categoryNames[category]!,
+                        ),
+                      );
+                    }),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          // FAQs List
-          Expanded(
-            child:
-                _isLoading
-                    ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFFE60012),
-                      ),
-                    )
-                    : _filteredFAQs.isEmpty
-                    ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.help_outline,
-                            size: 64,
-                            color: Colors.grey[400],
+        ),
+        // FAQs List
+        Expanded(
+          child:
+              _isLoading
+                  ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFFE60012)),
+                  )
+                  : _filteredFAQs.isEmpty
+                  ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.help_outline,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No FAQs found',
+                          style: GoogleFonts.poppins(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No FAQs found',
-                            style: GoogleFonts.poppins(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Try adjusting your search or filters',
-                            style: GoogleFonts.poppins(color: Colors.grey[500]),
-                          ),
-                        ],
-                      ),
-                    )
-                    : ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: _filteredFAQs.length,
-                      itemBuilder: (context, index) {
-                        final faq = _filteredFAQs[index];
-                        return _buildFAQCard(faq);
-                      },
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try adjusting your search or filters',
+                          style: GoogleFonts.poppins(color: Colors.grey[500]),
+                        ),
+                      ],
                     ),
-          ),
-        ],
-      ),
+                  )
+                  : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _filteredFAQs.length,
+                    itemBuilder: (context, index) {
+                      final faq = _filteredFAQs[index];
+                      return _buildFAQCard(faq);
+                    },
+                  ),
+        ),
+      ],
     );
   }
 

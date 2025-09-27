@@ -4,13 +4,40 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
 import 'services/language_service.dart';
 import 'services/language_notifier.dart';
+import 'services/location_service.dart';
+import 'services/notification_service.dart';
+import 'services/hive_database_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize services
+  await _initializeServices();
+
   runApp(const TotalEnergiesApp());
+}
+
+Future<void> _initializeServices() async {
+  try {
+    // Initialize Hive database
+    await HiveDatabaseService.initialize();
+
+    // Initialize location service
+    await LocationService.initialize();
+
+    // Initialize notification service
+    await NotificationService.initialize();
+
+    print('All services initialized successfully');
+  } catch (e) {
+    print('Error initializing services: $e');
+  }
 }
 
 class TotalEnergiesApp extends StatelessWidget {
@@ -59,6 +86,8 @@ class TotalEnergiesApp extends StatelessWidget {
             routes: {
               '/': (context) => const SplashScreen(),
               '/auth': (context) => const AuthScreen(),
+              '/login': (context) => const LoginScreen(),
+              '/register': (context) => const RegisterScreen(),
               '/main': (context) => const MainScreen(),
             },
           );

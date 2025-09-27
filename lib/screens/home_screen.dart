@@ -15,6 +15,7 @@ import 'products_catalog_screen.dart';
 import 'support_center_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/dashboard_service.dart';
+import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double _fuelCardBalance = 0.0;
   String _cardNumber = '**** **** **** 1234';
   bool _isLoadingDashboard = true;
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
@@ -41,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _startBannerAutoScroll();
     _showNewsletterOptIn();
     _loadDashboardData();
+    _checkAuthStatus();
 
     // Reset preference after 5 minutes for "Show Later" users (for testing)
     if (_newsletterPreference == 'later') {
@@ -124,6 +127,19 @@ class _HomeScreenState extends State<HomeScreen> {
           _isLoadingDashboard = false;
         });
       }
+    }
+  }
+
+  Future<void> _checkAuthStatus() async {
+    try {
+      final isLoggedIn = await AuthService.isLoggedIn();
+      if (mounted) {
+        setState(() {
+          _isLoggedIn = isLoggedIn;
+        });
+      }
+    } catch (e) {
+      print('Error checking auth status: $e');
     }
   }
 
@@ -229,6 +245,78 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+
+          // Login Banner (shown when not logged in)
+          if (!_isLoggedIn)
+            SliverToBoxAdapter(
+              child: Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFE60012), Color(0xFFFF6B35)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome to TotalEnergies!',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Sign in to access your personal data, fuel card, and exclusive offers.',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFFE60012),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: Text(
+                        'Sign In',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
           // Content
           SliverToBoxAdapter(

@@ -75,12 +75,12 @@ class _SplashScreenState extends State<SplashScreen>
     // Load user data and check authentication
     await AuthService.loadUserData();
     final isLoggedIn = await AuthService.isLoggedIn();
-    
+
     if (mounted) {
       if (isLoggedIn) {
         Navigator.of(context).pushReplacementNamed('/main');
       } else {
-        Navigator.of(context).pushReplacementNamed('/auth');
+        Navigator.of(context).pushReplacementNamed('/login');
       }
     }
   }

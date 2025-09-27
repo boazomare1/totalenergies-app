@@ -1,34 +1,39 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'hive_database_service.dart';
+import '../models/user_model.dart';
 
 class AuthService {
-  static const String _userKey = 'user_data';
   static const String _isLoggedInKey = 'is_logged_in';
-  static const String _phoneKey = 'phone_number';
-  static const String _emailKey = 'email';
-  static const String _nameKey = 'user_name';
+  static const String _currentUserIdKey = 'current_user_id';
 
-  // User data model
-  static Map<String, dynamic>? _currentUser;
+  // Current user
+  static UserModel? _currentUser;
 
   // Check if user is logged in
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_isLoggedInKey) ?? false;
+    final isLoggedIn = prefs.getBool(_isLoggedInKey) ?? false;
+
+    if (isLoggedIn && _currentUser == null) {
+      await loadUserData();
+    }
+
+    return isLoggedIn && _currentUser != null;
   }
 
   // Get current user data
-  static Map<String, dynamic>? getCurrentUser() {
+  static UserModel? getCurrentUser() {
     return _currentUser;
   }
 
   // Register user with phone or email
-  static Future<Map<String, dynamic>> registerUser({
+  static Future<UserModel> registerUser({
     required String phoneOrEmail,
     required String name,
     required String password,
   }) async {
     // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     // Validate input
     if (phoneOrEmail.isEmpty || name.isEmpty || password.isEmpty) {
@@ -46,34 +51,24 @@ class AuthService {
       throw Exception('Invalid phone number format');
     }
 
-    // Create user data
-    _currentUser = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'name': name,
-      'phone': isEmail ? null : phoneOrEmail,
-      'email': isEmail ? phoneOrEmail : null,
-      'password': password, // In real app, this would be hashed
-      'createdAt': DateTime.now().toIso8601String(),
-      'isVerified': false,
-    };
+    // Create user using Hive
+    _currentUser = await HiveDatabaseService.createUser(
+      name: name,
+      email: isEmail ? phoneOrEmail : '',
+      phone: isEmail ? '' : phoneOrEmail,
+      password: password, // In real app, this would be hashed
+    );
 
-    // Save to local storage
+    // Save login state
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isLoggedInKey, true);
-    await prefs.setString(_userKey, _currentUser.toString());
-    await prefs.setString(_nameKey, name);
-
-    if (isEmail) {
-      await prefs.setString(_emailKey, phoneOrEmail);
-    } else {
-      await prefs.setString(_phoneKey, phoneOrEmail);
-    }
+    await prefs.setString(_currentUserIdKey, _currentUser!.id);
 
     return _currentUser!;
   }
 
   // Login user
-  static Future<Map<String, dynamic>> loginUser({
+  static Future<UserModel> loginUser({
     required String phoneOrEmail,
     required String password,
   }) async {
@@ -100,30 +95,20 @@ class AuthService {
       throw Exception('Password must be at least 6 characters');
     }
 
-    // In a real app, this would validate against a backend
-    // For demo purposes, we'll create a user if they don't exist
-    final prefs = await SharedPreferences.getInstance();
-    final storedName = prefs.getString(_nameKey);
+    // Authenticate using Hive
+    _currentUser = await HiveDatabaseService.authenticateUser(
+      identifier: phoneOrEmail,
+      password: password,
+    );
 
-    // Create user data
-    _currentUser = {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'name': storedName ?? 'Demo User',
-      'phone': isEmail ? null : phoneOrEmail,
-      'email': isEmail ? phoneOrEmail : null,
-      'password': password,
-      'createdAt': DateTime.now().toIso8601String(),
-      'isVerified': true,
-    };
-
-    await prefs.setBool(_isLoggedInKey, true);
-    await prefs.setString(_userKey, _currentUser.toString());
-    await prefs.setString(_nameKey, _currentUser!['name']);
-    if (isEmail) {
-      await prefs.setString(_emailKey, phoneOrEmail);
-    } else {
-      await prefs.setString(_phoneKey, phoneOrEmail);
+    if (_currentUser == null) {
+      throw Exception('Invalid credentials');
     }
+
+    // Save login state
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isLoggedInKey, true);
+    await prefs.setString(_currentUserIdKey, _currentUser!.id);
 
     return _currentUser!;
   }
@@ -153,9 +138,12 @@ class AuthService {
     if (otp.length == 6 && RegExp(r'^\d+$').hasMatch(otp)) {
       // Mark user as verified
       if (_currentUser != null) {
-        _currentUser!['isVerified'] = true;
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(_userKey, _currentUser.toString());
+        final updatedUser = _currentUser!.copyWith(
+          isEmailVerified: true,
+          isPhoneVerified: true,
+        );
+        await HiveDatabaseService.updateUser(updatedUser);
+        _currentUser = updatedUser;
       }
       return true;
     }
@@ -168,10 +156,7 @@ class AuthService {
     _currentUser = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isLoggedInKey, false);
-    await prefs.remove(_userKey);
-    await prefs.remove(_nameKey);
-    await prefs.remove(_phoneKey);
-    await prefs.remove(_emailKey);
+    await prefs.remove(_currentUserIdKey);
   }
 
   // Load user data from storage
@@ -180,18 +165,9 @@ class AuthService {
     final isLoggedIn = prefs.getBool(_isLoggedInKey) ?? false;
 
     if (isLoggedIn) {
-      final name = prefs.getString(_nameKey);
-      final phone = prefs.getString(_phoneKey);
-      final email = prefs.getString(_emailKey);
-
-      if (name != null) {
-        _currentUser = {
-          'id': DateTime.now().millisecondsSinceEpoch.toString(),
-          'name': name,
-          'phone': phone,
-          'email': email,
-          'isVerified': true,
-        };
+      final userId = prefs.getString(_currentUserIdKey);
+      if (userId != null) {
+        _currentUser = await HiveDatabaseService.getUserById(userId);
       }
     }
   }
@@ -209,22 +185,72 @@ class AuthService {
 
   // Get user display name
   static String getUserDisplayName() {
-    if (_currentUser != null) {
-      return _currentUser!['name'] ?? 'User';
-    }
-    return 'Guest';
+    return _currentUser?.name ?? 'Guest';
   }
 
   // Get user contact info
   static String getUserContact() {
     if (_currentUser != null) {
-      return _currentUser!['phone'] ?? _currentUser!['email'] ?? '';
+      return _currentUser!.phone.isNotEmpty
+          ? _currentUser!.phone
+          : _currentUser!.email;
     }
     return '';
   }
 
   // Check if user is verified
   static bool isUserVerified() {
-    return _currentUser?['isVerified'] ?? false;
+    return _currentUser?.isEmailVerified ?? false;
+  }
+
+  // Biometric authentication methods
+  static Future<bool> authenticateWithBiometric() async {
+    if (_currentUser == null) {
+      throw Exception('No user logged in');
+    }
+
+    // Check if biometric is enabled for this user
+    final biometricEnabled = await HiveDatabaseService.getBiometricPreference(
+      _currentUser!.id,
+    );
+    if (!biometricEnabled) {
+      throw Exception('Biometric authentication is not enabled for this user');
+    }
+
+    // This would integrate with BiometricService
+    // For now, return true for testing
+    return true;
+  }
+
+  // Enable biometric for current user
+  static Future<void> enableBiometric(String biometricType) async {
+    if (_currentUser == null) {
+      throw Exception('No user logged in');
+    }
+
+    await HiveDatabaseService.setBiometricPreference(
+      userId: _currentUser!.id,
+      enabled: true,
+      biometricType: biometricType,
+    );
+  }
+
+  // Disable biometric for current user
+  static Future<void> disableBiometric() async {
+    if (_currentUser == null) {
+      throw Exception('No user logged in');
+    }
+
+    await HiveDatabaseService.setBiometricPreference(
+      userId: _currentUser!.id,
+      enabled: false,
+    );
+  }
+
+  // Check if biometric is enabled for current user
+  static Future<bool> isBiometricEnabled() async {
+    if (_currentUser == null) return false;
+
+    return await HiveDatabaseService.getBiometricPreference(_currentUser!.id);
   }
 }
