@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'visa_payment_screen.dart';
 import 'mpesa_payment_screen.dart';
+import 'bank_transfer_screen.dart';
 
 class CardScreen extends StatefulWidget {
   const CardScreen({super.key});
@@ -820,6 +821,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
       builder: (context) => _TopUpDialog(
         onMpesaPayment: _navigateToMpesaPayment,
         onVisaPayment: _navigateToVisaPayment,
+        onBankTransferPayment: _navigateToBankTransferPayment,
       ),
     );
   }
@@ -875,6 +877,30 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
             ),
       ),
     );
+  }
+
+  void _navigateToBankTransferPayment(double amount) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BankTransferScreen(amount: amount),
+      ),
+    ).then((success) {
+      if (success == true) {
+        setState(() {
+          _cardBalance += amount;
+          _transactions.insert(0, {
+            'id': DateTime.now().millisecondsSinceEpoch.toString(),
+            'type': 'topup',
+            'amount': amount,
+            'description': 'Card Top-up via Bank Transfer',
+            'date': DateTime.now().toIso8601String().split('T')[0],
+            'time': '${DateTime.now().hour}:${DateTime.now().minute}',
+            'status': 'completed',
+          });
+        });
+      }
+    });
   }
 
   void _linkExistingCard() {
@@ -1434,10 +1460,12 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
 class _TopUpDialog extends StatefulWidget {
   final Function(double) onMpesaPayment;
   final Function(double) onVisaPayment;
+  final Function(double) onBankTransferPayment;
 
   const _TopUpDialog({
     required this.onMpesaPayment,
     required this.onVisaPayment,
+    required this.onBankTransferPayment,
   });
 
   @override
@@ -1484,44 +1512,78 @@ class _TopUpDialogState extends State<_TopUpDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            Row(
+            Column(
               children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      final amount = double.tryParse(_topUpController.text);
-                      if (amount != null && amount > 0) {
-                        Navigator.pop(context);
-                        widget.onMpesaPayment(amount);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Please enter a valid amount',
-                              style: GoogleFonts.poppins(),
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    },
-                    icon: Icon(Icons.phone_android, size: 20),
-                    label: Text('M-Pesa', style: GoogleFonts.poppins()),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green[600],
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final amount = double.tryParse(_topUpController.text);
+                          if (amount != null && amount > 0) {
+                            Navigator.pop(context);
+                            widget.onMpesaPayment(amount);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please enter a valid amount',
+                                  style: GoogleFonts.poppins(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(Icons.phone_android, size: 20),
+                        label: Text('M-Pesa', style: GoogleFonts.poppins()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green[600],
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final amount = double.tryParse(_topUpController.text);
+                          if (amount != null && amount > 0) {
+                            Navigator.pop(context);
+                            widget.onVisaPayment(amount);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please enter a valid amount',
+                                  style: GoogleFonts.poppins(),
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(Icons.credit_card, size: 20),
+                        label: Text('Visa', style: GoogleFonts.poppins()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE60012),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
                       final amount = double.tryParse(_topUpController.text);
                       if (amount != null && amount > 0) {
                         Navigator.pop(context);
-                        widget.onVisaPayment(amount);
+                        widget.onBankTransferPayment(amount);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -1534,10 +1596,10 @@ class _TopUpDialogState extends State<_TopUpDialog> {
                         );
                       }
                     },
-                    icon: Icon(Icons.credit_card, size: 20),
-                    label: Text('Visa', style: GoogleFonts.poppins()),
+                    icon: Icon(Icons.account_balance, size: 20),
+                    label: Text('Bank Transfer', style: GoogleFonts.poppins()),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
+                      backgroundColor: Colors.blue[600],
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),

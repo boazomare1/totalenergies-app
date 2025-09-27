@@ -6,7 +6,6 @@ import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
 import 'services/language_service.dart';
 import 'services/language_notifier.dart';
-import 'services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
