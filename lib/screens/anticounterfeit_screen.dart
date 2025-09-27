@@ -18,7 +18,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
   List<Map<String, dynamic>> _verificationHistory = [];
 
   // Image upload variables
-  File? _selectedImage;
+  List<File> _selectedImages = [];
   bool _isUploadingImage = false;
   final ImagePicker _picker = ImagePicker();
 
@@ -860,93 +860,141 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                 ),
                                 const SizedBox(height: 12),
 
-                                // Image Preview or Upload Button
-                                if (_selectedImage != null)
-                                  Container(
+                              // Image Previews or Upload Button
+                              if (_selectedImages.isNotEmpty)
+                                Column(
+                                  children: [
+                                    // Image grid
+                                    GridView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(),
+                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        crossAxisSpacing: 8,
+                                        mainAxisSpacing: 8,
+                                        childAspectRatio: 1,
+                                      ),
+                                      itemCount: _selectedImages.length,
+                                      itemBuilder: (context, index) {
+                                        return Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: Colors.grey[300]!,
+                                                ),
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(8),
+                                                child: Image.file(
+                                                  _selectedImages[index],
+                                                  width: double.infinity,
+                                                  height: double.infinity,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              top: 4,
+                                              right: 4,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _selectedImages.removeAt(index);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding: const EdgeInsets.all(4),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red.withValues(alpha: 0.8),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: const Icon(
+                                                    Icons.close,
+                                                    color: Colors.white,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    // Add more button if less than 3 images
+                                    if (_selectedImages.length < 3)
+                                      GestureDetector(
+                                        onTap: _selectImage,
+                                        child: Container(
+                                          height: 60,
+                                          width: double.infinity,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[50],
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(
+                                              color: Colors.grey[300]!,
+                                              style: BorderStyle.solid,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.add_photo_alternate_outlined,
+                                                size: 24,
+                                                color: Colors.grey[400],
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Text(
+                                                'Add more photos (${_selectedImages.length}/3)',
+                                                style: GoogleFonts.poppins(
+                                                  fontSize: 14,
+                                                  color: Colors.grey[600],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                )
+                              else
+                                GestureDetector(
+                                  onTap: _selectImage,
+                                  child: Container(
                                     height: 120,
                                     width: double.infinity,
                                     decoration: BoxDecoration(
+                                      color: Colors.grey[50],
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                         color: Colors.grey[300]!,
+                                        style: BorderStyle.solid,
                                       ),
                                     ),
-                                    child: Stack(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          child: Image.file(
-                                            _selectedImage!,
-                                            width: double.infinity,
-                                            height: 120,
-                                            fit: BoxFit.cover,
-                                          ),
+                                        Icon(
+                                          Icons.camera_alt_outlined,
+                                          size: 32,
+                                          color: Colors.grey[400],
                                         ),
-                                        Positioned(
-                                          top: 8,
-                                          right: 8,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                _selectedImage = null;
-                                              });
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.all(4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.black.withValues(
-                                                  alpha: 0.6,
-                                                ),
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
-                                            ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Tap to add photos (up to 3)',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 14,
+                                            color: Colors.grey[600],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  )
-                                else
-                                  GestureDetector(
-                                    onTap: _selectImage,
-                                    child: Container(
-                                      height: 120,
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[50],
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                          color: Colors.grey[300]!,
-                                          style: BorderStyle.solid,
-                                        ),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.camera_alt_outlined,
-                                            size: 32,
-                                            color: Colors.grey[400],
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            'Tap to add photo',
-                                            style: GoogleFonts.poppins(
-                                              fontSize: 14,
-                                              color: Colors.grey[600],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
                                   ),
+                                ),
                               ],
                             ),
                           ),
@@ -1025,14 +1073,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isUploadingImage = false;
-        _selectedImage = null; // Clear selected image after submission
+        _selectedImages.clear(); // Clear selected images after submission
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _selectedImage != null
-                ? 'Report submitted with photo successfully!'
+            _selectedImages.isNotEmpty
+                ? 'Report submitted with ${_selectedImages.length} photo(s) successfully!'
                 : 'Report submitted successfully!',
             style: GoogleFonts.poppins(),
           ),
@@ -1044,6 +1092,19 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
   }
 
   void _selectImage() {
+    if (_selectedImages.length >= 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Maximum 3 photos allowed',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       builder:
@@ -1057,6 +1118,13 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  '${_selectedImages.length}/3 photos selected',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -1084,42 +1152,12 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Add a test button
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _testImagePicker();
-                  },
-                  child: Text('Test Image Picker'),
-                ),
               ],
             ),
           ),
     );
   }
 
-  void _testImagePicker() async {
-    try {
-      print('Testing image picker...');
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      print('Test result: ${image?.path}');
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Test result: ${image?.path ?? "No image selected"}'),
-          backgroundColor: image != null ? Colors.green : Colors.orange,
-        ),
-      );
-    } catch (e) {
-      print('Test error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Test error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
 
   Widget _buildImageSourceOption({
     required IconData icon,
@@ -1173,13 +1211,13 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
 
         if (image != null) {
           setState(() {
-            _selectedImage = File(image.path);
+            _selectedImages.add(File(image.path));
           });
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Photo captured successfully!',
+                'Photo captured successfully! (${_selectedImages.length}/3)',
                 style: GoogleFonts.poppins(),
               ),
               backgroundColor: Colors.green,
@@ -1249,13 +1287,13 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
 
         if (image != null) {
           setState(() {
-            _selectedImage = File(image.path);
+            _selectedImages.add(File(image.path));
           });
           
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Photo selected successfully!',
+                'Photo selected successfully! (${_selectedImages.length}/3)',
                 style: GoogleFonts.poppins(),
               ),
               backgroundColor: Colors.green,
@@ -1319,13 +1357,13 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
 
       if (result != null && result.files.single.path != null) {
         setState(() {
-          _selectedImage = File(result.files.single.path!);
+          _selectedImages.add(File(result.files.single.path!));
         });
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Image selected successfully!',
+              'Image selected successfully! (${_selectedImages.length}/3)',
               style: GoogleFonts.poppins(),
             ),
             backgroundColor: Colors.green,
