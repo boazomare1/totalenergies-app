@@ -14,7 +14,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
   late TabController _tabController;
   String _scannedCode = '';
   List<Map<String, dynamic>> _verificationHistory = [];
-  
+
   // Image upload variables
   File? _selectedImage;
   bool _isUploadingImage = false;
@@ -782,8 +782,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
                         TextField(
                           decoration: InputDecoration(
                             labelText: 'Product Name',
@@ -826,7 +827,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Image Upload Section
                         Container(
                           width: double.infinity,
@@ -855,7 +856,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              
+
                               // Image Preview or Upload Button
                               if (_selectedImage != null)
                                 Container(
@@ -863,7 +864,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.grey[300]!),
+                                    border: Border.all(
+                                      color: Colors.grey[300]!,
+                                    ),
                                   ),
                                   child: Stack(
                                     children: [
@@ -888,7 +891,9 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                           child: Container(
                                             padding: const EdgeInsets.all(4),
                                             decoration: BoxDecoration(
-                                              color: Colors.black.withValues(alpha: 0.6),
+                                              color: Colors.black.withValues(
+                                                alpha: 0.6,
+                                              ),
                                               shape: BoxShape.circle,
                                             ),
                                             child: const Icon(
@@ -917,7 +922,8 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                                       ),
                                     ),
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.camera_alt_outlined,
@@ -941,6 +947,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                         ),
                       ],
                     ),
+                    ),
                   ),
                 ),
 
@@ -950,10 +957,13 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                   child: SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _isUploadingImage ? null : () {
-                        Navigator.pop(context);
-                        _submitReport();
-                      },
+                      onPressed:
+                          _isUploadingImage
+                              ? null
+                              : () {
+                                Navigator.pop(context);
+                                _submitReport();
+                              },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[600],
                         foregroundColor: Colors.white,
@@ -962,29 +972,36 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: _isUploadingImage
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      child:
+                          _isUploadingImage
+                              ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
+                                    ),
                                   ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Uploading...',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              )
+                              : Text(
+                                'Submit Report',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Uploading...',
-                                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                                ),
-                              ],
-                            )
-                          : Text(
-                              'Submit Report',
-                              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                            ),
+                              ),
                     ),
                   ),
                 ),
@@ -999,17 +1016,17 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     setState(() {
       _isUploadingImage = true;
     });
-    
+
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isUploadingImage = false;
         _selectedImage = null; // Clear selected image after submission
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _selectedImage != null 
+            _selectedImage != null
                 ? 'Report submitted with photo successfully!'
                 : 'Report submitted successfully!',
             style: GoogleFonts.poppins(),
@@ -1024,44 +1041,45 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
   void _selectImage() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Select Image Source',
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _buildImageSourceOption(
-                  icon: Icons.camera_alt,
-                  label: 'Camera',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImageFromCamera();
-                  },
+                Text(
+                  'Select Image Source',
+                  style: GoogleFonts.poppins(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                _buildImageSourceOption(
-                  icon: Icons.photo_library,
-                  label: 'Gallery',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _pickImageFromGallery();
-                  },
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildImageSourceOption(
+                      icon: Icons.camera_alt,
+                      label: 'Camera',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _pickImageFromCamera();
+                      },
+                    ),
+                    _buildImageSourceOption(
+                      icon: Icons.photo_library,
+                      label: 'Gallery',
+                      onTap: () {
+                        Navigator.pop(context);
+                        _pickImageFromGallery();
+                      },
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 20),
               ],
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -1101,14 +1119,14 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     setState(() {
       _isUploadingImage = true;
     });
-    
+
     // Simulate image selection delay
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         _isUploadingImage = false;
         // For demo purposes, we'll create a placeholder
         // In a real app, you would use image_picker package:
-        // 
+        //
         // final ImagePicker picker = ImagePicker();
         // final XFile? image = await picker.pickImage(source: ImageSource.camera);
         // if (image != null) {
@@ -1118,7 +1136,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
         // }
         _selectedImage = null; // Placeholder - would be actual image file
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -1136,7 +1154,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     setState(() {
       _isUploadingImage = true;
     });
-    
+
     // Simulate image selection delay
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
@@ -1153,7 +1171,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
         // }
         _selectedImage = null; // Placeholder - would be actual image file
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
