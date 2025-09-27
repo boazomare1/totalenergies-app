@@ -95,16 +95,30 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
     },
   ];
 
-  final List<String> _categories = ['All', 'Fast Food', 'Coffee & Cafe', 'Healthy', 'Italian'];
+  final List<String> _categories = [
+    'All',
+    'Fast Food',
+    'Coffee & Cafe',
+    'Healthy',
+    'Italian',
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final filteredOptions = _foodOptions.where((option) {
-      final matchesCategory = _selectedCategory == 'All' || option['category'] == _selectedCategory;
-      final matchesSearch = option['name'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                           option['description'].toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    }).toList();
+    final filteredOptions =
+        _foodOptions.where((option) {
+          final matchesCategory =
+              _selectedCategory == 'All' ||
+              option['category'] == _selectedCategory;
+          final matchesSearch =
+              option['name'].toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ) ||
+              option['description'].toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              );
+          return matchesCategory && matchesSearch;
+        }).toList();
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -145,7 +159,8 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                     label: Text(
                       category,
                       style: GoogleFonts.poppins(
-                        color: isSelected ? Colors.white : const Color(0xFFE60012),
+                        color:
+                            isSelected ? Colors.white : const Color(0xFFE60012),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -159,7 +174,10 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                     selectedColor: const Color(0xFFE60012),
                     checkmarkColor: Colors.white,
                     side: BorderSide(
-                      color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
+                      color:
+                          isSelected
+                              ? const Color(0xFFE60012)
+                              : Colors.grey[300]!,
                     ),
                   ),
                 );
@@ -230,7 +248,10 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                 top: 12,
                 right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: option['isAvailable'] ? Colors.green : Colors.red,
                     borderRadius: BorderRadius.circular(12),
@@ -250,7 +271,10 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(12),
@@ -258,11 +282,7 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 16,
-                      ),
+                      const Icon(Icons.star, color: Colors.amber, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         option['rating'].toString(),
@@ -299,7 +319,10 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE60012).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -373,7 +396,8 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: option['isAvailable'] ? () => _orderFood(option) : null,
+                    onPressed:
+                        option['isAvailable'] ? () => _orderFood(option) : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE60012),
                       foregroundColor: Colors.white,
@@ -409,18 +433,11 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 14,
-            color: Colors.grey[600],
-          ),
+          Icon(icon, size: 14, color: Colors.grey[600]),
           const SizedBox(width: 4),
           Text(
             text,
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -430,39 +447,40 @@ class _BeyondFuelScreenState extends State<BeyondFuelScreen> {
   void _showSearchDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          'Search Food Options',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: TextField(
-          decoration: const InputDecoration(
-            hintText: 'Search by name or description...',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.search),
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Search Food Options',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search by name or description...',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _searchQuery = '';
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text('Clear'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              ),
+            ],
           ),
-          onChanged: (value) {
-            setState(() {
-              _searchQuery = value;
-            });
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _searchQuery = '';
-              });
-              Navigator.pop(context);
-            },
-            child: const Text('Clear'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
     );
   }
 

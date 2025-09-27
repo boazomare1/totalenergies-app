@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AnticounterfeitScreen extends StatefulWidget {
   const AnticounterfeitScreen({super.key});
@@ -18,6 +20,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
   // Image upload variables
   File? _selectedImage;
   bool _isUploadingImage = false;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -785,168 +788,170 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Product Name',
-                            hintText: 'Enter product name',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Product Code',
-                            hintText: 'Enter product code',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Station Location',
-                            hintText: 'Where did you find this product?',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        TextField(
-                          maxLines: 3,
-                          decoration: InputDecoration(
-                            labelText: 'Description',
-                            hintText:
-                                'Describe why you think this is counterfeit',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Image Upload Section
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[300]!),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Attach Photo (Optional)',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black87,
-                                ),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Product Name',
+                              hintText: 'Enter product name',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Upload a photo of the suspicious product to help with investigation',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Product Code',
+                              hintText: 'Enter product code',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              const SizedBox(height: 12),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Station Location',
+                              hintText: 'Where did you find this product?',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            maxLines: 3,
+                            decoration: InputDecoration(
+                              labelText: 'Description',
+                              hintText:
+                                  'Describe why you think this is counterfeit',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
 
-                              // Image Preview or Upload Button
-                              if (_selectedImage != null)
-                                Container(
-                                  height: 120,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Colors.grey[300]!,
-                                    ),
+                          // Image Upload Section
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey[300]!),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Attach Photo (Optional)',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black87,
                                   ),
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.file(
-                                          _selectedImage!,
-                                          width: double.infinity,
-                                          height: 120,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Positioned(
-                                        top: 8,
-                                        right: 8,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              _selectedImage = null;
-                                            });
-                                          },
-                                          child: Container(
-                                            padding: const EdgeInsets.all(4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.black.withValues(
-                                                alpha: 0.6,
-                                              ),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: const Icon(
-                                              Icons.close,
-                                              color: Colors.white,
-                                              size: 16,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Upload a photo of the suspicious product to help with investigation',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
                                   ),
-                                )
-                              else
-                                GestureDetector(
-                                  onTap: _selectImage,
-                                  child: Container(
+                                ),
+                                const SizedBox(height: 12),
+
+                                // Image Preview or Upload Button
+                                if (_selectedImage != null)
+                                  Container(
                                     height: 120,
                                     width: double.infinity,
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[50],
                                       borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                         color: Colors.grey[300]!,
-                                        style: BorderStyle.solid,
                                       ),
                                     ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                    child: Stack(
                                       children: [
-                                        Icon(
-                                          Icons.camera_alt_outlined,
-                                          size: 32,
-                                          color: Colors.grey[400],
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          child: Image.file(
+                                            _selectedImage!,
+                                            width: double.infinity,
+                                            height: 120,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Tap to add photo',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 14,
-                                            color: Colors.grey[600],
+                                        Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                _selectedImage = null;
+                                              });
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.6,
+                                                ),
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 16,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
+                                  )
+                                else
+                                  GestureDetector(
+                                    onTap: _selectImage,
+                                    child: Container(
+                                      height: 120,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[50],
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.grey[300]!,
+                                          style: BorderStyle.solid,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.camera_alt_outlined,
+                                            size: 32,
+                                            color: Colors.grey[400],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Tap to add photo',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1114,74 +1119,146 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     );
   }
 
-  void _pickImageFromCamera() {
-    // Simulate camera selection
-    setState(() {
-      _isUploadingImage = true;
-    });
+  void _pickImageFromCamera() async {
+    try {
+      // Check camera permission
+      final cameraStatus = await Permission.camera.request();
+      if (cameraStatus != PermissionStatus.granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Camera permission is required to take photos',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: 'Settings',
+              textColor: Colors.white,
+              onPressed: () => openAppSettings(),
+            ),
+          ),
+        );
+        return;
+      }
 
-    // Simulate image selection delay
-    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
-        _isUploadingImage = false;
-        // For demo purposes, we'll create a placeholder
-        // In a real app, you would use image_picker package:
-        //
-        // final ImagePicker picker = ImagePicker();
-        // final XFile? image = await picker.pickImage(source: ImageSource.camera);
-        // if (image != null) {
-        //   setState(() {
-        //     _selectedImage = File(image.path);
-        //   });
-        // }
-        _selectedImage = null; // Placeholder - would be actual image file
+        _isUploadingImage = true;
       });
 
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80, // Reduce quality to save space
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+
+      setState(() {
+        _isUploadingImage = false;
+      });
+
+      if (image != null) {
+        setState(() {
+          _selectedImage = File(image.path);
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Photo captured successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isUploadingImage = false;
+      });
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Camera functionality would be implemented with image_picker package',
+            'Error capturing photo: ${e.toString()}',
             style: GoogleFonts.poppins(),
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
         ),
       );
-    });
+    }
   }
 
-  void _pickImageFromGallery() {
-    // Simulate gallery selection
-    setState(() {
-      _isUploadingImage = true;
-    });
+  void _pickImageFromGallery() async {
+    try {
+      // Check storage permission
+      final storageStatus = await Permission.storage.request();
+      if (storageStatus != PermissionStatus.granted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Storage permission is required to access photos',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.orange,
+            action: SnackBarAction(
+              label: 'Settings',
+              textColor: Colors.white,
+              onPressed: () => openAppSettings(),
+            ),
+          ),
+        );
+        return;
+      }
 
-    // Simulate image selection delay
-    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
-        _isUploadingImage = false;
-        // For demo purposes, we'll create a placeholder
-        // In a real app, you would use image_picker package:
-        //
-        // final ImagePicker picker = ImagePicker();
-        // final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-        // if (image != null) {
-        //   setState(() {
-        //     _selectedImage = File(image.path);
-        //   });
-        // }
-        _selectedImage = null; // Placeholder - would be actual image file
+        _isUploadingImage = true;
       });
 
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80, // Reduce quality to save space
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+
+      setState(() {
+        _isUploadingImage = false;
+      });
+
+      if (image != null) {
+        setState(() {
+          _selectedImage = File(image.path);
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Photo selected successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isUploadingImage = false;
+      });
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Gallery functionality would be implemented with image_picker package',
+            'Error selecting photo: ${e.toString()}',
             style: GoogleFonts.poppins(),
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
         ),
       );
-    });
+    }
   }
 }
 
