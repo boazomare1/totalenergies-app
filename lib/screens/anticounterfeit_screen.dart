@@ -14,11 +14,6 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
   String _scannedCode = '';
   List<Map<String, dynamic>> _verificationHistory = [];
 
-  // Scratch code variables
-  String _hiddenCode = 'GAS2024TE001';
-  String _revealedCode = '';
-  bool _isCodeRevealed = false;
-  List<Offset> _scratchPoints = [];
 
   @override
   void initState() {
@@ -188,31 +183,16 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                   ),
                 ),
 
-                // Scratch Code Area - Centered
+                // Centered Title
                 Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Scratch to Verify',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Container(width: 250, child: _buildScratchCodeArea()),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Tap and drag to scratch off the silver coating',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                  child: Text(
+                    'Product Authenticity Verification',
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -241,81 +221,31 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                 Row(
                   children: [
                     Icon(
-                      _isCodeRevealed ? Icons.check_circle : Icons.info_outline,
-                      color:
-                          _isCodeRevealed
-                              ? Colors.green
-                              : const Color(0xFFE60012),
+                      Icons.info_outline,
+                      color: const Color(0xFFE60012),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _isCodeRevealed ? 'Code Revealed' : 'Enter Code',
+                      'Enter Product Code',
                       style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: _isCodeRevealed ? Colors.green : Colors.black87,
+                        color: Colors.black87,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
 
-                // Revealed code display
-                if (_isCodeRevealed)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.green.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Revealed Code:',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.green[700],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _revealedCode,
-                          style: GoogleFonts.poppins(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[700],
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 12),
-
                 // Manual entry field
                 TextField(
-                  controller: TextEditingController(
-                    text: _isCodeRevealed ? _revealedCode : _scannedCode,
-                  ),
                   decoration: InputDecoration(
-                    hintText:
-                        _isCodeRevealed
-                            ? 'Code automatically filled'
-                            : 'Enter product code manually',
+                    hintText: 'Enter product code manually',
                     hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
                     prefixIcon: Icon(
-                      _isCodeRevealed ? Icons.verified : Icons.edit,
-                      color:
-                          _isCodeRevealed
-                              ? Colors.green
-                              : const Color(0xFFE60012),
+                      Icons.edit,
+                      color: const Color(0xFFE60012),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -323,12 +253,7 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color:
-                            _isCodeRevealed
-                                ? Colors.green
-                                : const Color(0xFFE60012),
-                      ),
+                      borderSide: const BorderSide(color: Color(0xFFE60012)),
                     ),
                   ),
                   onChanged: (value) {
@@ -339,71 +264,25 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
                 ),
                 const SizedBox(height: 12),
 
-                // Reset button if code is revealed
-                if (_isCodeRevealed)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _isCodeRevealed = false;
-                              _revealedCode = '';
-                              _scratchPoints.clear();
-                              _scannedCode = '';
-                            });
-                          },
-                          icon: const Icon(Icons.refresh, size: 16),
-                          label: const Text('Reset'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.grey[600],
-                            side: BorderSide(color: Colors.grey[300]!),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed:
-                              _scannedCode.isNotEmpty ? _verifyProduct : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFE60012),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: Text(
-                            'Verify Product',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                else
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed:
-                          _scannedCode.isNotEmpty ? _verifyProduct : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE60012),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: Text(
-                        'Verify Product',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                // Verify button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _scannedCode.isNotEmpty ? _verifyProduct : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE60012),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    child: Text(
+                      'Verify Product',
+                      style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                    ),
                   ),
+                ),
               ],
             ),
           ),
@@ -986,100 +865,6 @@ class _AnticounterfeitScreenState extends State<AnticounterfeitScreen>
     );
   }
 
-  Widget _buildScratchCodeArea() {
-    return GestureDetector(
-      onPanStart: (details) {
-        setState(() {
-          _scratchPoints.add(details.localPosition);
-        });
-      },
-      onPanUpdate: (details) {
-        setState(() {
-          _scratchPoints.add(details.localPosition);
-          _checkScratchProgress();
-        });
-      },
-      onPanEnd: (details) {
-        _checkScratchProgress();
-      },
-      child: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey[600]!, width: 2),
-        ),
-        child: Stack(
-          children: [
-            // Silver coating layer
-            Container(
-              height: 60,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.grey[300]!,
-                    Colors.grey[400]!,
-                    Colors.grey[300]!,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(6),
-              ),
-            ),
-
-            // Scratch effect overlay
-            if (_scratchPoints.isNotEmpty)
-              CustomPaint(
-                size: const Size(double.infinity, 60),
-                painter: ScratchPainter(_scratchPoints),
-              ),
-
-            // Revealed code
-            if (_isCodeRevealed)
-              Center(
-                child: Text(
-                  _hiddenCode,
-                  style: GoogleFonts.poppins(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
-                  ),
-                ),
-              ),
-
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _checkScratchProgress() {
-    // Calculate scratch coverage (simplified)
-    double coverage =
-        _scratchPoints.length / 50.0; // Adjust threshold as needed
-
-    if (coverage > 0.3 && !_isCodeRevealed) {
-      // 30% scratched
-      setState(() {
-        _isCodeRevealed = true;
-        _revealedCode = _hiddenCode;
-      });
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Code revealed! You can now verify it below.',
-            style: GoogleFonts.poppins(),
-          ),
-          backgroundColor: Colors.green,
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-  }
 }
 
 class ScannerFramePainter extends CustomPainter {
@@ -1161,42 +946,3 @@ class ScannerFramePainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class ScratchPainter extends CustomPainter {
-  final List<Offset> scratchPoints;
-
-  ScratchPainter(this.scratchPoints);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint =
-        Paint()
-          ..color = Colors.transparent
-          ..style = PaintingStyle.fill;
-
-    // Create scratch effect by drawing transparent circles at touch points
-    for (int i = 0; i < scratchPoints.length; i++) {
-      final point = scratchPoints[i];
-      canvas.drawCircle(
-        point,
-        8.0, // Scratch radius
-        paint..color = Colors.transparent,
-      );
-    }
-
-    // Draw scratch lines between consecutive points
-    if (scratchPoints.length > 1) {
-      final linePaint =
-          Paint()
-            ..color = Colors.transparent
-            ..strokeWidth = 6.0
-            ..strokeCap = StrokeCap.round;
-
-      for (int i = 1; i < scratchPoints.length; i++) {
-        canvas.drawLine(scratchPoints[i - 1], scratchPoints[i], linePaint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
-}
