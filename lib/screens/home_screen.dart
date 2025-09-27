@@ -476,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Align(
                       alignment: Alignment.bottomRight,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () => _handleBannerTap(index),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: const Color(0xFFE60012),
@@ -626,6 +626,28 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToScreen(Widget screen) {
     Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
+  }
+
+  void _handleBannerTap(int index) {
+    switch (index) {
+      case 0: // Quartz Oil
+        _navigateToScreen(const QuartzOilFinderScreen());
+        break;
+      case 1: // Enjoy Store
+        _navigateToScreen(const StationFinderScreen());
+        break;
+      case 2: // KFC
+        _navigateToScreen(const StationFinderScreen());
+        break;
+      case 3: // TotalEnergies Card
+        _navigateToScreen(const CardScreen());
+        break;
+      case 4: // TotalEnergies Gas
+        _navigateToScreen(const GasProductsScreen());
+        break;
+      default:
+        break;
+    }
   }
 
   void _showPayAtStationModal() {
