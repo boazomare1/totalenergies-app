@@ -18,13 +18,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   final _otpController = TextEditingController();
 
   bool _isLoading = false;
   bool _isOTPSent = false;
   bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
   bool _agreeToTerms = false;
 
   @override
@@ -33,7 +31,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     _otpController.dispose();
     super.dispose();
   }
@@ -156,62 +153,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Password Fields (Two per row)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildInputField(
-                            controller: _passwordController,
-                            label: 'Password',
-                            hint: 'Create password',
-                            icon: Icons.lock_outline,
-                            isPassword: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Password required';
-                              }
-                              if (value.length < 8) {
-                                return 'Min 8 characters';
-                              }
-                              if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                                return 'Need uppercase';
-                              }
-                              if (!RegExp(r'[a-z]').hasMatch(value)) {
-                                return 'Need lowercase';
-                              }
-                              if (!RegExp(r'[0-9]').hasMatch(value)) {
-                                return 'Need number';
-                              }
-                              if (!RegExp(
-                                r'[!@#$%^&*(),.?":{}|<>]',
-                              ).hasMatch(value)) {
-                                return 'Need special char';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildInputField(
-                            controller: _confirmPasswordController,
-                            label: 'Confirm Password',
-                            hint: 'Confirm password',
-                            icon: Icons.lock_outline,
-                            isPassword: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Confirm required';
-                              }
-                              if (value != _passwordController.text) {
-                                return 'Passwords mismatch';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+      // Password Field with Real-time Validation
+      _buildPasswordField(),
                     const SizedBox(height: 20),
 
                     // OTP Section (shown after registration)
@@ -368,23 +311,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Icon(
                             Icons.person_outline,
                             color: Colors.grey[600],
-                            size: 20,
+                            size: 18,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Already have an account? ',
-                            style: GoogleFonts.poppins(
-                              color: Colors.grey[600],
-                              fontSize: 14,
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'Already have an account? ',
+                              style: GoogleFonts.poppins(
+                                color: Colors.grey[600],
+                                fontSize: 13,
+                              ),
                             ),
                           ),
                           TextButton(
                             onPressed: _goToLogin,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             child: Text(
                               'Sign In',
                               style: GoogleFonts.poppins(
                                 color: const Color(0xFFE60012),
-                                fontSize: 14,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -398,6 +348,132 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Password',
+          style: GoogleFonts.poppins(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _passwordController,
+          obscureText: !_isPasswordVisible,
+          onChanged: (value) {
+            setState(() {}); // Trigger rebuild for validation indicators
+          },
+          decoration: InputDecoration(
+            hintText: 'Create a strong password',
+            prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFFE60012)),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: Colors.grey[400],
+              ),
+              onPressed: () {
+                setState(() {
+                  _isPasswordVisible = !_isPasswordVisible;
+                });
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFE60012), width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey[50],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _buildPasswordRequirements(),
+      ],
+    );
+  }
+
+  Widget _buildPasswordRequirements() {
+    final password = _passwordController.text;
+    
+    final requirements = [
+      {
+        'text': 'At least 8 characters',
+        'met': password.length >= 8,
+      },
+      {
+        'text': 'Contains uppercase letter',
+        'met': RegExp(r'[A-Z]').hasMatch(password),
+      },
+      {
+        'text': 'Contains lowercase letter',
+        'met': RegExp(r'[a-z]').hasMatch(password),
+      },
+      {
+        'text': 'Contains number',
+        'met': RegExp(r'[0-9]').hasMatch(password),
+      },
+      {
+        'text': 'Contains special character',
+        'met': RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password),
+      },
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Password Requirements:',
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...requirements.map((req) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              children: [
+                Icon(
+                  req['met'] as bool ? Icons.check_circle : Icons.radio_button_unchecked,
+                  size: 16,
+                  color: req['met'] as bool ? Colors.green : Colors.grey[400],
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  req['text'] as String,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: req['met'] as bool ? Colors.green[700] : Colors.grey[600],
+                    fontWeight: req['met'] as bool ? FontWeight.w500 : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+          )),
+        ],
       ),
     );
   }
@@ -425,41 +501,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          obscureText:
-              isPassword
-                  ? (isPassword && controller == _passwordController
-                      ? !_isPasswordVisible
-                      : !_isConfirmPasswordVisible)
-                  : false,
+          obscureText: isPassword ? !_isPasswordVisible : false,
           keyboardType: keyboardType,
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
             prefixIcon: Icon(icon, color: const Color(0xFFE60012)),
-            suffixIcon:
-                isPassword
-                    ? IconButton(
-                      icon: Icon(
-                        (isPassword && controller == _passwordController
-                                ? _isPasswordVisible
-                                : _isConfirmPasswordVisible)
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.grey[400],
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          if (controller == _passwordController) {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          } else {
-                            _isConfirmPasswordVisible =
-                                !_isConfirmPasswordVisible;
-                          }
-                        });
-                      },
-                    )
-                    : null,
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey[400],
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  )
+                : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey[300]!),

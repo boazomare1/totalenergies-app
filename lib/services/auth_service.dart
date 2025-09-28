@@ -64,8 +64,11 @@ class AuthService {
     // Hash password for security
     String hashedPassword = _hashPassword(password);
 
-    // Check if user already exists in secure storage
-    if (await SecureStorageService.userExists(phoneOrEmail)) {
+    // Check if user already exists in both secure storage and Hive
+    bool existsInSecure = await SecureStorageService.userExists(phoneOrEmail);
+    bool existsInHive = await HiveDatabaseService.userExists(phoneOrEmail);
+    
+    if (existsInSecure || existsInHive) {
       throw Exception(
         'User with this ${isEmail ? 'email' : 'phone number'} already exists',
       );
