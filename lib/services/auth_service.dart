@@ -2,7 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'hive_database_service.dart';
-import 'cloud_storage_service.dart';
+import 'secure_storage_service.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -64,15 +64,15 @@ class AuthService {
     // Hash password for security
     String hashedPassword = _hashPassword(password);
 
-    // Check if user already exists in cloud storage
-    if (await CloudStorageService.userExists(phoneOrEmail)) {
+    // Check if user already exists in secure storage
+    if (await SecureStorageService.userExists(phoneOrEmail)) {
       throw Exception(
         'User with this ${isEmail ? 'email' : 'phone number'} already exists',
       );
     }
 
-    // Create user in cloud storage
-    _currentUser = await CloudStorageService.createUser(
+    // Create user in secure storage
+    _currentUser = await SecureStorageService.createUser(
       name: name,
       email: isEmail ? phoneOrEmail : '',
       phone: isEmail ? '' : phoneOrEmail,
@@ -129,13 +129,13 @@ class AuthService {
     // Hash the provided password for comparison
     String hashedPassword = _hashPassword(password);
 
-    // Authenticate using cloud storage first, then fallback to local
-    _currentUser = await CloudStorageService.authenticateUser(
+    // Authenticate using secure storage first, then fallback to local
+    _currentUser = await SecureStorageService.authenticateUser(
       identifier: phoneOrEmail,
       password: hashedPassword,
     );
 
-    // Fallback to local storage if cloud fails
+    // Fallback to local storage if secure storage fails
     if (_currentUser == null) {
       _currentUser = await HiveDatabaseService.authenticateUser(
         identifier: phoneOrEmail,
@@ -152,9 +152,9 @@ class AuthService {
       throw Exception('Account has been deactivated. Please contact support.');
     }
 
-    // Update last login time in cloud storage
+    // Update last login time in secure storage
     final updatedUser = _currentUser!.copyWith(lastLoginAt: DateTime.now());
-    await CloudStorageService.updateUser(updatedUser);
+    await SecureStorageService.updateUser(updatedUser);
     await HiveDatabaseService.updateUser(updatedUser);
     _currentUser = updatedUser;
 
@@ -223,8 +223,8 @@ class AuthService {
     if (isLoggedIn) {
       final userId = prefs.getString(_currentUserIdKey);
       if (userId != null) {
-        // Try cloud storage first, then fallback to local
-        _currentUser = await CloudStorageService.getUserById(userId);
+        // Try secure storage first, then fallback to local
+        _currentUser = await SecureStorageService.getUserById(userId);
         if (_currentUser == null) {
           _currentUser = await HiveDatabaseService.getUserById(userId);
         }
@@ -313,7 +313,7 @@ class AuthService {
       throw Exception('No user logged in');
     }
 
-    await CloudStorageService.setBiometricPreference(
+    await SecureStorageService.setBiometricPreference(
       userId: _currentUser!.id,
       enabled: true,
       biometricType: biometricType,
@@ -331,7 +331,7 @@ class AuthService {
       throw Exception('No user logged in');
     }
 
-    await CloudStorageService.setBiometricPreference(
+    await SecureStorageService.setBiometricPreference(
       userId: _currentUser!.id,
       enabled: false,
     );
@@ -345,8 +345,8 @@ class AuthService {
   static Future<bool> isBiometricEnabled() async {
     if (_currentUser == null) return false;
 
-    // Try cloud storage first, then fallback to local
-    bool enabled = await CloudStorageService.getBiometricPreference(_currentUser!.id);
+    // Try secure storage first, then fallback to local
+    bool enabled = await SecureStorageService.getBiometricPreference(_currentUser!.id);
     if (!enabled) {
       enabled = await HiveDatabaseService.getBiometricPreference(_currentUser!.id);
     }
