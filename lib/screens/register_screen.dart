@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
+import 'terms_of_service_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,7 +15,8 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _registerFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _phoneEmailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _otpController = TextEditingController();
@@ -27,7 +30,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _phoneEmailController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _otpController.dispose();
@@ -104,57 +108,109 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Phone/Email Field
-                    _buildInputField(
-                      controller: _phoneEmailController,
-                      label: 'Phone Number or Email',
-                      hint: 'Enter your phone number or email',
-                      icon: Icons.contact_phone_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your phone number or email';
-                        }
-                        return null;
-                      },
+                    // Phone and Email Fields (Two per row)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _phoneController,
+                            label: 'Phone Number',
+                            hint: 'Enter your phone number',
+                            icon: Icons.phone_outlined,
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Phone required';
+                              }
+                              if (!RegExp(
+                                r'^\+?[\d\s\-\(\)]{10,}$',
+                              ).hasMatch(value)) {
+                                return 'Invalid phone';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _emailController,
+                            label: 'Email Address',
+                            hint: 'Enter your email',
+                            icon: Icons.email_outlined,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Email required';
+                              }
+                              if (!RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              ).hasMatch(value)) {
+                                return 'Invalid email';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
 
-                    // Password Field
-                    _buildInputField(
-                      controller: _passwordController,
-                      label: 'Password',
-                      hint: 'Create a strong password',
-                      icon: Icons.lock_outline,
-                      isPassword: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a password';
-                        }
-                        if (value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Confirm Password Field
-                    _buildInputField(
-                      controller: _confirmPasswordController,
-                      label: 'Confirm Password',
-                      hint: 'Confirm your password',
-                      icon: Icons.lock_outline,
-                      isPassword: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
-                        }
-                        if (value != _passwordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
+                    // Password Fields (Two per row)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _passwordController,
+                            label: 'Password',
+                            hint: 'Create password',
+                            icon: Icons.lock_outline,
+                            isPassword: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Password required';
+                              }
+                              if (value.length < 8) {
+                                return 'Min 8 characters';
+                              }
+                              if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                return 'Need uppercase';
+                              }
+                              if (!RegExp(r'[a-z]').hasMatch(value)) {
+                                return 'Need lowercase';
+                              }
+                              if (!RegExp(r'[0-9]').hasMatch(value)) {
+                                return 'Need number';
+                              }
+                              if (!RegExp(
+                                r'[!@#$%^&*(),.?":{}|<>]',
+                              ).hasMatch(value)) {
+                                return 'Need special char';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildInputField(
+                            controller: _confirmPasswordController,
+                            label: 'Confirm Password',
+                            hint: 'Confirm password',
+                            icon: Icons.lock_outline,
+                            isPassword: true,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Confirm required';
+                              }
+                              if (value != _passwordController.text) {
+                                return 'Passwords mismatch';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
 
@@ -181,46 +237,81 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     // Terms and Conditions
                     if (!_isOTPSent) ...[
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: _agreeToTerms,
-                            onChanged: (value) {
-                              setState(() {
-                                _agreeToTerms = value ?? false;
-                              });
-                            },
-                            activeColor: const Color(0xFFE60012),
-                          ),
-                          Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                style: GoogleFonts.poppins(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: _agreeToTerms,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _agreeToTerms = value ?? false;
+                                    });
+                                  },
+                                  activeColor: const Color(0xFFE60012),
                                 ),
-                                children: [
-                                  const TextSpan(text: 'I agree to the '),
-                                  TextSpan(
-                                    text: 'Terms of Service',
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFFE60012),
-                                      fontWeight: FontWeight.w600,
+                                Expanded(
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: GoogleFonts.poppins(
+                                        color: Colors.grey[700],
+                                        fontSize: 14,
+                                      ),
+                                      children: [
+                                        const TextSpan(text: 'I agree to the '),
+                                        WidgetSpan(
+                                          child: GestureDetector(
+                                            onTap: () => _showTermsOfService(),
+                                            child: Text(
+                                              'Terms of Service',
+                                              style: GoogleFonts.poppins(
+                                                color: const Color(0xFFE60012),
+                                                fontWeight: FontWeight.w600,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const TextSpan(text: ' and '),
+                                        WidgetSpan(
+                                          child: GestureDetector(
+                                            onTap: () => _showPrivacyPolicy(),
+                                            child: Text(
+                                              'Privacy Policy',
+                                              style: GoogleFonts.poppins(
+                                                color: const Color(0xFFE60012),
+                                                fontWeight: FontWeight.w600,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  const TextSpan(text: ' and '),
-                                  TextSpan(
-                                    text: 'Privacy Policy',
-                                    style: GoogleFonts.poppins(
-                                      color: const Color(0xFFE60012),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Please read our Terms of Service and Privacy Policy before creating your account. By checking the box above, you acknowledge that you have read and agree to be bound by these documents.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                                fontStyle: FontStyle.italic,
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 30),
                     ],
@@ -394,14 +485,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
+      // Use email as primary identifier if provided, otherwise use phone
+      String primaryIdentifier =
+          _emailController.text.trim().isNotEmpty
+              ? _emailController.text.trim()
+              : _phoneController.text.trim();
+
       await AuthService.registerUser(
-        phoneOrEmail: _phoneEmailController.text.trim(),
+        phoneOrEmail: primaryIdentifier,
         name: _nameController.text.trim(),
         password: _passwordController.text,
       );
 
-      // Send OTP
-      await AuthService.sendOTP(_phoneEmailController.text.trim());
+      // Send OTP to both phone and email if both are provided
+      String contactInfo = '';
+      if (_phoneController.text.trim().isNotEmpty &&
+          _emailController.text.trim().isNotEmpty) {
+        contactInfo =
+            '${_phoneController.text.trim()} and ${_emailController.text.trim()}';
+        await AuthService.sendOTP(_phoneController.text.trim());
+        await AuthService.sendOTP(_emailController.text.trim());
+      } else if (_phoneController.text.trim().isNotEmpty) {
+        contactInfo = _phoneController.text.trim();
+        await AuthService.sendOTP(_phoneController.text.trim());
+      } else if (_emailController.text.trim().isNotEmpty) {
+        contactInfo = _emailController.text.trim();
+        await AuthService.sendOTP(_emailController.text.trim());
+      }
 
       if (mounted) {
         setState(() {
@@ -411,9 +521,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Verification code sent to ${_phoneEmailController.text}',
-            ),
+            content: Text('Verification code sent to $contactInfo'),
             backgroundColor: Colors.green,
           ),
         );
@@ -438,8 +546,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
+      // Try verification with both phone and email if both are provided
+      String primaryIdentifier =
+          _emailController.text.trim().isNotEmpty
+              ? _emailController.text.trim()
+              : _phoneController.text.trim();
+
       bool isVerified = await AuthService.verifyOTP(
-        _phoneEmailController.text.trim(),
+        primaryIdentifier,
         _otpController.text.trim(),
       );
 
@@ -476,6 +590,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+  }
+
+  void _showTermsOfService() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TermsOfServiceScreen()),
+    );
+  }
+
+  void _showPrivacyPolicy() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
     );
   }
 }

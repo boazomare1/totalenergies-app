@@ -40,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Check if user is already logged in
       final isLoggedIn = await AuthService.isLoggedIn();
       final hasBiometricEnabled = await AuthService.isBiometricEnabled();
+      final currentUser = AuthService.getCurrentUser();
 
       // Check if device has fingerprint capability
       final biometricInfo = await BiometricService.getBiometricInfo();
@@ -57,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       print('- Is logged in: $isLoggedIn');
       print('- Has biometric enabled: $hasBiometricEnabled');
       print('- Has fingerprint: $hasFingerprint');
+      print('- Current user: ${currentUser?.name}');
 
       setState(() {
         _isFirstTimeLogin = !isLoggedIn;
@@ -132,7 +134,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      _isFirstTimeLogin ? 'Welcome' : 'Welcome Back',
+                      _isFirstTimeLogin
+                          ? 'Welcome'
+                          : 'Welcome Back, ${AuthService.getUserDisplayName()}',
                       style: GoogleFonts.poppins(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -394,8 +398,8 @@ class _LoginScreenState extends State<LoginScreen> {
               if (value == null || value.isEmpty) {
                 return 'Please enter your password';
               }
-              if (value.length < 6) {
-                return 'Password must be at least 6 characters';
+              if (value.length < 8) {
+                return 'Password must be at least 8 characters';
               }
               return null;
             },
@@ -572,8 +576,8 @@ class _LoginScreenState extends State<LoginScreen> {
             if (value == null || value.isEmpty) {
               return 'Please enter your password';
             }
-            if (value.length < 6) {
-              return 'Password must be at least 6 characters';
+            if (value.length < 8) {
+              return 'Password must be at least 8 characters';
             }
             return null;
           },

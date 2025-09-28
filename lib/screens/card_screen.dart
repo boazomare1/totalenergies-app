@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'visa_payment_screen.dart';
 import 'mpesa_payment_screen.dart';
 import 'bank_transfer_screen.dart';
+import '../services/auth_service.dart';
 
 class CardScreen extends StatefulWidget {
   const CardScreen({super.key});
@@ -16,6 +17,9 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   String _selectedCardType = 'virtual';
   String _selectedApplicationType = 'individual';
   double _cardBalance = 2500.0;
+  bool _hideBalance = false;
+  bool _isLoggedIn = false;
+  String _userName = 'Guest';
   final List<Map<String, dynamic>> _transactions = [];
   final TextEditingController _topUpController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -30,6 +34,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _loadCardData();
+    _checkAuthStatus();
   }
 
   @override
@@ -79,6 +84,20 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     });
   }
 
+  Future<void> _checkAuthStatus() async {
+    try {
+      final isLoggedIn = await AuthService.isLoggedIn();
+      final currentUser = AuthService.getCurrentUser();
+
+      setState(() {
+        _isLoggedIn = isLoggedIn;
+        _userName = currentUser?.name ?? 'Guest';
+      });
+    } catch (e) {
+      print('Error checking auth status: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,7 +106,7 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
         backgroundColor: const Color(0xFFE60012),
         elevation: 0,
         title: Text(
-          'My Card',
+          _isLoggedIn ? 'My Card - $_userName' : 'My Card',
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -174,13 +193,37 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'KSh ${_cardBalance.toStringAsFixed(2)}',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _hideBalance
+                            ? '••••••••'
+                            : 'KSh ${_cardBalance.toStringAsFixed(2)}',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (_isLoggedIn) ...[
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _hideBalance = !_hideBalance;
+                          });
+                        },
+                        child: Icon(
+                          _hideBalance
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -535,7 +578,9 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'KSh ${_cardBalance.toStringAsFixed(2)}',
+                    _hideBalance
+                        ? '••••••••'
+                        : 'KSh ${_cardBalance.toStringAsFixed(2)}',
                     style: GoogleFonts.poppins(
                       color: const Color(0xFFE60012),
                       fontSize: 20,
@@ -818,11 +863,12 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   void _topUpCard() {
     showDialog(
       context: context,
-      builder: (context) => _TopUpDialog(
-        onMpesaPayment: _navigateToMpesaPayment,
-        onVisaPayment: _navigateToVisaPayment,
-        onBankTransferPayment: _navigateToBankTransferPayment,
-      ),
+      builder:
+          (context) => _TopUpDialog(
+            onMpesaPayment: _navigateToMpesaPayment,
+            onVisaPayment: _navigateToVisaPayment,
+            onBankTransferPayment: _navigateToBankTransferPayment,
+          ),
     );
   }
 

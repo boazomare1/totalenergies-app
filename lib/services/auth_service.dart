@@ -1,4 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
 import 'hive_database_service.dart';
 import '../models/user_model.dart';
 
@@ -51,18 +53,38 @@ class AuthService {
       throw Exception('Invalid phone number format');
     }
 
+    // Validate password strength
+    if (!_isStrongPassword(password)) {
+      throw Exception(
+        'Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character',
+      );
+    }
+
+    // Hash password for security
+    String hashedPassword = _hashPassword(password);
+
+    // Check if user already exists
+    if (await HiveDatabaseService.userExists(phoneOrEmail)) {
+      throw Exception(
+        'User with this ${isEmail ? 'email' : 'phone number'} already exists',
+      );
+    }
+
     // Create user using Hive
     _currentUser = await HiveDatabaseService.createUser(
       name: name,
       email: isEmail ? phoneOrEmail : '',
       phone: isEmail ? '' : phoneOrEmail,
-      password: password, // In real app, this would be hashed
+      password: hashedPassword,
     );
 
     // Save login state
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isLoggedInKey, true);
     await prefs.setString(_currentUserIdKey, _currentUser!.id);
+
+    // Log successful registration
+    print('User registered successfully: ${_currentUser!.id}');
 
     return _currentUser!;
   }
@@ -95,20 +117,36 @@ class AuthService {
       throw Exception('Password must be at least 6 characters');
     }
 
+    // Hash the provided password for comparison
+    String hashedPassword = _hashPassword(password);
+
     // Authenticate using Hive
     _currentUser = await HiveDatabaseService.authenticateUser(
       identifier: phoneOrEmail,
-      password: password,
+      password: hashedPassword,
     );
 
     if (_currentUser == null) {
       throw Exception('Invalid credentials');
     }
 
+    // Check if account is active
+    if (!_currentUser!.isActive) {
+      throw Exception('Account has been deactivated. Please contact support.');
+    }
+
+    // Update last login time
+    final updatedUser = _currentUser!.copyWith(lastLoginAt: DateTime.now());
+    await HiveDatabaseService.updateUser(updatedUser);
+    _currentUser = updatedUser;
+
     // Save login state
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isLoggedInKey, true);
     await prefs.setString(_currentUserIdKey, _currentUser!.id);
+
+    // Log successful login
+    print('User logged in successfully: ${_currentUser!.id}');
 
     return _currentUser!;
   }
@@ -181,6 +219,31 @@ class AuthService {
     // Accept various phone formats
     String cleaned = phone.replaceAll(RegExp(r'[^\d+]'), '');
     return cleaned.length >= 10 && cleaned.length <= 15;
+  }
+
+  static bool _isStrongPassword(String password) {
+    // Password must be at least 8 characters and contain:
+    // - At least one uppercase letter
+    // - At least one lowercase letter
+    // - At least one digit
+    // - At least one special character
+    if (password.length < 8) return false;
+
+    bool hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    bool hasLowercase = password.contains(RegExp(r'[a-z]'));
+    bool hasDigits = password.contains(RegExp(r'[0-9]'));
+    bool hasSpecialCharacters = password.contains(
+      RegExp(r'[!@#$%^&*(),.?":{}|<>]'),
+    );
+
+    return hasUppercase && hasLowercase && hasDigits && hasSpecialCharacters;
+  }
+
+  static String _hashPassword(String password) {
+    // Use SHA-256 for password hashing
+    var bytes = utf8.encode(password);
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 
   // Get user display name

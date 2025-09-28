@@ -35,6 +35,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String _cardNumber = '**** **** **** 1234';
   bool _isLoadingDashboard = true;
   bool _isLoggedIn = false;
+  bool _hideBalance = false;
+  String _userName = 'Guest';
 
   @override
   void initState() {
@@ -133,9 +135,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _checkAuthStatus() async {
     try {
       final isLoggedIn = await AuthService.isLoggedIn();
+      final currentUser = AuthService.getCurrentUser();
+
       if (mounted) {
         setState(() {
           _isLoggedIn = isLoggedIn;
+          _userName = currentUser?.name ?? 'Guest';
         });
       }
     } catch (e) {
@@ -191,7 +196,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  _getTimeBasedGreeting(context),
+                                  _isLoggedIn
+                                      ? '${_getTimeBasedGreeting(context)}, $_userName'
+                                      : _getTimeBasedGreeting(context),
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -1028,7 +1035,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   else
                     Text(
-                      'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
+                      _hideBalance
+                          ? '••••••••'
+                          : 'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontSize: 24,
@@ -1037,37 +1046,82 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                 ],
               ),
-              GestureDetector(
-                onTap: _refreshDashboard,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.refresh,
-                        color: const Color(0xFFE60012),
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Refresh',
-                        style: GoogleFonts.poppins(
-                          color: const Color(0xFFE60012),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+              Row(
+                children: [
+                  if (_isLoggedIn) ...[
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _hideBalance = !_hideBalance;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _hideBalance
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              _hideBalance ? 'Show' : 'Hide',
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  GestureDetector(
+                    onTap: _refreshDashboard,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.refresh,
+                            color: const Color(0xFFE60012),
+                            size: 16,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Refresh',
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFFE60012),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

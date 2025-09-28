@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'analytics_screen.dart';
 import 'language_selection_screen.dart';
+import 'terms_of_service_screen.dart';
+import 'privacy_policy_screen.dart';
 import '../services/language_service.dart';
+import '../services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -20,13 +23,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _locationServices = true;
   bool _biometricAuth = false;
   bool _darkMode = false;
+  bool _hideBalance = false;
   String _selectedLanguage = 'English';
   String _selectedCurrency = 'KSh';
+  bool _isLoggedIn = false;
+  String _userName = 'Guest';
 
   @override
   void initState() {
     super.initState();
     _loadCurrentLanguage();
+    _loadUserData();
   }
 
   Future<void> _loadCurrentLanguage() async {
@@ -34,6 +41,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _selectedLanguage = LanguageService.getLanguageName(languageCode);
     });
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final isLoggedIn = await AuthService.isLoggedIn();
+      final currentUser = AuthService.getCurrentUser();
+      final biometricEnabled = await AuthService.isBiometricEnabled();
+
+      setState(() {
+        _isLoggedIn = isLoggedIn;
+        _userName = currentUser?.name ?? 'Guest';
+        _biometricAuth = biometricEnabled;
+      });
+    } catch (e) {
+      print('Error loading user data: $e');
+    }
   }
 
   @override
@@ -133,9 +156,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Biometric Authentication',
             'Use fingerprint or face ID for secure access',
             _biometricAuth,
-            (value) => setState(() => _biometricAuth = value),
+            (value) => _toggleBiometric(value),
             Icons.fingerprint,
           ),
+          if (_isLoggedIn) ...[
+            _buildSwitchTile(
+              'Hide Balance',
+              'Hide balance information for privacy',
+              _hideBalance,
+              (value) => setState(() => _hideBalance = value),
+              Icons.visibility_off,
+            ),
+          ],
           _buildListTile(
             'Privacy Policy',
             'View our privacy policy',
@@ -187,6 +219,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             () => _showLicenses(),
           ),
 
+          // Logout Section (if logged in)
+          if (_isLoggedIn) ...[
+            _buildSectionHeader('Account'),
+            _buildLogoutTile(),
+          ],
+
           const SizedBox(height: 20),
         ],
       ),
@@ -235,28 +273,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'John Doe',
+                  _userName,
                   style: GoogleFonts.poppins(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  'john.doe@example.com',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                if (_isLoggedIn) ...[
+                  Text(
+                    AuthService.getUserContact(),
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '+254 712 345 678',
-                  style: GoogleFonts.poppins(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Verified',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
+                ] else ...[
+                  Text(
+                    'Guest User',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -418,16 +477,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showPrivacyPolicy() {
-    _showInfoDialog(
-      'Privacy Policy',
-      'Our privacy policy outlines how we collect, use, and protect your personal information.',
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
     );
   }
 
   void _showTermsOfService() {
-    _showInfoDialog(
-      'Terms of Service',
-      'These terms govern your use of the TotalEnergies mobile application.',
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const TermsOfServiceScreen()),
     );
   }
 
@@ -464,6 +523,149 @@ class _SettingsScreenState extends State<SettingsScreen> {
       'Open Source Licenses',
       'This app uses various open source libraries. View licenses for more details.',
     );
+  }
+
+  Widget _buildLogoutTile() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        title: Text(
+          'Logout',
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.red,
+          ),
+        ),
+        subtitle: Text(
+          'Sign out of your account',
+          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+        ),
+        leading: Icon(Icons.logout, color: Colors.red),
+        onTap: _confirmLogout,
+      ),
+    );
+  }
+
+  Future<void> _toggleBiometric(bool value) async {
+    try {
+      if (value) {
+        // Enable biometric authentication
+        await AuthService.enableBiometric('fingerprint');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Biometric authentication enabled successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        // Disable biometric authentication
+        await AuthService.disableBiometric();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Biometric authentication disabled.',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      setState(() {
+        _biometricAuth = value;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _confirmLogout() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Logout',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Are you sure you want to logout?',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Cancel',
+                  style: GoogleFonts.poppins(color: Colors.grey[600]),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context); // Close dialog
+                  await _logout();
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: Text(
+                  'Logout',
+                  style: GoogleFonts.poppins(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> _logout() async {
+    try {
+      await AuthService.logout();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Logged out successfully!',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to login screen
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Error logging out: ${e.toString()}',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _showInfoDialog(String title, String content) {
