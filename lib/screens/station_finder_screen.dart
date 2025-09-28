@@ -568,15 +568,22 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                   },
                   icon: const Icon(
                     Icons.info_outline,
-                    size: 12,
+                    size: 16,
                     color: Color(0xFFE60012),
                   ),
-                  label: const Text('Details', style: TextStyle(fontSize: 10)),
+                  label: Text(
+                    'Details', 
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFFE60012),
+                    ),
+                  ),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFFE60012),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 4,
+                      horizontal: 8,
+                      vertical: 6,
                     ),
                   ),
                 ),
@@ -592,7 +599,14 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                             }
                             : null,
                     icon: const Icon(Icons.directions, size: 16),
-                    label: const Text('Go', style: TextStyle(fontSize: 12)),
+                    label: Text(
+                      'Go', 
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE60012),
                       foregroundColor: Colors.white,
