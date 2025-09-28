@@ -18,11 +18,7 @@ class BiometricService {
           availableBiometrics.contains(BiometricType.fingerprint) ||
           availableBiometrics.contains(BiometricType.strong);
 
-      print('Fingerprint check:');
-      print('- Can check biometrics: $isAvailable');
-      print('- Device supported: $isDeviceSupported');
-      print('- Has enrolled biometrics: $hasEnrolledBiometrics');
-      print('- Has fingerprint: $hasFingerprint');
+      // Debug info removed for cleaner logs
 
       return isAvailable &&
           isDeviceSupported &&
@@ -51,7 +47,7 @@ class BiometricService {
     try {
       // First check if biometric is available
       final isAvailable = await isBiometricAvailable();
-      print('Biometric available: $isAvailable');
+      // Debug info removed for cleaner logs
       
       if (!isAvailable) {
         throw Exception('Fingerprint authentication is not available on this device');
@@ -66,7 +62,7 @@ class BiometricService {
         ),
       );
 
-      print('Biometric authentication result: $result');
+      // Debug info removed for cleaner logs
       return result;
     } on PlatformException catch (e) {
       print(

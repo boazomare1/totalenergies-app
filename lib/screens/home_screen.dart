@@ -16,6 +16,7 @@ import 'support_center_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/dashboard_service.dart';
 import '../services/auth_service.dart';
+import '../services/otp_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,8 +28,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentBannerIndex = 0;
   late PageController _bannerController;
-  bool _hasShownNewsletterPopup = false;
-  String _newsletterPreference = 'show'; // 'show', 'later', 'never'
+  // Newsletter preferences now handled by OTPService
 
   // Dashboard data
   double _fuelCardBalance = 0.0;
@@ -47,17 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadDashboardData();
     _checkAuthStatus();
 
-    // Reset preference after 5 minutes for "Show Later" users (for testing)
-    if (_newsletterPreference == 'later') {
-      Future.delayed(const Duration(minutes: 5), () {
-        if (mounted) {
-          setState(() {
-            _newsletterPreference = 'show';
-            _hasShownNewsletterPopup = false;
-          });
-        }
-      });
-    }
+    // OTP popup preferences are now handled by OTPService
   }
 
   @override
@@ -868,8 +858,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showNewsletterOptIn() {
-    if (!_hasShownNewsletterPopup && _newsletterPreference == 'show') {
+  void _showNewsletterOptIn() async {
+    // Check if we should show the popup based on OTP service preferences
+    final shouldShow = await OTPService.shouldShowOTPPopup();
+    
+    if (shouldShow) {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           showDialog(
@@ -877,34 +870,22 @@ class _HomeScreenState extends State<HomeScreen> {
             barrierDismissible: false,
             builder:
                 (context) => _NewsletterOptInDialog(
-                  onOptIn: () {
-                    setState(() {
-                      _hasShownNewsletterPopup = true;
-                      _newsletterPreference = 'never';
-                    });
+                  onOptIn: () async {
+                    await OTPService.dismissOTPPopup();
                     Navigator.pop(context);
                     _showOptInSuccess();
                   },
-                  onSkip: () {
-                    setState(() {
-                      _hasShownNewsletterPopup = true;
-                      _newsletterPreference = 'never';
-                    });
+                  onSkip: () async {
+                    await OTPService.dismissOTPPopup();
                     Navigator.pop(context);
                   },
-                  onLater: () {
-                    setState(() {
-                      _hasShownNewsletterPopup = true;
-                      _newsletterPreference = 'later';
-                    });
+                  onLater: () async {
+                    await OTPService.dismissOTPPopup();
                     Navigator.pop(context);
                     _showLaterMessage();
                   },
-                  onNever: () {
-                    setState(() {
-                      _hasShownNewsletterPopup = true;
-                      _newsletterPreference = 'never';
-                    });
+                  onNever: () async {
+                    await OTPService.dismissOTPPopup();
                     Navigator.pop(context);
                   },
                 ),
@@ -931,11 +912,11 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          AppLocalizations.of(context)!.noProblemLater,
+          'No problem! We\'ll show you this again in 15 minutes.',
           style: GoogleFonts.poppins(),
         ),
         backgroundColor: Colors.orange,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
@@ -1013,40 +994,43 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Available Balance',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  if (_isLoadingDashboard)
-                    const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  else
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      _hideBalance
-                          ? '••••••••'
-                          : 'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
+                      'Available Balance',
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        color: Colors.white.withValues(alpha: 0.8),
+                        fontSize: 14,
                       ),
                     ),
-                ],
+                    const SizedBox(height: 4),
+                    if (_isLoadingDashboard)
+                      const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    else
+                      Text(
+                        _hideBalance
+                            ? '••••••••'
+                            : 'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                  ],
+                ),
               ),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   if (_isLoggedIn) ...[
                     GestureDetector(

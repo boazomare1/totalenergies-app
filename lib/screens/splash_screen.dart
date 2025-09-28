@@ -86,15 +86,15 @@ class _SplashScreenState extends State<SplashScreen>
           // User is already logged in, go to main screen
           Navigator.of(context).pushReplacementNamed('/main');
         } else {
-          // User is not logged in, go to register screen first
-          Navigator.of(context).pushReplacementNamed('/register');
+          // User is not logged in, go to login screen first
+          Navigator.of(context).pushReplacementNamed('/login');
         }
       }
     } catch (e) {
       print('Error during navigation: $e');
       if (mounted) {
-        // If there's an error, still navigate to register screen
-        Navigator.of(context).pushReplacementNamed('/register');
+        // If there's an error, still navigate to login screen
+        Navigator.of(context).pushReplacementNamed('/login');
       }
     }
   }

@@ -1,11 +1,17 @@
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OTPService {
   static const int _otpLength = 6;
   static const Duration _otpValidityDuration = Duration(minutes: 5);
+  static const Duration _reminderDelay = Duration(minutes: 15);
   
   // Store OTPs temporarily (in real app, this would be server-side)
   static final Map<String, Map<String, dynamic>> _activeOTPs = {};
+  
+  // Keys for SharedPreferences
+  static const String _otpPopupDismissedKey = 'otp_popup_dismissed';
+  static const String _otpPopupDismissedTimeKey = 'otp_popup_dismissed_time';
 
   // Generate and send OTP
   static Future<String> sendOTP(String phoneNumber, String purpose) async {
@@ -153,5 +159,39 @@ class OTPService {
         'expiry': value['expiry'].toString(),
       })),
     };
+  }
+
+  // OTP Popup Preference Management
+  static Future<void> dismissOTPPopup() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_otpPopupDismissedKey, true);
+    await prefs.setString(_otpPopupDismissedTimeKey, DateTime.now().toIso8601String());
+  }
+
+  static Future<bool> shouldShowOTPPopup() async {
+    final prefs = await SharedPreferences.getInstance();
+    final dismissed = prefs.getBool(_otpPopupDismissedKey) ?? false;
+    
+    if (!dismissed) return true;
+    
+    final dismissedTimeStr = prefs.getString(_otpPopupDismissedTimeKey);
+    if (dismissedTimeStr == null) return true;
+    
+    try {
+      final dismissedTime = DateTime.parse(dismissedTimeStr);
+      final now = DateTime.now();
+      final timeSinceDismissed = now.difference(dismissedTime);
+      
+      // Show popup again if 15 minutes have passed
+      return timeSinceDismissed >= _reminderDelay;
+    } catch (e) {
+      return true; // Show popup if there's an error parsing time
+    }
+  }
+
+  static Future<void> resetOTPPopupPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_otpPopupDismissedKey);
+    await prefs.remove(_otpPopupDismissedTimeKey);
   }
 }
