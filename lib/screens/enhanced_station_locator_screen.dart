@@ -601,7 +601,13 @@ class _EnhancedStationLocatorScreenState
                     child: ElevatedButton.icon(
                       onPressed: () => _showStationDetails(station),
                       icon: const Icon(Icons.info_outline, size: 16),
-                      label: Text('Details', style: GoogleFonts.poppins()),
+                      label: Text(
+                        'Details', 
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE60012),
                         shape: RoundedRectangleBorder(
@@ -1046,7 +1052,13 @@ class _EnhancedStationLocatorScreenState
                     );
                   },
                   icon: const Icon(Icons.phone, size: 20),
-                  label: Text('Call', style: GoogleFonts.poppins()),
+                  label: Text(
+                    'Call', 
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE60012),
                     padding: const EdgeInsets.symmetric(vertical: 16),
