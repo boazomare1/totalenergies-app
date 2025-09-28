@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -15,10 +16,11 @@ class CheckoutScreen extends StatefulWidget {
   State<CheckoutScreen> createState() => _CheckoutScreenState();
 }
 
-class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStateMixin {
+class _CheckoutScreenState extends State<CheckoutScreen>
+    with TickerProviderStateMixin {
   late TabController _tabController;
   int _currentStep = 0;
-  
+
   // Form controllers
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -26,22 +28,33 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
   final _addressController = TextEditingController();
   final _cityController = TextEditingController();
   final _postalCodeController = TextEditingController();
-  
+
   // Payment details
   String _selectedPaymentMethod = 'mpesa';
   String _selectedDeliveryTime = 'asap';
   String _selectedDeliveryType = 'home';
-  
+
   // Order summary
   final double _deliveryFee = 200.0;
   final double _serviceFee = 50.0;
   double _tax = 0.0;
-  
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _calculateTax();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = AuthService.getCurrentUser();
+    if (user != null) {
+      _nameController.text = user.name;
+      _phoneController.text = user.phone;
+      _emailController.text = user.email;
+      // Address fields remain empty for user to fill
+    }
   }
 
   @override
@@ -60,7 +73,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
     _tax = (widget.totalAmount + _deliveryFee + _serviceFee) * 0.16; // 16% VAT
   }
 
-  double get _grandTotal => widget.totalAmount + _deliveryFee + _serviceFee + _tax;
+  double get _grandTotal =>
+      widget.totalAmount + _deliveryFee + _serviceFee + _tax;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +128,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ],
             ),
           ),
-          
+
           // Tab Content
           Expanded(
             child: TabBarView(
@@ -134,23 +148,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
   Widget _buildProgressStep(int step, String title, IconData icon) {
     final isActive = _currentStep >= step;
     final isCompleted = _currentStep > step;
-    
+
     return Column(
       children: [
         Container(
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.3),
+            color:
+                isActive ? Colors.white : Colors.white.withValues(alpha: 0.3),
             shape: BoxShape.circle,
             border: Border.all(
-              color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
+              color:
+                  isActive ? Colors.white : Colors.white.withValues(alpha: 0.5),
               width: 2,
             ),
           ),
           child: Icon(
             isCompleted ? Icons.check : icon,
-            color: isActive ? const Color(0xFFE60012) : Colors.white.withValues(alpha: 0.7),
+            color:
+                isActive
+                    ? const Color(0xFFE60012)
+                    : Colors.white.withValues(alpha: 0.7),
             size: 20,
           ),
         ),
@@ -159,7 +178,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
           title,
           style: GoogleFonts.poppins(
             fontSize: 12,
-            color: isActive ? Colors.white : Colors.white.withValues(alpha: 0.7),
+            color:
+                isActive ? Colors.white : Colors.white.withValues(alpha: 0.7),
             fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
@@ -172,7 +192,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
       child: Container(
         height: 2,
         margin: const EdgeInsets.symmetric(horizontal: 8),
-        color: _currentStep > 0 ? Colors.white : Colors.white.withValues(alpha: 0.3),
+        color:
+            _currentStep > 0
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.3),
       ),
     );
   }
@@ -186,7 +209,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
           // Delivery Information
           _buildSectionHeader('Delivery Information', Icons.local_shipping),
           const SizedBox(height: 16),
-          
+
           // Delivery Type Selection
           Row(
             children: [
@@ -209,13 +232,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Contact Information
           _buildSectionHeader('Contact Information', Icons.contact_phone),
           const SizedBox(height: 16),
-          
+
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
@@ -227,9 +250,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           TextField(
             controller: _phoneController,
             decoration: InputDecoration(
@@ -242,9 +265,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
             ),
             keyboardType: TextInputType.phone,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           TextField(
             controller: _emailController,
             decoration: InputDecoration(
@@ -257,13 +280,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
             ),
             keyboardType: TextInputType.emailAddress,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Delivery Address
           _buildSectionHeader('Delivery Address', Icons.location_on),
           const SizedBox(height: 16),
-          
+
           TextField(
             controller: _addressController,
             decoration: InputDecoration(
@@ -276,9 +299,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
             ),
             maxLines: 2,
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Expanded(
@@ -310,20 +333,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Delivery Time
           _buildSectionHeader('Delivery Time', Icons.access_time),
           const SizedBox(height: 16),
-          
-          _buildDeliveryTimeOption('ASAP', 'Deliver as soon as possible', 'asap'),
-          _buildDeliveryTimeOption('Today Evening', 'Deliver today between 6-8 PM', 'today_evening'),
-          _buildDeliveryTimeOption('Tomorrow Morning', 'Deliver tomorrow between 8-12 PM', 'tomorrow_morning'),
-          _buildDeliveryTimeOption('Tomorrow Afternoon', 'Deliver tomorrow between 12-6 PM', 'tomorrow_afternoon'),
-          
+
+          _buildDeliveryTimeOption(
+            'ASAP',
+            'Deliver as soon as possible',
+            'asap',
+          ),
+          _buildDeliveryTimeOption(
+            'Today Evening',
+            'Deliver today between 6-8 PM',
+            'today_evening',
+          ),
+          _buildDeliveryTimeOption(
+            'Tomorrow Morning',
+            'Deliver tomorrow between 8-12 PM',
+            'tomorrow_morning',
+          ),
+          _buildDeliveryTimeOption(
+            'Tomorrow Afternoon',
+            'Deliver tomorrow between 12-6 PM',
+            'tomorrow_afternoon',
+          ),
+
           const SizedBox(height: 32),
-          
+
           // Continue Button
           SizedBox(
             width: double.infinity,
@@ -360,7 +399,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
           // Payment Methods
           _buildSectionHeader('Payment Methods', Icons.payment),
           const SizedBox(height: 16),
-          
+
           _buildPaymentMethodOption(
             'M-Pesa',
             'Pay with M-Pesa mobile money',
@@ -385,13 +424,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
             Icons.money,
             'cod',
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Order Summary
           _buildSectionHeader('Order Summary', Icons.receipt),
           const SizedBox(height: 16),
-          
+
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -407,10 +446,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
             ),
             child: Column(
               children: [
-                _buildOrderSummaryRow('Subtotal', 'KES ${widget.totalAmount.toStringAsFixed(2)}'),
-                _buildOrderSummaryRow('Delivery Fee', 'KES ${_deliveryFee.toStringAsFixed(2)}'),
-                _buildOrderSummaryRow('Service Fee', 'KES ${_serviceFee.toStringAsFixed(2)}'),
-                _buildOrderSummaryRow('VAT (16%)', 'KES ${_tax.toStringAsFixed(2)}'),
+                _buildOrderSummaryRow(
+                  'Subtotal',
+                  'KES ${widget.totalAmount.toStringAsFixed(2)}',
+                ),
+                _buildOrderSummaryRow(
+                  'Delivery Fee',
+                  'KES ${_deliveryFee.toStringAsFixed(2)}',
+                ),
+                _buildOrderSummaryRow(
+                  'Service Fee',
+                  'KES ${_serviceFee.toStringAsFixed(2)}',
+                ),
+                _buildOrderSummaryRow(
+                  'VAT (16%)',
+                  'KES ${_tax.toStringAsFixed(2)}',
+                ),
                 const Divider(),
                 _buildOrderSummaryRow(
                   'Total',
@@ -420,9 +471,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Continue Button
           SizedBox(
             width: double.infinity,
@@ -459,7 +510,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
           // Order Items
           _buildSectionHeader('Order Items', Icons.shopping_cart),
           const SizedBox(height: 16),
-          
+
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -473,16 +524,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ],
             ),
             child: Column(
-              children: widget.cartItems.map((item) => _buildOrderItem(item)).toList(),
+              children:
+                  widget.cartItems
+                      .map((item) => _buildOrderItem(item))
+                      .toList(),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Delivery Information
           _buildSectionHeader('Delivery Information', Icons.local_shipping),
           const SizedBox(height: 16),
-          
+
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -509,26 +563,40 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Final Order Summary
           _buildSectionHeader('Final Total', Icons.receipt_long),
           const SizedBox(height: 16),
-          
+
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xFFE60012).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE60012).withValues(alpha: 0.3)),
+              border: Border.all(
+                color: const Color(0xFFE60012).withValues(alpha: 0.3),
+              ),
             ),
             child: Column(
               children: [
-                _buildOrderSummaryRow('Subtotal', 'KES ${widget.totalAmount.toStringAsFixed(2)}'),
-                _buildOrderSummaryRow('Delivery Fee', 'KES ${_deliveryFee.toStringAsFixed(2)}'),
-                _buildOrderSummaryRow('Service Fee', 'KES ${_serviceFee.toStringAsFixed(2)}'),
-                _buildOrderSummaryRow('VAT (16%)', 'KES ${_tax.toStringAsFixed(2)}'),
+                _buildOrderSummaryRow(
+                  'Subtotal',
+                  'KES ${widget.totalAmount.toStringAsFixed(2)}',
+                ),
+                _buildOrderSummaryRow(
+                  'Delivery Fee',
+                  'KES ${_deliveryFee.toStringAsFixed(2)}',
+                ),
+                _buildOrderSummaryRow(
+                  'Service Fee',
+                  'KES ${_serviceFee.toStringAsFixed(2)}',
+                ),
+                _buildOrderSummaryRow(
+                  'VAT (16%)',
+                  'KES ${_tax.toStringAsFixed(2)}',
+                ),
                 const Divider(),
                 _buildOrderSummaryRow(
                   'Total Amount',
@@ -538,9 +606,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Place Order Button
           SizedBox(
             width: double.infinity,
@@ -585,9 +653,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildDeliveryOption(String title, String subtitle, IconData icon, String value) {
+  Widget _buildDeliveryOption(
+    String title,
+    String subtitle,
+    IconData icon,
+    String value,
+  ) {
     final isSelected = _selectedDeliveryType == value;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -597,7 +670,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE60012).withValues(alpha: 0.1) : Colors.white,
+          color:
+              isSelected
+                  ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                  : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
@@ -622,10 +698,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
             ),
             Text(
               subtitle,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
           ],
@@ -636,7 +709,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
 
   Widget _buildDeliveryTimeOption(String title, String subtitle, String value) {
     final isSelected = _selectedDeliveryTime == value;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -647,7 +720,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE60012).withValues(alpha: 0.1) : Colors.white,
+          color:
+              isSelected
+                  ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                  : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
@@ -656,7 +732,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
         child: Row(
           children: [
             Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
               color: isSelected ? const Color(0xFFE60012) : Colors.grey[600],
             ),
             const SizedBox(width: 12),
@@ -669,7 +747,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? const Color(0xFFE60012) : Colors.black87,
+                      color:
+                          isSelected ? const Color(0xFFE60012) : Colors.black87,
                     ),
                   ),
                   Text(
@@ -688,9 +767,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildPaymentMethodOption(String title, String subtitle, IconData icon, String value) {
+  Widget _buildPaymentMethodOption(
+    String title,
+    String subtitle,
+    IconData icon,
+    String value,
+  ) {
     final isSelected = _selectedPaymentMethod == value;
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -701,7 +785,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE60012).withValues(alpha: 0.1) : Colors.white,
+          color:
+              isSelected
+                  ? const Color(0xFFE60012).withValues(alpha: 0.1)
+                  : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? const Color(0xFFE60012) : Colors.grey[300]!,
@@ -724,7 +811,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? const Color(0xFFE60012) : Colors.black87,
+                      color:
+                          isSelected ? const Color(0xFFE60012) : Colors.black87,
                     ),
                   ),
                   Text(
@@ -738,7 +826,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
               ),
             ),
             Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
               color: isSelected ? const Color(0xFFE60012) : Colors.grey[600],
             ),
           ],
@@ -747,7 +837,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
     );
   }
 
-  Widget _buildOrderSummaryRow(String label, String value, {bool isTotal = false}) {
+  Widget _buildOrderSummaryRow(
+    String label,
+    String value, {
+    bool isTotal = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -818,10 +912,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
           ),
           Text(
             'Qty: 1',
-            style: GoogleFonts.poppins(
-              fontSize: 12,
-              color: Colors.grey[600],
-            ),
+            style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -848,10 +939,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
           Expanded(
             child: Text(
               value.isEmpty ? 'Not provided' : value,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.black87,
-              ),
+              style: GoogleFonts.poppins(fontSize: 14, color: Colors.black87),
             ),
           ),
         ],
@@ -902,7 +990,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
       );
       return;
     }
-    
+
     _tabController.animateTo(1);
     setState(() {
       _currentStep = 1;
@@ -920,102 +1008,104 @@ class _CheckoutScreenState extends State<CheckoutScreen> with TickerProviderStat
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE60012)),
+      builder:
+          (context) => AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE60012)),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Processing your order...',
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              'Processing your order...',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
 
     // Simulate order processing
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
-        
+
         // Show success dialog
         showDialog(
           context: context,
-          builder: (context) => AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 28),
-              const SizedBox(width: 8),
-              Text(
-                'Order Placed!',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+          builder:
+              (context) => AlertDialog(
+                title: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green, size: 28),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Order Placed!',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Your order has been successfully placed.',
-                style: GoogleFonts.poppins(fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Order ID: #TE${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFFE60012),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Your order has been successfully placed.',
+                      style: GoogleFonts.poppins(fontSize: 16),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Order ID: #TE${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFFE60012),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Total: KES ${_grandTotal.toStringAsFixed(2)}',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'You will receive a confirmation SMS shortly.',
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close dialog
+                      if (mounted) {
+                        Navigator.pop(context); // Go back to home
+                      }
+                    },
+                    child: Text(
+                      'Continue Shopping',
+                      style: GoogleFonts.poppins(
+                        color: const Color(0xFFE60012),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Total: KES ${_grandTotal.toStringAsFixed(2)}',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'You will receive a confirmation SMS shortly.',
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close dialog
-                if (mounted) {
-                  Navigator.pop(context); // Go back to home
-                }
-              },
-              child: Text(
-                'Continue Shopping',
-                style: GoogleFonts.poppins(
-                  color: const Color(0xFFE60012),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+        );
       }
     });
   }

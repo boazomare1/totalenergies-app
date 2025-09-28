@@ -30,13 +30,17 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       biometricType: fields[10] as String?,
       preferences: (fields[11] as Map).cast<String, dynamic>(),
       isActive: fields[12] as bool,
+      cardBalance: fields[13] as double,
+      cardNumber: fields[14] as String,
+      cvv: fields[15] as String,
+      expiryDate: fields[16] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +66,15 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(11)
       ..write(obj.preferences)
       ..writeByte(12)
-      ..write(obj.isActive);
+      ..write(obj.isActive)
+      ..writeByte(13)
+      ..write(obj.cardBalance)
+      ..writeByte(14)
+      ..write(obj.cardNumber)
+      ..writeByte(15)
+      ..write(obj.cvv)
+      ..writeByte(16)
+      ..write(obj.expiryDate);
   }
 
   @override

@@ -43,6 +43,18 @@ class UserModel extends HiveObject {
   @HiveField(12)
   bool isActive;
 
+  @HiveField(13)
+  double cardBalance;
+
+  @HiveField(14)
+  String cardNumber;
+
+  @HiveField(15)
+  String cvv;
+
+  @HiveField(16)
+  String expiryDate;
+
   UserModel({
     required this.id,
     required this.name,
@@ -57,6 +69,10 @@ class UserModel extends HiveObject {
     this.biometricType,
     this.preferences = const {},
     this.isActive = true,
+    this.cardBalance = 0.0,
+    this.cardNumber = '',
+    this.cvv = '',
+    this.expiryDate = '',
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -77,6 +93,10 @@ class UserModel extends HiveObject {
       biometricType: json['biometricType'] as String?,
       preferences: Map<String, dynamic>.from(json['preferences'] as Map? ?? {}),
       isActive: json['isActive'] as bool? ?? true,
+      cardBalance: (json['cardBalance'] as num?)?.toDouble() ?? 0.0,
+      cardNumber: json['cardNumber'] as String? ?? '',
+      cvv: json['cvv'] as String? ?? '',
+      expiryDate: json['expiryDate'] as String? ?? '',
     );
   }
 
@@ -95,6 +115,10 @@ class UserModel extends HiveObject {
       'biometricType': biometricType,
       'preferences': preferences,
       'isActive': isActive,
+      'cardBalance': cardBalance,
+      'cardNumber': cardNumber,
+      'cvv': cvv,
+      'expiryDate': expiryDate,
     };
   }
 
@@ -112,6 +136,10 @@ class UserModel extends HiveObject {
     String? biometricType,
     Map<String, dynamic>? preferences,
     bool? isActive,
+    double? cardBalance,
+    String? cardNumber,
+    String? cvv,
+    String? expiryDate,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -127,6 +155,10 @@ class UserModel extends HiveObject {
       biometricType: biometricType ?? this.biometricType,
       preferences: preferences ?? this.preferences,
       isActive: isActive ?? this.isActive,
+      cardBalance: cardBalance ?? this.cardBalance,
+      cardNumber: cardNumber ?? this.cardNumber,
+      cvv: cvv ?? this.cvv,
+      expiryDate: expiryDate ?? this.expiryDate,
     );
   }
 

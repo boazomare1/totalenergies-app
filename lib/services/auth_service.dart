@@ -3,6 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'hive_database_service.dart';
 import 'secure_storage_service.dart';
+import 'notification_service.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -27,6 +28,11 @@ class AuthService {
   // Get current user data
   static UserModel? getCurrentUser() {
     return _currentUser;
+  }
+
+  // Update current user data
+  static Future<void> updateCurrentUser(UserModel user) async {
+    _currentUser = user;
   }
 
   // Register user with phone or email
@@ -67,7 +73,7 @@ class AuthService {
     // Check if user already exists in both secure storage and Hive
     bool existsInSecure = await SecureStorageService.userExists(phoneOrEmail);
     bool existsInHive = await HiveDatabaseService.userExists(phoneOrEmail);
-    
+
     if (existsInSecure || existsInHive) {
       throw Exception(
         'User with this ${isEmail ? 'email' : 'phone number'} already exists',
@@ -181,8 +187,12 @@ class AuthService {
     String otp =
         (100000 + (DateTime.now().millisecondsSinceEpoch % 900000)).toString();
 
-    // In a real app, this would be sent via SMS or email
-    print('OTP sent to $phoneOrEmail: $otp');
+    // Send OTP as notification
+    await NotificationService.showNotification(
+      title: 'TotalEnergies Verification',
+      body: 'Your verification code is: $otp\nValid for 5 minutes',
+      payload: 'auth_verification',
+    );
 
     return otp;
   }
@@ -349,9 +359,13 @@ class AuthService {
     if (_currentUser == null) return false;
 
     // Try secure storage first, then fallback to local
-    bool enabled = await SecureStorageService.getBiometricPreference(_currentUser!.id);
+    bool enabled = await SecureStorageService.getBiometricPreference(
+      _currentUser!.id,
+    );
     if (!enabled) {
-      enabled = await HiveDatabaseService.getBiometricPreference(_currentUser!.id);
+      enabled = await HiveDatabaseService.getBiometricPreference(
+        _currentUser!.id,
+      );
     }
     return enabled;
   }

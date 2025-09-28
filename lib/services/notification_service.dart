@@ -257,6 +257,17 @@ class NotificationService {
     }
   }
 
+  /// Show notification (public method)
+  static Future<void> showNotification({
+    required String title,
+    required String body,
+    String? payload,
+  }) async {
+    await _showLocalNotification(title, body, {
+      'payload': payload ?? 'default',
+    });
+  }
+
   /// Subscribe to topic for location-based notifications
   static Future<void> subscribeToLocationTopic(String locationId) async {
     try {

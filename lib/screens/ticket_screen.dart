@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 
 class TicketScreen extends StatefulWidget {
   const TicketScreen({super.key});
@@ -28,18 +29,21 @@ class _TicketScreenState extends State<TicketScreen>
     'Other',
   ];
 
-  final List<String> _priorities = [
-    'Low',
-    'Medium',
-    'High',
-    'Urgent',
-  ];
+  final List<String> _priorities = ['Low', 'Medium', 'High', 'Urgent'];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _loadTickets();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = AuthService.getCurrentUser();
+    if (user != null) {
+      _phoneController.text = user.phone;
+    }
   }
 
   @override
@@ -62,7 +66,8 @@ class _TicketScreenState extends State<TicketScreen>
           'priority': 'High',
           'status': 'Open',
           'createdAt': DateTime.now().subtract(const Duration(days: 2)),
-          'description': 'My payment was deducted but not reflected in my account balance.',
+          'description':
+              'My payment was deducted but not reflected in my account balance.',
         },
         {
           'id': 'TKT-002',
@@ -87,7 +92,8 @@ class _TicketScreenState extends State<TicketScreen>
   }
 
   void _createTicket() {
-    if (_subjectController.text.isEmpty || _descriptionController.text.isEmpty) {
+    if (_subjectController.text.isEmpty ||
+        _descriptionController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -206,10 +212,7 @@ class _TicketScreenState extends State<TicketScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildTicketsList(),
-          _buildCreateTicketForm(),
-        ],
+        children: [_buildTicketsList(), _buildCreateTicketForm()],
       ),
     );
   }
@@ -220,11 +223,7 @@ class _TicketScreenState extends State<TicketScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.support_agent,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.support_agent, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No tickets yet',
@@ -352,7 +351,7 @@ class _TicketScreenState extends State<TicketScreen>
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Category Selection
           Text(
             'Category *',
@@ -365,14 +364,18 @@ class _TicketScreenState extends State<TicketScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
-            items: _categories.map((category) {
-              return DropdownMenuItem(
-                value: category,
-                child: Text(category, style: GoogleFonts.poppins()),
-              );
-            }).toList(),
+            items:
+                _categories.map((category) {
+                  return DropdownMenuItem(
+                    value: category,
+                    child: Text(category, style: GoogleFonts.poppins()),
+                  );
+                }).toList(),
             onChanged: (value) {
               setState(() {
                 _selectedCategory = value!;
@@ -393,14 +396,18 @@ class _TicketScreenState extends State<TicketScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
-            items: _priorities.map((priority) {
-              return DropdownMenuItem(
-                value: priority,
-                child: Text(priority, style: GoogleFonts.poppins()),
-              );
-            }).toList(),
+            items:
+                _priorities.map((priority) {
+                  return DropdownMenuItem(
+                    value: priority,
+                    child: Text(priority, style: GoogleFonts.poppins()),
+                  );
+                }).toList(),
             onChanged: (value) {
               setState(() {
                 _selectedPriority = value!;
@@ -422,7 +429,10 @@ class _TicketScreenState extends State<TicketScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -441,7 +451,10 @@ class _TicketScreenState extends State<TicketScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -460,7 +473,10 @@ class _TicketScreenState extends State<TicketScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
           ),
           const SizedBox(height: 32),
@@ -477,23 +493,24 @@ class _TicketScreenState extends State<TicketScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: _isSubmitting
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+              child:
+                  _isSubmitting
+                      ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      : Text(
+                        'Create Ticket',
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
-                    )
-                  : Text(
-                      'Create Ticket',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
             ),
           ),
         ],
@@ -506,99 +523,97 @@ class _TicketScreenState extends State<TicketScreen>
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder:
+          (context) => Container(
+            height: MediaQuery.of(context).size.height * 0.8,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Ticket Details',
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 Text(
-                  'Ticket Details',
+                  ticket['subject'],
                   style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              ticket['subject'],
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'ID: ${ticket['id']}',
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                _buildStatusChip(ticket['status']),
-                const SizedBox(width: 8),
-                _buildPriorityChip(ticket['priority']),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Description',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              ticket['description'],
-              style: GoogleFonts.poppins(),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Created: ${_formatDate(ticket['createdAt'])}',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
-            ),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE60012),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Close',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
                   ),
                 ),
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  'ID: ${ticket['id']}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    _buildStatusChip(ticket['status']),
+                    const SizedBox(width: 8),
+                    _buildPriorityChip(ticket['priority']),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Description',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(ticket['description'], style: GoogleFonts.poppins()),
+                const SizedBox(height: 16),
+                Text(
+                  'Created: ${_formatDate(ticket['createdAt'])}',
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE60012),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      'Close',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 

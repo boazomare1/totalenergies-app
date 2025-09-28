@@ -66,6 +66,7 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
         child: Form(
           key: _bankTransferFormKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Amount Display
@@ -114,59 +115,66 @@ class _BankTransferScreenState extends State<BankTransferScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: _selectedBank.isEmpty ? null : _selectedBank,
-                decoration: InputDecoration(
-                  hintText: 'Choose your bank',
-                  hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
-                  prefixIcon: const Icon(
-                    Icons.account_balance,
-                    color: Color(0xFFE60012),
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFE60012),
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
-                items:
-                    _banks.map((bank) {
-                      return DropdownMenuItem<String>(
-                        value: bank['code'],
-                        child: Text(
-                          bank['name']!,
-                          style: GoogleFonts.poppins(),
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: double.infinity),
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedBank.isEmpty ? null : _selectedBank,
+                    decoration: InputDecoration(
+                      hintText: 'Choose your bank',
+                      hintStyle: GoogleFonts.poppins(color: Colors.grey[400]),
+                      prefixIcon: const Icon(
+                        Icons.account_balance,
+                        color: Color(0xFFE60012),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color(0xFFE60012),
+                          width: 2,
                         ),
-                      );
-                    }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedBank = value ?? '';
-                    _bankController.text =
-                        _banks.firstWhere(
-                          (bank) => bank['code'] == value,
-                        )['name'] ??
-                        '';
-                  });
-                },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please select a bank';
-                  }
-                  return null;
-                },
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                    ),
+                    items:
+                        _banks.map((bank) {
+                          return DropdownMenuItem<String>(
+                            value: bank['code'],
+                            child: Text(
+                              bank['name']!,
+                              style: GoogleFonts.poppins(fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          );
+                        }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedBank = value ?? '';
+                        _bankController.text =
+                            _banks.firstWhere(
+                              (bank) => bank['code'] == value,
+                            )['name'] ??
+                            '';
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select a bank';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
               ),
 
               const SizedBox(height: 20),

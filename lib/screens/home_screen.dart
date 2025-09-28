@@ -32,11 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Newsletter preferences now handled by OTPService
 
   // Dashboard data
-  double _fuelCardBalance = 0.0;
-  String _cardNumber = '**** **** **** 1234';
-  bool _isLoadingDashboard = true;
   bool _isLoggedIn = false;
-  bool _hideBalance = false;
   String _userName = 'Guest';
 
   @override
@@ -102,24 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadDashboardData() async {
     try {
       await DashboardService.initializeSampleData();
-
-      final balance = await DashboardService.getFuelCardBalance();
-      final cardNumber = await DashboardService.getCardNumber();
-
-      if (mounted) {
-        setState(() {
-          _fuelCardBalance = balance;
-          _cardNumber = cardNumber;
-          _isLoadingDashboard = false;
-        });
-      }
     } catch (e) {
       print('Error loading dashboard data: $e');
-      if (mounted) {
-        setState(() {
-          _isLoadingDashboard = false;
-        });
-      }
     }
   }
 
@@ -137,14 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print('Error checking auth status: $e');
     }
-  }
-
-  // Refresh dashboard data
-  Future<void> _refreshDashboard() async {
-    setState(() {
-      _isLoadingDashboard = true;
-    });
-    await _loadDashboardData();
   }
 
   @override
@@ -322,11 +294,6 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 // Promotional Banner Carousel
                 _buildBannerCarousel(),
-
-                const SizedBox(height: 24),
-
-                // Fuel Card Balance
-                _buildFuelCardBalance(),
 
                 const SizedBox(height: 24),
 
@@ -924,199 +891,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         backgroundColor: Colors.orange,
         duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  // Build fuel card balance widget
-  Widget _buildFuelCardBalance() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFE60012), Color(0xFFFF6B35)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE60012).withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'TotalEnergies Card',
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _cardNumber,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white.withValues(alpha: 0.8),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CardScreen()),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.credit_card,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Available Balance',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    if (_isLoadingDashboard)
-                      const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    else
-                      Text(
-                        _hideBalance
-                            ? '••••••••'
-                            : 'KSh ${_fuelCardBalance.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_isLoggedIn) ...[
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _hideBalance = !_hideBalance;
-                        });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _hideBalance
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              _hideBalance ? 'Show' : 'Hide',
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                  GestureDetector(
-                    onTap: _refreshDashboard,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.refresh,
-                            color: const Color(0xFFE60012),
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Refresh',
-                            style: GoogleFonts.poppins(
-                              color: const Color(0xFFE60012),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

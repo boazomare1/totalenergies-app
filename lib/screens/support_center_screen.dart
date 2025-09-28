@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/support_service.dart';
+import '../services/auth_service.dart';
 import 'ticket_screen.dart';
 
 class SupportCenterScreen extends StatefulWidget {
@@ -78,6 +79,12 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     final descriptionController = TextEditingController();
     String selectedCategory = 'general';
     String selectedPriority = 'medium';
+
+    // Pre-populate with user data if available
+    final user = AuthService.getCurrentUser();
+    if (user != null) {
+      // You can add user-specific pre-filled data here if needed
+    }
 
     showDialog(
       context: context,
@@ -247,7 +254,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       );
     }
   }
-
 
   void _showLiveChatDialog() {
     final availability = SupportService.getLiveChatAvailability();
@@ -568,11 +574,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.support_agent,
-            size: 64,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.support_agent, size: 64, color: Colors.grey[400]),
           const SizedBox(height: 16),
           Text(
             'Support Tickets',
@@ -585,9 +587,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
           const SizedBox(height: 8),
           Text(
             'Manage your support tickets and create new ones',
-            style: GoogleFonts.poppins(
-              color: Colors.grey[500],
-            ),
+            style: GoogleFonts.poppins(color: Colors.grey[500]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -595,9 +595,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const TicketScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const TicketScreen()),
               );
             },
             icon: const Icon(Icons.support_agent),
@@ -862,7 +860,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       ),
     );
   }
-
 
   Widget _buildQuickActionCard({
     required IconData icon,
@@ -1136,7 +1133,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
       ),
     );
   }
-
 
   String _formatTime(DateTime date) {
     return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';

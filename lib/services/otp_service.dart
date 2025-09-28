@@ -1,14 +1,15 @@
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'notification_service.dart';
 
 class OTPService {
   static const int _otpLength = 6;
   static const Duration _otpValidityDuration = Duration(minutes: 5);
   static const Duration _reminderDelay = Duration(minutes: 15);
-  
+
   // Store OTPs temporarily (in real app, this would be server-side)
   static final Map<String, Map<String, dynamic>> _activeOTPs = {};
-  
+
   // Keys for SharedPreferences
   static const String _otpPopupDismissedKey = 'otp_popup_dismissed';
   static const String _otpPopupDismissedTimeKey = 'otp_popup_dismissed_time';
@@ -18,7 +19,7 @@ class OTPService {
     // Generate random 6-digit OTP
     final otp = _generateOTP();
     final expiryTime = DateTime.now().add(_otpValidityDuration);
-    
+
     // Store OTP with metadata
     _activeOTPs[phoneNumber] = {
       'otp': otp,
@@ -28,19 +29,26 @@ class OTPService {
       'maxAttempts': 3,
     };
 
-    // Simulate sending OTP via SMS
-    print('OTP sent to $phoneNumber: $otp (Valid for 5 minutes)');
-    
+    // Send OTP as notification instead of console log
+    await NotificationService.showNotification(
+      title: 'TotalEnergies OTP',
+      body: 'Your verification code is: $otp\nValid for 5 minutes',
+      payload: 'otp_verification',
+    );
+
     // In a real app, this would call an SMS service
     // await _sendSMS(phoneNumber, 'Your TotalEnergies OTP is: $otp. Valid for 5 minutes.');
-    
+
     return otp; // Return for demo purposes
   }
 
   // Verify OTP
-  static Future<Map<String, dynamic>> verifyOTP(String phoneNumber, String enteredOTP) async {
+  static Future<Map<String, dynamic>> verifyOTP(
+    String phoneNumber,
+    String enteredOTP,
+  ) async {
     final otpData = _activeOTPs[phoneNumber];
-    
+
     if (otpData == null) {
       return {
         'success': false,
@@ -94,13 +102,13 @@ class OTPService {
   static bool hasActiveOTP(String phoneNumber) {
     final otpData = _activeOTPs[phoneNumber];
     if (otpData == null) return false;
-    
+
     // Check if expired
     if (DateTime.now().isAfter(otpData['expiry'])) {
       _activeOTPs.remove(phoneNumber);
       return false;
     }
-    
+
     return true;
   }
 
@@ -108,15 +116,15 @@ class OTPService {
   static Duration? getRemainingTime(String phoneNumber) {
     final otpData = _activeOTPs[phoneNumber];
     if (otpData == null) return null;
-    
+
     final expiry = otpData['expiry'] as DateTime;
     final now = DateTime.now();
-    
+
     if (now.isAfter(expiry)) {
       _activeOTPs.remove(phoneNumber);
       return null;
     }
-    
+
     return expiry.difference(now);
   }
 
@@ -124,7 +132,7 @@ class OTPService {
   static Future<String> resendOTP(String phoneNumber) async {
     // Remove existing OTP
     _activeOTPs.remove(phoneNumber);
-    
+
     // Send new OTP
     return await sendOTP(phoneNumber, 'resend');
   }
@@ -141,11 +149,11 @@ class OTPService {
   static String _generateOTP() {
     final random = Random();
     final otp = StringBuffer();
-    
+
     for (int i = 0; i < _otpLength; i++) {
       otp.write(random.nextInt(10));
     }
-    
+
     return otp.toString();
   }
 
@@ -153,11 +161,13 @@ class OTPService {
   static Map<String, dynamic> getOTPStats() {
     return {
       'activeOTPs': _activeOTPs.length,
-      'otps': _activeOTPs.map((key, value) => MapEntry(key, {
-        'purpose': value['purpose'],
-        'attempts': value['attempts'],
-        'expiry': value['expiry'].toString(),
-      })),
+      'otps': _activeOTPs.map(
+        (key, value) => MapEntry(key, {
+          'purpose': value['purpose'],
+          'attempts': value['attempts'],
+          'expiry': value['expiry'].toString(),
+        }),
+      ),
     };
   }
 
@@ -165,23 +175,26 @@ class OTPService {
   static Future<void> dismissOTPPopup() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_otpPopupDismissedKey, true);
-    await prefs.setString(_otpPopupDismissedTimeKey, DateTime.now().toIso8601String());
+    await prefs.setString(
+      _otpPopupDismissedTimeKey,
+      DateTime.now().toIso8601String(),
+    );
   }
 
   static Future<bool> shouldShowOTPPopup() async {
     final prefs = await SharedPreferences.getInstance();
     final dismissed = prefs.getBool(_otpPopupDismissedKey) ?? false;
-    
+
     if (!dismissed) return true;
-    
+
     final dismissedTimeStr = prefs.getString(_otpPopupDismissedTimeKey);
     if (dismissedTimeStr == null) return true;
-    
+
     try {
       final dismissedTime = DateTime.parse(dismissedTimeStr);
       final now = DateTime.now();
       final timeSinceDismissed = now.difference(dismissedTime);
-      
+
       // Show popup again if 15 minutes have passed
       return timeSinceDismissed >= _reminderDelay;
     } catch (e) {

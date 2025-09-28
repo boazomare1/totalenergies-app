@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/otp_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/otp_verification_dialog.dart';
 
 class MpesaPaymentScreen extends StatefulWidget {
@@ -22,6 +23,19 @@ class _MpesaPaymentScreenState extends State<MpesaPaymentScreen> {
   final _phoneNumberController = TextEditingController();
 
   bool _isProcessing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = AuthService.getCurrentUser();
+    if (user != null) {
+      _phoneNumberController.text = user.phone;
+    }
+  }
 
   @override
   void dispose() {

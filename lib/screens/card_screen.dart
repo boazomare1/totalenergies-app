@@ -3,7 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'visa_payment_screen.dart';
 import 'mpesa_payment_screen.dart';
 import 'bank_transfer_screen.dart';
+import 'enhanced_station_locator_screen.dart';
 import '../services/auth_service.dart';
+import '../services/hive_database_service.dart';
 
 class CardScreen extends StatefulWidget {
   const CardScreen({super.key});
@@ -16,10 +18,14 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   String _selectedCardType = 'virtual';
   String _selectedApplicationType = 'individual';
-  double _cardBalance = 2500.0;
+  double _cardBalance = 0.0;
   bool _hideBalance = false;
   bool _isLoggedIn = false;
   String _userName = 'Guest';
+  bool _showCardBack = false;
+  String _cardNumber = '';
+  String _cvv = '';
+  String _expiryDate = '';
   final List<Map<String, dynamic>> _transactions = [];
   final TextEditingController _topUpController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -35,6 +41,90 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     _tabController = TabController(length: 3, vsync: this);
     _loadCardData();
     _checkAuthStatus();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = AuthService.getCurrentUser();
+    print('Loading user data: $user');
+    if (user != null) {
+      _nameController.text = user.name;
+      _emailController.text = user.email;
+      _phoneController.text = user.phone;
+      print(
+        'Loaded user data - Name: ${user.name}, Email: ${user.email}, Phone: ${user.phone}',
+      );
+    } else {
+      print('No user data found');
+    }
+  }
+
+  Future<void> _updateUserBalance(double newBalance) async {
+    try {
+      final currentUser = AuthService.getCurrentUser();
+      if (currentUser != null) {
+        final updatedUser = currentUser.copyWith(cardBalance: newBalance);
+        await HiveDatabaseService.updateUser(updatedUser);
+        // Update the cached user in AuthService
+        await AuthService.updateCurrentUser(updatedUser);
+        setState(() {
+          _cardBalance = newBalance;
+        });
+      }
+    } catch (e) {
+      print('Error updating user balance: $e');
+    }
+  }
+
+  // Generate a unique card number based on user ID
+  String _generateCardNumber() {
+    final currentUser = AuthService.getCurrentUser();
+    if (currentUser == null) return '4532 1234 5678 9012';
+
+    // Use user ID to generate a consistent card number
+    final userId = currentUser.id;
+    final hash = userId.hashCode.abs();
+
+    // Generate a 16-digit card number
+    final cardNumber =
+        '4532 ${(hash % 10000).toString().padLeft(4, '0')} ${(hash % 10000).toString().padLeft(4, '0')} ${(hash % 10000).toString().padLeft(4, '0')}';
+    return cardNumber;
+  }
+
+  // Generate a unique CVV based on user ID
+  String _generateCVV() {
+    final currentUser = AuthService.getCurrentUser();
+    if (currentUser == null) return '123';
+
+    final userId = currentUser.id;
+    final hash = userId.hashCode.abs();
+    return (hash % 1000).toString().padLeft(3, '0');
+  }
+
+  // Generate expiry date (3 years from now)
+  String _generateExpiryDate() {
+    final now = DateTime.now();
+    final expiry = DateTime(now.year + 3, now.month, now.day);
+    return '${expiry.month.toString().padLeft(2, '0')}/${expiry.year.toString().substring(2)}';
+  }
+
+  // Save card details to Hive
+  Future<void> _saveCardDetails() async {
+    try {
+      final currentUser = AuthService.getCurrentUser();
+      if (currentUser != null) {
+        final updatedUser = currentUser.copyWith(
+          cardNumber: _cardNumber,
+          cvv: _cvv,
+          expiryDate: _expiryDate,
+        );
+        await HiveDatabaseService.updateUser(updatedUser);
+        // Update the cached user in AuthService
+        await AuthService.updateCurrentUser(updatedUser);
+      }
+    } catch (e) {
+      print('Error saving card details: $e');
+    }
   }
 
   @override
@@ -92,6 +182,32 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
       setState(() {
         _isLoggedIn = isLoggedIn;
         _userName = currentUser?.name ?? 'Guest';
+        _cardBalance = currentUser?.cardBalance ?? 0.0;
+
+        // Load or generate card details
+        if (currentUser != null) {
+          _cardNumber =
+              currentUser.cardNumber.isNotEmpty
+                  ? currentUser.cardNumber
+                  : _generateCardNumber();
+          _cvv = currentUser.cvv.isNotEmpty ? currentUser.cvv : _generateCVV();
+          _expiryDate =
+              currentUser.expiryDate.isNotEmpty
+                  ? currentUser.expiryDate
+                  : _generateExpiryDate();
+
+          // Save generated card details if they were empty
+          if (currentUser.cardNumber.isEmpty ||
+              currentUser.cvv.isEmpty ||
+              currentUser.expiryDate.isEmpty) {
+            _saveCardDetails();
+          }
+        } else {
+          // Default values for guest users
+          _cardNumber = '4532 1234 5678 9012';
+          _cvv = '123';
+          _expiryDate = '12/25';
+        }
       });
     } catch (e) {
       print('Error checking auth status: $e');
@@ -144,135 +260,57 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Card Balance Section
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFE60012), Color(0xFFB8000E)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFE60012).withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'TotalEnergies Card',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+          // Realistic Card Design
+          _buildRealisticCard(),
+
+          const SizedBox(height: 16),
+
+          // Card Action Buttons
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _topUpCard,
+                  icon: const Icon(Icons.add, color: Color(0xFFE60012)),
+                  label: Text(
+                    'Top Up',
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xFFE60012),
+                      fontWeight: FontWeight.w600,
                     ),
-                    const Icon(
-                      Icons.credit_card,
-                      color: Colors.white,
-                      size: 24,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Available Balance',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white70,
-                    fontSize: 14,
+                    elevation: 2,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _hideBalance
-                            ? '••••••••'
-                            : 'KSh ${_cardBalance.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _linkExistingCard,
+                  icon: const Icon(Icons.link, color: Color(0xFFE60012)),
+                  label: Text(
+                    'Link Card',
+                    style: GoogleFonts.poppins(
+                      color: const Color(0xFFE60012),
+                      fontWeight: FontWeight.w600,
                     ),
-                    if (_isLoggedIn) ...[
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _hideBalance = !_hideBalance;
-                          });
-                        },
-                        child: Icon(
-                          _hideBalance
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ],
-                  ],
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xFFE60012)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _topUpCard,
-                        icon: const Icon(Icons.add, color: Color(0xFFE60012)),
-                        label: Text(
-                          'Top Up',
-                          style: GoogleFonts.poppins(
-                            color: const Color(0xFFE60012),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: _linkExistingCard,
-                        icon: const Icon(Icons.link, color: Colors.white),
-                        label: Text(
-                          'Link Card',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.white),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 24),
@@ -629,6 +667,259 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildRealisticCard() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showCardBack = !_showCardBack;
+        });
+      },
+      child: Container(
+        width: double.infinity,
+        height: 200,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFE60012), Color(0xFFB8000E), Color(0xFF8B0000)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE60012).withValues(alpha: 0.4),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: _showCardBack ? _buildCardBack() : _buildCardFront(),
+      ),
+    );
+  }
+
+  Widget _buildCardFront() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top row with TotalEnergies logo and chip
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // TotalEnergies Logo
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'TOTALENERGIES',
+                  style: GoogleFonts.poppins(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+              // Chip
+              Container(
+                width: 40,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: Colors.amber[300],
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Center(
+                  child: Container(
+                    width: 30,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Colors.amber[100],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'CHIP',
+                        style: GoogleFonts.poppins(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber[800],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          // Card Number
+          Text(
+            _hideBalance ? '•••• •••• •••• ••••' : _cardNumber,
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Bottom row with name and expiry
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Card Holder Name
+              if (_isLoggedIn) ...[
+                Expanded(
+                  child: Text(
+                    _userName.toUpperCase(),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+              // Expiry Date
+              Text(
+                _expiryDate,
+                style: GoogleFonts.poppins(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // Balance
+          Row(
+            children: [
+              Text(
+                'Balance: ',
+                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+              ),
+              Text(
+                _hideBalance
+                    ? '••••••••'
+                    : 'KSh ${_cardBalance.toStringAsFixed(2)}',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              if (_isLoggedIn) ...[
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _hideBalance = !_hideBalance;
+                    });
+                  },
+                  child: Icon(
+                    _hideBalance ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.white70,
+                    size: 16,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardBack() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Spacer(),
+          // Magnetic strip
+          Container(
+            width: double.infinity,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // CVV section
+          Row(
+            children: [
+              Container(
+                width: 200,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Row(
+                    children: [
+                      Text(
+                        'CVV: ',
+                        style: GoogleFonts.poppins(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        _hideBalance ? '•••' : _cvv,
+                        style: GoogleFonts.poppins(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Signature strip
+          Container(
+            width: double.infinity,
+            height: 20,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Center(
+              child: Text(
+                'Authorized Signature',
+                style: GoogleFonts.poppins(color: Colors.white70, fontSize: 10),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Tap to flip text
+          Center(
+            child: Text(
+              'Tap to flip card',
+              style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildQuickActionCard({
     required IconData icon,
     required String title,
@@ -879,9 +1170,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
         builder:
             (context) => MpesaPaymentScreen(
               amount: amount,
-              onPaymentSuccess: (phoneNumber) {
+              onPaymentSuccess: (phoneNumber) async {
+                final newBalance = _cardBalance + amount;
+                await _updateUserBalance(newBalance);
                 setState(() {
-                  _cardBalance += amount;
                   _transactions.insert(0, {
                     'id': DateTime.now().millisecondsSinceEpoch.toString(),
                     'type': 'topup',
@@ -905,9 +1197,15 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
         builder:
             (context) => VisaPaymentScreen(
               amount: amount,
-              onPaymentSuccess: (cardNumber, expiryDate, cvv, cardHolderName) {
+              onPaymentSuccess: (
+                cardNumber,
+                expiryDate,
+                cvv,
+                cardHolderName,
+              ) async {
+                final newBalance = _cardBalance + amount;
+                await _updateUserBalance(newBalance);
                 setState(() {
-                  _cardBalance += amount;
                   _transactions.insert(0, {
                     'id': DateTime.now().millisecondsSinceEpoch.toString(),
                     'type': 'topup',
@@ -931,10 +1229,11 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
       MaterialPageRoute(
         builder: (context) => BankTransferScreen(amount: amount),
       ),
-    ).then((success) {
+    ).then((success) async {
       if (success == true) {
+        final newBalance = _cardBalance + amount;
+        await _updateUserBalance(newBalance);
         setState(() {
-          _cardBalance += amount;
           _transactions.insert(0, {
             'id': DateTime.now().millisecondsSinceEpoch.toString(),
             'type': 'topup',
@@ -1051,25 +1350,635 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _manageCardSettings() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Card settings feature coming soon!',
-          style: GoogleFonts.poppins(),
+  // Helper methods for settings
+  Widget _buildSettingsSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
         ),
+        const SizedBox(height: 12),
+        ...children,
+      ],
+    );
+  }
+
+  Widget _buildSettingsItem(
+    String title,
+    String subtitle,
+    IconData icon, {
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFFE60012)),
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: GoogleFonts.poppins(color: Colors.grey[600]),
+      ),
+      trailing:
+          onTap != null ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+      onTap: onTap,
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+
+  // Helper methods for help
+  Widget _buildHelpSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...children,
+      ],
+    );
+  }
+
+  Widget _buildHelpItem(
+    String title,
+    String subtitle,
+    IconData icon, {
+    VoidCallback? onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: const Color(0xFFE60012)),
+      title: Text(
+        title,
+        style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: GoogleFonts.poppins(color: Colors.grey[600]),
+      ),
+      trailing:
+          onTap != null ? const Icon(Icons.arrow_forward_ios, size: 16) : null,
+      onTap: onTap,
+      contentPadding: EdgeInsets.zero,
+    );
+  }
+
+  // Settings action methods
+  void _showChangePinDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Change PIN',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'This feature will be available soon. You can change your PIN at any TotalEnergies station.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showTransactionLimitsDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Transaction Limits',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Set your daily spending limits. This feature will be available in the next update.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showBlockCardDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Block Card',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Are you sure you want to temporarily block your card? You can unblock it anytime.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: GoogleFonts.poppins()),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Card blocked successfully',
+                        style: GoogleFonts.poppins(),
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                },
+                child: Text(
+                  'Block',
+                  style: GoogleFonts.poppins(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _showNotificationSettings() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Notification Settings',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Manage your notification preferences. This feature will be available soon.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // Help action methods
+  void _callSupport() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Call Support',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Call our support team at +254 700 000 000 for immediate assistance.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: GoogleFonts.poppins()),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Opening phone dialer...',
+                        style: GoogleFonts.poppins(),
+                      ),
+                      backgroundColor: const Color(0xFFE60012),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Call',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _emailSupport() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Email Support',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Send us an email at support@totalenergies.co.ke and we\'ll get back to you within 24 hours.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel', style: GoogleFonts.poppins()),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Opening email client...',
+                        style: GoogleFonts.poppins(),
+                      ),
+                      backgroundColor: const Color(0xFFE60012),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Email',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _openLiveChat() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Live Chat',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(
+              'Live chat support is available 24/7. This feature will be available in the next update.',
+              style: GoogleFonts.poppins(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'OK',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _findNearestStation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const EnhancedStationLocatorScreen(),
       ),
     );
   }
 
+  void _showFAQ(String question) {
+    String answer = '';
+    switch (question) {
+      case 'What is a TotalEnergies card?':
+        answer =
+            'A TotalEnergies card is a prepaid card that allows you to pay for fuel and services at TotalEnergies stations. It offers convenience, security, and rewards.';
+        break;
+      case 'How do I activate my card?':
+        answer =
+            'You can activate your card at any TotalEnergies station by presenting your card and ID. The staff will help you complete the activation process.';
+        break;
+      case 'What are the fees?':
+        answer =
+            'There are no monthly fees. Transaction fees are minimal and vary by service. Check the fee schedule at any station for detailed information.';
+        break;
+    }
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              question,
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            content: Text(answer, style: GoogleFonts.poppins()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Close',
+                  style: GoogleFonts.poppins(color: const Color(0xFFE60012)),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _manageCardSettings() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.9,
+            builder: (_, controller) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 5,
+                      width: 50,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: controller,
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Card Settings',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: const Icon(Icons.close),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Card Information
+                            _buildSettingsSection('Card Information', [
+                              _buildSettingsItem(
+                                'Card Number',
+                                '**** **** **** 1234',
+                                Icons.credit_card,
+                              ),
+                              _buildSettingsItem(
+                                'Card Type',
+                                'TotalEnergies Premium',
+                                Icons.card_membership,
+                              ),
+                              _buildSettingsItem(
+                                'Expiry Date',
+                                '12/25',
+                                Icons.calendar_today,
+                              ),
+                            ]),
+
+                            const SizedBox(height: 20),
+
+                            // Security Settings
+                            _buildSettingsSection('Security', [
+                              _buildSettingsItem(
+                                'Change PIN',
+                                'Update your card PIN',
+                                Icons.lock,
+                                onTap: () => _showChangePinDialog(),
+                              ),
+                              _buildSettingsItem(
+                                'Transaction Limits',
+                                'Set daily spending limits',
+                                Icons.speed,
+                                onTap: () => _showTransactionLimitsDialog(),
+                              ),
+                              _buildSettingsItem(
+                                'Block/Unblock Card',
+                                'Temporarily disable your card',
+                                Icons.block,
+                                onTap: () => _showBlockCardDialog(),
+                              ),
+                            ]),
+
+                            const SizedBox(height: 20),
+
+                            // Notifications
+                            _buildSettingsSection('Notifications', [
+                              _buildSettingsItem(
+                                'Transaction Alerts',
+                                'Get notified of all transactions',
+                                Icons.notifications,
+                                onTap: () => _showNotificationSettings(),
+                              ),
+                              _buildSettingsItem(
+                                'Low Balance Alerts',
+                                'Alert when balance is low',
+                                Icons.warning,
+                                onTap: () => _showNotificationSettings(),
+                              ),
+                            ]),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+    );
+  }
+
   void _showHelp() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Help & Support feature coming soon!',
-          style: GoogleFonts.poppins(),
-        ),
-      ),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.8,
+            minChildSize: 0.5,
+            maxChildSize: 0.9,
+            builder: (_, controller) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 5,
+                      width: 50,
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: controller,
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Help & Support',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: const Icon(Icons.close),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            // Quick Help Topics
+                            _buildHelpSection('Quick Help', [
+                              _buildHelpItem(
+                                'How to check balance',
+                                'View your current card balance and transaction history',
+                                Icons.account_balance_wallet,
+                              ),
+                              _buildHelpItem(
+                                'How to top up',
+                                'Add funds to your TotalEnergies card',
+                                Icons.add_circle,
+                              ),
+                              _buildHelpItem(
+                                'How to use at stations',
+                                'Pay for fuel and services using your card',
+                                Icons.local_gas_station,
+                              ),
+                              _buildHelpItem(
+                                'Lost or stolen card',
+                                'Report and block your card immediately',
+                                Icons.report_problem,
+                              ),
+                            ]),
+
+                            const SizedBox(height: 20),
+
+                            // Contact Support
+                            _buildHelpSection('Contact Support', [
+                              _buildHelpItem(
+                                'Call Support',
+                                '+254 700 000 000',
+                                Icons.phone,
+                                onTap: () => _callSupport(),
+                              ),
+                              _buildHelpItem(
+                                'Email Support',
+                                'support@totalenergies.co.ke',
+                                Icons.email,
+                                onTap: () => _emailSupport(),
+                              ),
+                              _buildHelpItem(
+                                'Live Chat',
+                                'Chat with our support team',
+                                Icons.chat,
+                                onTap: () => _openLiveChat(),
+                              ),
+                              _buildHelpItem(
+                                'Visit Station',
+                                'Find nearest TotalEnergies station',
+                                Icons.location_on,
+                                onTap: () => _findNearestStation(),
+                              ),
+                            ]),
+
+                            const SizedBox(height: 20),
+
+                            // FAQ
+                            _buildHelpSection('Frequently Asked Questions', [
+                              _buildHelpItem(
+                                'What is a TotalEnergies card?',
+                                'A prepaid card for fuel and services',
+                                Icons.help_outline,
+                                onTap:
+                                    () => _showFAQ(
+                                      'What is a TotalEnergies card?',
+                                    ),
+                              ),
+                              _buildHelpItem(
+                                'How do I activate my card?',
+                                'Activate your card at any station',
+                                Icons.help_outline,
+                                onTap:
+                                    () =>
+                                        _showFAQ('How do I activate my card?'),
+                              ),
+                              _buildHelpItem(
+                                'What are the fees?',
+                                'View all card-related fees',
+                                Icons.help_outline,
+                                onTap: () => _showFAQ('What are the fees?'),
+                              ),
+                            ]),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
     );
   }
 
@@ -1154,6 +2063,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
     final cardHolderName =
         _nameController.text.isNotEmpty ? _nameController.text : 'Card Holder';
 
+    print(
+      'Virtual card generation - Name controller: "${_nameController.text}", Card holder: "$cardHolderName"',
+    );
+
     showDialog(
       context: context,
       builder:
@@ -1162,16 +2075,22 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Container(
-              height: 450,
+              width: 350,
+              height: 400,
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Swipeable Card
-                  Expanded(
+                  Container(
+                    height: 200,
                     child: PageView(
                       children: [
                         // Card Front
                         Container(
-                          margin: const EdgeInsets.all(20),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 20,
+                          ),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFFE60012), Color(0xFFB8000E)],
@@ -1266,7 +2185,10 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
 
                         // Card Back
                         Container(
-                          margin: const EdgeInsets.all(20),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 20,
+                          ),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [Color(0xFF2C2C2C), Color(0xFF1A1A1A)],
@@ -1408,11 +2330,15 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              _saveCardDetails(
-                                cardNumber,
-                                expiryDate,
-                                cvv,
-                                cardHolderName,
+                              // Card details are automatically saved when generated
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Card details saved successfully!',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -1438,67 +2364,6 @@ class _CardScreenState extends State<CardScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-    );
-  }
-
-  String _generateCardNumber() {
-    // Generate a realistic-looking card number
-    final random = DateTime.now().millisecondsSinceEpoch;
-    final baseNumber = (random % 9000000000000000) + 1000000000000000;
-    return baseNumber.toString().replaceAllMapped(
-      RegExp(r'(\d{4})(?=\d)'),
-      (Match match) => '${match.group(1)} ',
-    );
-  }
-
-  String _generateExpiryDate() {
-    final now = DateTime.now();
-    final expiryYear = now.year + 3;
-    final month = (now.month + 6) % 12;
-    return '${month.toString().padLeft(2, '0')}/${expiryYear.toString().substring(2)}';
-  }
-
-  String _generateCVV() {
-    final random = DateTime.now().millisecondsSinceEpoch;
-    return (random % 900 + 100).toString();
-  }
-
-  void _saveCardDetails(
-    String cardNumber,
-    String expiryDate,
-    String cvv,
-    String cardHolderName,
-  ) {
-    setState(() {
-      _cardBalance = 0.0; // New card starts with zero balance
-      _transactions.clear();
-      _transactions.add({
-        'id': DateTime.now().millisecondsSinceEpoch.toString(),
-        'type': 'card_created',
-        'amount': 0.0,
-        'description': 'Virtual card created successfully',
-        'date': DateTime.now().toIso8601String().split('T')[0],
-        'time': '${DateTime.now().hour}:${DateTime.now().minute}',
-        'status': 'completed',
-      });
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Virtual card created and saved successfully!',
-          style: GoogleFonts.poppins(),
-        ),
-        backgroundColor: Colors.green,
-        action: SnackBarAction(
-          label: 'View Card',
-          textColor: Colors.white,
-          onPressed: () {
-            // Switch to My Card tab
-            _tabController.animateTo(0);
-          },
-        ),
-      ),
     );
   }
 }

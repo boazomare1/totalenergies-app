@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 
 class PayAtStationScreen extends StatefulWidget {
   const PayAtStationScreen({super.key});
@@ -108,6 +109,19 @@ class _PayAtStationScreenState extends State<PayAtStationScreen> {
       'color': const Color(0xFFE60012),
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = AuthService.getCurrentUser();
+    if (user != null) {
+      _phoneController.text = user.phone;
+    }
+  }
 
   @override
   void dispose() {
