@@ -17,6 +17,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/dashboard_service.dart';
 import '../services/auth_service.dart';
 import '../services/otp_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -859,10 +860,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showNewsletterOptIn() async {
-    // Check if we should show the popup based on OTP service preferences
-    final shouldShow = await OTPService.shouldShowOTPPopup();
+    // Check if user has chosen "Never show" for newsletter popup
+    final prefs = await SharedPreferences.getInstance();
+    final neverShow = prefs.getBool('newsletter_never_show') ?? false;
     
-    if (shouldShow) {
+    if (!neverShow) {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
           showDialog(
@@ -871,21 +873,26 @@ class _HomeScreenState extends State<HomeScreen> {
             builder:
                 (context) => _NewsletterOptInDialog(
                   onOptIn: () async {
-                    await OTPService.dismissOTPPopup();
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('newsletter_never_show', true);
                     Navigator.pop(context);
                     _showOptInSuccess();
                   },
                   onSkip: () async {
-                    await OTPService.dismissOTPPopup();
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('newsletter_never_show', true);
                     Navigator.pop(context);
                   },
                   onLater: () async {
+                    // Use OTP service for "Later" - shows again after 15 minutes
                     await OTPService.dismissOTPPopup();
                     Navigator.pop(context);
                     _showLaterMessage();
                   },
                   onNever: () async {
-                    await OTPService.dismissOTPPopup();
+                    // Permanently disable newsletter popup
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('newsletter_never_show', true);
                     Navigator.pop(context);
                   },
                 ),

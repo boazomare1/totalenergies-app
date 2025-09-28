@@ -8,6 +8,7 @@ import 'logout_screen.dart';
 import '../services/language_service.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -218,6 +219,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'View third-party licenses',
             Icons.code,
             () => _showLicenses(),
+          ),
+
+          // Debug Section
+          _buildSectionHeader('Debug'),
+          _buildDebugTile(
+            'Reset Newsletter Popup',
+            'Show newsletter popup again',
+            Icons.refresh,
+            () => _resetNewsletterPopup(),
           ),
 
           // Logout Section (if logged in)
@@ -604,6 +614,67 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context,
       MaterialPageRoute(builder: (context) => const LogoutScreen()),
     );
+  }
+
+  Widget _buildDebugTile(String title, String subtitle, IconData icon, VoidCallback onTap) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        title: Text(
+          title,
+          style: GoogleFonts.poppins(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.orange[700],
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: GoogleFonts.poppins(fontSize: 14, color: Colors.grey[600]),
+        ),
+        leading: Icon(icon, color: Colors.orange[700]),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Future<void> _resetNewsletterPopup() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('newsletter_never_show');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Newsletter popup reset! It will show again on next app launch.',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}', style: GoogleFonts.poppins()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _showInfoDialog(String title, String content) {
