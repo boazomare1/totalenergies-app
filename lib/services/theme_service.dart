@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeService {
+class ThemeService extends ChangeNotifier {
   static const String _themeKey = 'theme_mode';
   static ThemeMode _themeMode = ThemeMode.system;
+  static final ThemeService _instance = ThemeService._internal();
+
+  factory ThemeService() => _instance;
+  ThemeService._internal();
 
   static ThemeMode get themeMode => _themeMode;
 
@@ -17,6 +21,16 @@ class ThemeService {
     _themeMode = mode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeKey, mode.index);
+    _instance.notifyListeners();
+  }
+
+  // Add listener methods for the singleton instance
+  static void addThemeListener(VoidCallback listener) {
+    _instance.addListener(listener);
+  }
+
+  static void removeThemeListener(VoidCallback listener) {
+    _instance.removeListener(listener);
   }
 
   static ThemeData get lightTheme {
@@ -34,9 +48,7 @@ class ThemeService {
       cardTheme: CardTheme(
         color: Colors.white,
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -48,9 +60,7 @@ class ThemeService {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE60012)),
@@ -74,9 +84,7 @@ class ThemeService {
       cardTheme: CardTheme(
         color: const Color(0xFF1E1E1E),
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -88,9 +96,7 @@ class ThemeService {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE60012)),

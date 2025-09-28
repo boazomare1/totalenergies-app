@@ -5,6 +5,7 @@ import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
+import 'screens/analytics_screen.dart';
 import 'services/language_service.dart';
 import 'services/language_notifier.dart';
 import 'services/location_service.dart';
@@ -50,8 +51,30 @@ Future<void> _initializeServices() async {
   }
 }
 
-class TotalEnergiesApp extends StatelessWidget {
+class TotalEnergiesApp extends StatefulWidget {
   const TotalEnergiesApp({super.key});
+
+  @override
+  State<TotalEnergiesApp> createState() => _TotalEnergiesAppState();
+}
+
+class _TotalEnergiesAppState extends State<TotalEnergiesApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen to theme changes
+    ThemeService.addThemeListener(_onThemeChanged);
+  }
+
+  @override
+  void dispose() {
+    ThemeService.removeThemeListener(_onThemeChanged);
+    super.dispose();
+  }
+
+  void _onThemeChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +109,7 @@ class TotalEnergiesApp extends StatelessWidget {
               '/login': (context) => const LoginScreen(),
               '/register': (context) => const RegisterScreen(),
               '/main': (context) => const MainScreen(),
+              '/analytics': (context) => const AnalyticsScreen(),
             },
           );
         },
