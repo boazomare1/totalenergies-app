@@ -599,7 +599,7 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                             }
                             : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE60012),
+                      backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -614,27 +614,20 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                       children: [
                         const Icon(Icons.directions, size: 16),
                         const SizedBox(width: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'GO', 
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.5,
-                              shadows: [
-                                Shadow(
-                                  offset: const Offset(1, 1),
-                                  blurRadius: 2,
-                                  color: Colors.black.withValues(alpha: 0.8),
-                                ),
-                              ],
-                            ),
+                        Text(
+                          'GO', 
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.yellow,
+                            letterSpacing: 1.0,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(2, 2),
+                                blurRadius: 4,
+                                color: Colors.black,
+                              ),
+                            ],
                           ),
                         ),
                       ],
