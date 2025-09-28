@@ -56,9 +56,6 @@ class _StationMapWidgetState extends State<StationMapWidget> {
             snippet: station['address'] ?? '',
           ),
           onTap: () {
-            setState(() {
-              _selectedStation = position;
-            });
             widget.onStationSelected(station);
           },
         ),

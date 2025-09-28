@@ -248,14 +248,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     }
   }
 
-  void _showTicketDetails(Map<String, dynamic> ticket) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildTicketDetailsSheet(ticket),
-    );
-  }
 
   void _showLiveChatDialog() {
     final availability = SupportService.getLiveChatAvailability();
@@ -871,138 +863,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     );
   }
 
-  Widget _buildTicketCard(Map<String, dynamic> ticket) {
-    final statusNames = SupportService.getTicketStatusesDisplayNames();
-    final categoryNames = SupportService.getTicketCategoriesDisplayNames();
-    final priorityNames = SupportService.getTicketPrioritiesDisplayNames();
-
-    Color statusColor;
-    switch (ticket['status']) {
-      case 'open':
-        statusColor = Colors.blue;
-        break;
-      case 'in_progress':
-        statusColor = Colors.orange;
-        break;
-      case 'resolved':
-        statusColor = Colors.green;
-        break;
-      case 'closed':
-        statusColor = Colors.grey;
-        break;
-      default:
-        statusColor = Colors.grey;
-    }
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () => _showTicketDetails(ticket),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      ticket['subject'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      statusNames[ticket['status']] ?? ticket['status'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                ticket['description'],
-                style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      categoryNames[ticket['category']] ?? ticket['category'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      priorityNames[ticket['priority']] ?? ticket['priority'],
-                      style: GoogleFonts.poppins(
-                        fontSize: 10,
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    _formatDate(ticket['createdAt']),
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildQuickActionCard({
     required IconData icon,
@@ -1277,20 +1137,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
     );
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays > 0) {
-      return '${difference.inDays} days ago';
-    } else if (difference.inHours > 0) {
-      return '${difference.inHours} hours ago';
-    } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} minutes ago';
-    } else {
-      return 'Just now';
-    }
-  }
 
   String _formatTime(DateTime date) {
     return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';

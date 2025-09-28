@@ -304,7 +304,7 @@ class _TicketScreenState extends State<TicketScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: _getStatusColor(status).withOpacity(0.1),
+        color: _getStatusColor(status).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _getStatusColor(status)),
       ),
@@ -323,7 +323,7 @@ class _TicketScreenState extends State<TicketScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: _getPriorityColor(priority).withOpacity(0.1),
+        color: _getPriorityColor(priority).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _getPriorityColor(priority)),
       ),
