@@ -604,7 +604,6 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
