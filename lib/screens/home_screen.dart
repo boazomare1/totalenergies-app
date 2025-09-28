@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'station_finder_screen.dart';
+import 'enhanced_station_locator_screen.dart';
 import 'card_screen.dart';
 import 'offers_screen.dart';
 import 'gas_products_screen.dart';
@@ -652,7 +652,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Find nearby TotalEnergies stations',
             Icons.location_on,
             Colors.amber,
-            () => _navigateToScreen(const StationFinderScreen()),
+            () => _navigateToScreen(const EnhancedStationLocatorScreen()),
           ),
           const SizedBox(height: 12),
 
