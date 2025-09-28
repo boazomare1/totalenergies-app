@@ -32,6 +32,9 @@ Future<void> _initializeServices() async {
     // Initialize Hive database
     await HiveDatabaseService.initialize();
 
+    // Request location permission
+    await LocationService.requestLocationPermission();
+
     // Initialize location service
     await LocationService.initialize();
 

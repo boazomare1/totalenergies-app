@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
+import '../services/location_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -72,16 +73,27 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToNextScreen() async {
-    // Load user data and check authentication
-    await AuthService.loadUserData();
-    final isLoggedIn = await AuthService.isLoggedIn();
+    try {
+      // Request location permission
+      await LocationService.requestLocationPermission();
+      
+      // Load user data and check authentication
+      await AuthService.loadUserData();
+      final isLoggedIn = await AuthService.isLoggedIn();
 
-    if (mounted) {
-      if (isLoggedIn) {
-        // User is already logged in, go to main screen
-        Navigator.of(context).pushReplacementNamed('/main');
-      } else {
-        // User is not logged in, go to register screen first
+      if (mounted) {
+        if (isLoggedIn) {
+          // User is already logged in, go to main screen
+          Navigator.of(context).pushReplacementNamed('/main');
+        } else {
+          // User is not logged in, go to register screen first
+          Navigator.of(context).pushReplacementNamed('/register');
+        }
+      }
+    } catch (e) {
+      print('Error during navigation: $e');
+      if (mounted) {
+        // If there's an error, still navigate to register screen
         Navigator.of(context).pushReplacementNamed('/register');
       }
     }
