@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/products_service.dart';
+import '../services/cart_service.dart';
 import 'shopping_cart_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProductsCatalogScreen extends StatefulWidget {
   const ProductsCatalogScreen({super.key});
@@ -110,6 +112,32 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _buildProductDetailsSheet(product),
+    );
+  }
+
+  void _addToCart(Map<String, dynamic> product) {
+    final cartService = Provider.of<CartService>(context, listen: false);
+    cartService.addToCart(product);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          '${product['name']} added to cart!',
+          style: GoogleFonts.poppins(),
+        ),
+        backgroundColor: const Color(0xFFE60012),
+        duration: const Duration(seconds: 2),
+        action: SnackBarAction(
+          label: 'View Cart',
+          textColor: Colors.white,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ShoppingCartScreen()),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -418,17 +446,50 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ShoppingCartScreen(),
-                ),
+          Consumer<CartService>(
+            builder: (context, cartService, child) {
+              return Stack(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ShoppingCartScreen(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.shopping_cart),
+                    tooltip: 'Shopping Cart',
+                  ),
+                  if (cartService.itemCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '${cartService.itemCount}',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
-            icon: const Icon(Icons.shopping_cart),
-            tooltip: 'Shopping Cart',
           ),
         ],
         bottom: TabBar(
@@ -981,6 +1042,32 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
                       ),
                     ),
                   ),
+                  // Add to Cart Button
+                  if (product['stock'] > 0 || product['category'] == 'services')
+                    Consumer<CartService>(
+                      builder: (context, cartService, child) {
+                        final isInCart = cartService.isInCart(product['id']);
+                        final quantity = cartService.getQuantity(product['id']);
+                        
+                        return ElevatedButton.icon(
+                          onPressed: () => _addToCart(product),
+                          icon: Icon(
+                            isInCart ? Icons.shopping_cart : Icons.add_shopping_cart,
+                            size: 16,
+                          ),
+                          label: Text(
+                            isInCart ? 'In Cart ($quantity)' : 'Add to Cart',
+                            style: GoogleFonts.poppins(),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: isInCart ? Colors.green[600] : const Color(0xFFE60012),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   if (product['canPreOrder'])
                     ElevatedButton.icon(
                       onPressed: () => _showPreOrderDialog(product),

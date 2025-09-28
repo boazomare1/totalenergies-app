@@ -13,6 +13,7 @@ import 'services/notification_service.dart';
 import 'services/hive_database_service.dart';
 import 'services/secure_storage_service.dart';
 import 'services/theme_service.dart';
+import 'services/cart_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -78,8 +79,11 @@ class _TotalEnergiesAppState extends State<TotalEnergiesApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => LanguageNotifier()..loadCurrentLocale(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => LanguageNotifier()..loadCurrentLocale()),
+        ChangeNotifierProvider(create: (context) => CartService()),
+      ],
       child: Consumer<LanguageNotifier>(
         builder: (context, languageNotifier, child) {
           return MaterialApp(
