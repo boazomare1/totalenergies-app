@@ -353,29 +353,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Login Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Already have an account? ',
-                          style: GoogleFonts.poppins(
+                    // Login Link - Always visible at the bottom
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.person_outline,
                             color: Colors.grey[600],
-                            fontSize: 14,
+                            size: 20,
                           ),
-                        ),
-                        TextButton(
-                          onPressed: _goToLogin,
-                          child: Text(
-                            'Sign In',
+                          const SizedBox(width: 8),
+                          Text(
+                            'Already have an account? ',
                             style: GoogleFonts.poppins(
-                              color: const Color(0xFFE60012),
+                              color: Colors.grey[600],
                               fontSize: 14,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
+                          TextButton(
+                            onPressed: _goToLogin,
+                            child: Text(
+                              'Sign In',
+                              style: GoogleFonts.poppins(
+                                color: const Color(0xFFE60012),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -4,6 +4,7 @@ import 'analytics_screen.dart';
 import 'language_selection_screen.dart';
 import 'terms_of_service_screen.dart';
 import 'privacy_policy_screen.dart';
+import 'logout_screen.dart';
 import '../services/language_service.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -599,73 +600,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _confirmLogout() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(
-              'Logout',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-            ),
-            content: Text(
-              'Are you sure you want to logout?',
-              style: GoogleFonts.poppins(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  'Cancel',
-                  style: GoogleFonts.poppins(color: Colors.grey[600]),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(context); // Close dialog
-                  await _logout();
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text(
-                  'Logout',
-                  style: GoogleFonts.poppins(color: Colors.white),
-                ),
-              ),
-            ],
-          ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LogoutScreen()),
     );
-  }
-
-  Future<void> _logout() async {
-    try {
-      await AuthService.logout();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Logged out successfully!',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Navigate to login screen
-        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Error logging out: ${e.toString()}',
-              style: GoogleFonts.poppins(),
-            ),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 
   void _showInfoDialog(String title, String content) {

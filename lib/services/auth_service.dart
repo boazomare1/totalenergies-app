@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'hive_database_service.dart';
+import 'cloud_storage_service.dart';
 import '../models/user_model.dart';
 
 class AuthService {
@@ -63,15 +64,23 @@ class AuthService {
     // Hash password for security
     String hashedPassword = _hashPassword(password);
 
-    // Check if user already exists
-    if (await HiveDatabaseService.userExists(phoneOrEmail)) {
+    // Check if user already exists in cloud storage
+    if (await CloudStorageService.userExists(phoneOrEmail)) {
       throw Exception(
         'User with this ${isEmail ? 'email' : 'phone number'} already exists',
       );
     }
 
-    // Create user using Hive
-    _currentUser = await HiveDatabaseService.createUser(
+    // Create user in cloud storage
+    _currentUser = await CloudStorageService.createUser(
+      name: name,
+      email: isEmail ? phoneOrEmail : '',
+      phone: isEmail ? '' : phoneOrEmail,
+      password: hashedPassword,
+    );
+
+    // Also create in local Hive for offline access
+    await HiveDatabaseService.createUser(
       name: name,
       email: isEmail ? phoneOrEmail : '',
       phone: isEmail ? '' : phoneOrEmail,
@@ -120,11 +129,19 @@ class AuthService {
     // Hash the provided password for comparison
     String hashedPassword = _hashPassword(password);
 
-    // Authenticate using Hive
-    _currentUser = await HiveDatabaseService.authenticateUser(
+    // Authenticate using cloud storage first, then fallback to local
+    _currentUser = await CloudStorageService.authenticateUser(
       identifier: phoneOrEmail,
       password: hashedPassword,
     );
+
+    // Fallback to local storage if cloud fails
+    if (_currentUser == null) {
+      _currentUser = await HiveDatabaseService.authenticateUser(
+        identifier: phoneOrEmail,
+        password: hashedPassword,
+      );
+    }
 
     if (_currentUser == null) {
       throw Exception('Invalid credentials');
@@ -135,8 +152,9 @@ class AuthService {
       throw Exception('Account has been deactivated. Please contact support.');
     }
 
-    // Update last login time
+    // Update last login time in cloud storage
     final updatedUser = _currentUser!.copyWith(lastLoginAt: DateTime.now());
+    await CloudStorageService.updateUser(updatedUser);
     await HiveDatabaseService.updateUser(updatedUser);
     _currentUser = updatedUser;
 
@@ -205,7 +223,11 @@ class AuthService {
     if (isLoggedIn) {
       final userId = prefs.getString(_currentUserIdKey);
       if (userId != null) {
-        _currentUser = await HiveDatabaseService.getUserById(userId);
+        // Try cloud storage first, then fallback to local
+        _currentUser = await CloudStorageService.getUserById(userId);
+        if (_currentUser == null) {
+          _currentUser = await HiveDatabaseService.getUserById(userId);
+        }
       }
     }
   }
@@ -291,6 +313,11 @@ class AuthService {
       throw Exception('No user logged in');
     }
 
+    await CloudStorageService.setBiometricPreference(
+      userId: _currentUser!.id,
+      enabled: true,
+      biometricType: biometricType,
+    );
     await HiveDatabaseService.setBiometricPreference(
       userId: _currentUser!.id,
       enabled: true,
@@ -304,6 +331,10 @@ class AuthService {
       throw Exception('No user logged in');
     }
 
+    await CloudStorageService.setBiometricPreference(
+      userId: _currentUser!.id,
+      enabled: false,
+    );
     await HiveDatabaseService.setBiometricPreference(
       userId: _currentUser!.id,
       enabled: false,
@@ -314,6 +345,11 @@ class AuthService {
   static Future<bool> isBiometricEnabled() async {
     if (_currentUser == null) return false;
 
-    return await HiveDatabaseService.getBiometricPreference(_currentUser!.id);
+    // Try cloud storage first, then fallback to local
+    bool enabled = await CloudStorageService.getBiometricPreference(_currentUser!.id);
+    if (!enabled) {
+      enabled = await HiveDatabaseService.getBiometricPreference(_currentUser!.id);
+    }
+    return enabled;
   }
 }

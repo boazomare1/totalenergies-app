@@ -11,6 +11,7 @@ import 'services/language_notifier.dart';
 import 'services/location_service.dart';
 import 'services/notification_service.dart';
 import 'services/hive_database_service.dart';
+import 'services/cloud_storage_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +26,9 @@ void main() async {
 
 Future<void> _initializeServices() async {
   try {
+    // Initialize cloud storage
+    await CloudStorageService.initialize();
+
     // Initialize Hive database
     await HiveDatabaseService.initialize();
 

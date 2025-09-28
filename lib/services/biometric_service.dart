@@ -52,17 +52,15 @@ class BiometricService {
       // First check if biometric is available
       final isAvailable = await isBiometricAvailable();
       print('Biometric available: $isAvailable');
-
+      
       if (!isAvailable) {
-        // For testing purposes, simulate biometric auth if not available
-        print('Biometric not available, using simulation for testing');
-        return await simulateBiometricAuth(reason: reason);
+        throw Exception('Fingerprint authentication is not available on this device');
       }
 
       final result = await _localAuth.authenticate(
         localizedReason: reason,
         options: const AuthenticationOptions(
-          biometricOnly: false, // Allow fallback for testing
+          biometricOnly: true, // Only use biometric, no fallback
           stickyAuth: true,
           sensitiveTransaction: true,
         ),
@@ -76,13 +74,13 @@ class BiometricService {
       );
 
       if (e.code == auth_error.notAvailable) {
-        // For testing, simulate authentication instead of throwing error
-        print('Biometric not available, using simulation');
-        return await simulateBiometricAuth(reason: reason);
+        throw Exception(
+          'Biometric authentication is not available on this device',
+        );
       } else if (e.code == auth_error.notEnrolled) {
-        // For testing, simulate authentication instead of throwing error
-        print('Biometric not enrolled, using simulation');
-        return await simulateBiometricAuth(reason: reason);
+        throw Exception(
+          'No biometric data is enrolled. Please set up fingerprint authentication in your device settings.',
+        );
       } else if (e.code == auth_error.lockedOut) {
         throw Exception(
           'Biometric authentication is temporarily locked. Please try again later.',
@@ -96,15 +94,13 @@ class BiometricService {
       } else if (e.code == 'SystemCancel') {
         throw Exception('Authentication was cancelled by system');
       } else {
-        // For other errors, try simulation for testing
-        print('Biometric error, using simulation: ${e.message}');
-        return await simulateBiometricAuth(reason: reason);
+        throw Exception(
+          'Biometric authentication failed: ${e.message ?? 'Unknown error'}',
+        );
       }
     } catch (e) {
       print('Error during biometric authentication: $e');
-      // For testing, simulate authentication instead of throwing error
-      print('Using simulation due to error');
-      return await simulateBiometricAuth(reason: reason);
+      throw Exception('Biometric authentication failed: ${e.toString()}');
     }
   }
 
