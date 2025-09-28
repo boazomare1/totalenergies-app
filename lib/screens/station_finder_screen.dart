@@ -614,12 +614,27 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                       children: [
                         const Icon(Icons.directions, size: 16),
                         const SizedBox(width: 4),
-                        Text(
-                          'Go', 
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'GO', 
+                            style: GoogleFonts.poppins(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                              shadows: [
+                                Shadow(
+                                  offset: const Offset(1, 1),
+                                  blurRadius: 2,
+                                  color: Colors.black.withValues(alpha: 0.8),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
