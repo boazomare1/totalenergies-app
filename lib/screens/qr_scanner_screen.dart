@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class QRScannerScreen extends StatefulWidget {
@@ -11,8 +11,7 @@ class QRScannerScreen extends StatefulWidget {
 }
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  QRViewController? controller;
+  MobileScannerController controller = MobileScannerController();
   bool isScanning = true;
   String? scannedCode;
 
@@ -64,19 +63,17 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      this.controller = controller;
-    });
-    controller.scannedDataStream.listen((scanData) {
-      if (isScanning && scanData.code != null) {
+  void _onDetect(BarcodeCapture capture) {
+    if (isScanning && capture.barcodes.isNotEmpty) {
+      final barcode = capture.barcodes.first;
+      if (barcode.rawValue != null) {
         setState(() {
           isScanning = false;
-          scannedCode = scanData.code;
+          scannedCode = barcode.rawValue;
         });
-        _processQRCode(scanData.code!);
+        _processQRCode(barcode.rawValue!);
       }
-    });
+    }
   }
 
   void _processQRCode(String code) {
@@ -194,7 +191,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 
@@ -215,16 +212,9 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         children: [
           Expanded(
             flex: 4,
-            child: QRView(
-              key: qrKey,
-              onQRViewCreated: _onQRViewCreated,
-              overlay: QrScannerOverlayShape(
-                borderColor: const Color(0xFFE60012),
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 250,
-              ),
+            child: MobileScanner(
+              controller: controller,
+              onDetect: _onDetect,
             ),
           ),
           Expanded(

@@ -39,14 +39,14 @@ class _StationMapWidgetState extends State<StationMapWidget> {
 
   void _createMarkers() {
     _markers.clear();
-    
+
     for (int i = 0; i < widget.stations.length; i++) {
       final station = widget.stations[i];
       final position = LatLng(
         station['latitude'] ?? 0.0,
         station['longitude'] ?? 0.0,
       );
-      
+
       _markers.add(
         Marker(
           markerId: MarkerId('station_$i'),
@@ -99,9 +99,7 @@ class _StationMapWidgetState extends State<StationMapWidget> {
         station['latitude'] ?? 0.0,
         station['longitude'] ?? 0.0,
       );
-      _mapController!.animateCamera(
-        CameraUpdate.newLatLngZoom(position, 16.0),
-      );
+      _mapController!.animateCamera(CameraUpdate.newLatLngZoom(position, 16.0));
     }
   }
 
@@ -118,11 +116,7 @@ class _StationMapWidgetState extends State<StationMapWidget> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.location_off,
-                size: 48,
-                color: Colors.grey[400],
-              ),
+              Icon(Icons.location_off, size: 48, color: Colors.grey[400]),
               const SizedBox(height: 16),
               Text(
                 'No stations found',
@@ -151,10 +145,12 @@ class _StationMapWidgetState extends State<StationMapWidget> {
             GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
-                target: widget.userLocation ?? LatLng(
-                  widget.stations.first['latitude'] ?? 0.0,
-                  widget.stations.first['longitude'] ?? 0.0,
-                ),
+                target:
+                    widget.userLocation ??
+                    LatLng(
+                      widget.stations.first['latitude'] ?? 0.0,
+                      widget.stations.first['longitude'] ?? 0.0,
+                    ),
                 zoom: 12.0,
               ),
               markers: _markers,
@@ -173,9 +169,10 @@ class _StationMapWidgetState extends State<StationMapWidget> {
                     backgroundColor: Colors.white,
                     child: Icon(
                       Icons.my_location,
-                      color: widget.userLocation != null 
-                          ? const Color(0xFFE60012) 
-                          : Colors.grey[400],
+                      color:
+                          widget.userLocation != null
+                              ? const Color(0xFFE60012)
+                              : Colors.grey[400],
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -201,15 +198,11 @@ class _StationMapWidgetState extends State<StationMapWidget> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(
-                        color: const Color(0xFFE60012),
-                      ),
+                      CircularProgressIndicator(color: const Color(0xFFE60012)),
                       const SizedBox(height: 16),
                       Text(
                         'Loading map...',
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey[600],
-                        ),
+                        style: GoogleFonts.poppins(color: Colors.grey[600]),
                       ),
                     ],
                   ),
