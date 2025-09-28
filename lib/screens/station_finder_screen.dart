@@ -591,21 +591,13 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                 // Navigate button with icon - takes remaining space
                 Expanded(
                   flex: 2,
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     onPressed:
                         station['isOpen']
                             ? () {
                               _navigateToStation(station);
                             }
                             : null,
-                    icon: const Icon(Icons.directions, size: 16),
-                    label: Text(
-                      'Go', 
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE60012),
                       foregroundColor: Colors.white,
@@ -616,6 +608,21 @@ class _StationFinderScreenState extends State<StationFinderScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.directions, size: 16),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Go', 
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
