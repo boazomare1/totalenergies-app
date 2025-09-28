@@ -598,21 +598,27 @@ class _EnhancedStationLocatorScreenState
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton.icon(
+                    child: ElevatedButton(
                       onPressed: () => _showStationDetails(station),
-                      icon: const Icon(Icons.info_outline, size: 16),
-                      label: Text(
-                        'Details', 
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE60012),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.info_outline, size: 16, color: Colors.white),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Details', 
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -1039,7 +1045,7 @@ class _EnhancedStationLocatorScreenState
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton.icon(
+                child: ElevatedButton(
                   onPressed: () {
                     // In a real app, make a phone call
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -1051,20 +1057,26 @@ class _EnhancedStationLocatorScreenState
                       ),
                     );
                   },
-                  icon: const Icon(Icons.phone, size: 20),
-                  label: Text(
-                    'Call', 
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE60012),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.phone, size: 20, color: Colors.white),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Call', 
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
