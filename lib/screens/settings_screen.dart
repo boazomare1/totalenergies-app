@@ -7,6 +7,7 @@ import 'privacy_policy_screen.dart';
 import 'logout_screen.dart';
 import '../services/language_service.dart';
 import '../services/auth_service.dart';
+import '../services/theme_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,6 +37,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _loadCurrentLanguage();
     _loadUserData();
+    _loadThemeMode();
   }
 
   Future<void> _loadCurrentLanguage() async {
@@ -59,6 +61,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } catch (e) {
       print('Error loading user data: $e');
     }
+  }
+
+  Future<void> _loadThemeMode() async {
+    setState(() {
+      _darkMode = ThemeService.themeMode == ThemeMode.dark;
+    });
   }
 
   @override
@@ -120,7 +128,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Dark Mode',
             'Switch to dark theme',
             _darkMode,
-            (value) => setState(() => _darkMode = value),
+            (value) async {
+              setState(() => _darkMode = value);
+              await ThemeService.setThemeMode(
+                value ? ThemeMode.dark : ThemeMode.light,
+              );
+            },
             Icons.dark_mode,
           ),
           _buildListTile(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/support_service.dart';
+import 'ticket_screen.dart';
 
 class SupportCenterScreen extends StatefulWidget {
   const SupportCenterScreen({super.key});
@@ -571,41 +572,59 @@ class _SupportCenterScreenState extends State<SupportCenterScreen>
   }
 
   Widget _buildTicketsTab() {
-    return _isLoading
-        ? const Center(
-          child: CircularProgressIndicator(color: Color(0xFFE60012)),
-        )
-        : _tickets.isEmpty
-        ? Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.support_agent, size: 64, color: Colors.grey[400]),
-              const SizedBox(height: 16),
-              Text(
-                'No support tickets',
-                style: GoogleFonts.poppins(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Create a new ticket to get help',
-                style: GoogleFonts.poppins(color: Colors.grey[500]),
-              ),
-            ],
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.support_agent,
+            size: 64,
+            color: Colors.grey[400],
           ),
-        )
-        : ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: _tickets.length,
-          itemBuilder: (context, index) {
-            final ticket = _tickets[index];
-            return _buildTicketCard(ticket);
-          },
-        );
+          const SizedBox(height: 16),
+          Text(
+            'Support Tickets',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Manage your support tickets and create new ones',
+            style: GoogleFonts.poppins(
+              color: Colors.grey[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TicketScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.support_agent),
+            label: Text(
+              'Open Support Tickets',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE60012),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildNewTicketTab() {

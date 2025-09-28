@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/station_service.dart';
+import '../widgets/station_map_widget.dart';
 
 class EnhancedStationLocatorScreen extends StatefulWidget {
   const EnhancedStationLocatorScreen({super.key});
@@ -31,6 +33,7 @@ class _EnhancedStationLocatorScreenState
   String _sortBy = 'distance'; // distance, rating, name
   Map<String, double>? _currentLocation;
   Map<String, dynamic>? _routeInfo;
+  LatLng? _userLocation;
 
   @override
   void initState() {
@@ -68,8 +71,14 @@ class _EnhancedStationLocatorScreenState
     if (mounted) {
       setState(() {
         _currentLocation = location;
+        _userLocation = LatLng(location['latitude']!, location['longitude']!);
       });
     }
+  }
+
+  void _onStationSelected(Map<String, dynamic> station) {
+    // Switch to list view to show station details
+    _tabController.animateTo(0);
   }
 
   void _applyFilters() {
@@ -609,10 +618,14 @@ class _EnhancedStationLocatorScreenState
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.info_outline, size: 16, color: Colors.white),
+                          const Icon(
+                            Icons.info_outline,
+                            size: 16,
+                            color: Colors.white,
+                          ),
                           const SizedBox(width: 4),
                           Text(
-                            'Details', 
+                            'Details',
                             style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
@@ -636,37 +649,12 @@ class _EnhancedStationLocatorScreenState
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Map Placeholder
+          // Interactive Map
           Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[300]!),
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.map, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Interactive Map',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Map integration would show here\nwith station markers and routes',
-                      style: GoogleFonts.poppins(color: Colors.grey[500]),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+            child: StationMapWidget(
+              stations: _filteredStations,
+              onStationSelected: _onStationSelected,
+              userLocation: _userLocation,
             ),
           ),
           const SizedBox(height: 16),
@@ -1070,7 +1058,7 @@ class _EnhancedStationLocatorScreenState
                       const Icon(Icons.phone, size: 20, color: Colors.white),
                       const SizedBox(width: 4),
                       Text(
-                        'Call', 
+                        'Call',
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

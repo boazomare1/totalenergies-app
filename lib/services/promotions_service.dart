@@ -1,4 +1,3 @@
-import 'dart:math';
 
 class PromotionsService {
   // Sample promotions data

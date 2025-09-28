@@ -863,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Check if user has chosen "Never show" for newsletter popup
     final prefs = await SharedPreferences.getInstance();
     final neverShow = prefs.getBool('newsletter_never_show') ?? false;
-    
+
     if (!neverShow) {
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/auth_screen.dart';
@@ -12,6 +11,7 @@ import 'services/location_service.dart';
 import 'services/notification_service.dart';
 import 'services/hive_database_service.dart';
 import 'services/secure_storage_service.dart';
+import 'services/theme_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -40,6 +40,9 @@ Future<void> _initializeServices() async {
 
     // Initialize notification service
     await NotificationService.initialize();
+
+    // Initialize theme service
+    await ThemeService.initialize();
 
     print('All services initialized successfully');
   } catch (e) {
@@ -72,22 +75,9 @@ class TotalEnergiesApp extends StatelessWidget {
             localeResolutionCallback:
                 LanguageService.getLocaleResolutionCallback(),
 
-            theme: ThemeData(
-              primarySwatch: Colors.red,
-              primaryColor: const Color(0xFFE60012), // TotalEnergies Red
-              colorScheme: const ColorScheme.light(
-                primary: Color(0xFFE60012),
-                secondary: Color(0xFF06D6A0), // Green
-                surface: Colors.white,
-              ),
-              appBarTheme: const AppBarTheme(
-                backgroundColor: Color(0xFFE60012),
-                foregroundColor: Colors.white,
-                elevation: 0,
-              ),
-              textTheme: GoogleFonts.poppinsTextTheme(),
-              useMaterial3: true,
-            ),
+            theme: ThemeService.lightTheme,
+            darkTheme: ThemeService.darkTheme,
+            themeMode: ThemeService.themeMode,
 
             initialRoute: '/',
             routes: {

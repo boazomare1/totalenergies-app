@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/products_service.dart';
+import 'shopping_cart_screen.dart';
 
 class ProductsCatalogScreen extends StatefulWidget {
   const ProductsCatalogScreen({super.key});
@@ -416,6 +417,20 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen>
         backgroundColor: const Color(0xFFE60012),
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ShoppingCartScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.shopping_cart),
+            tooltip: 'Shopping Cart',
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
