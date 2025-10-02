@@ -14,6 +14,7 @@ import 'services/hive_database_service.dart';
 import 'services/secure_storage_service.dart';
 import 'services/theme_service.dart';
 import 'services/cart_service.dart';
+import 'services/app_initialization_service.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +46,9 @@ Future<void> _initializeServices() async {
 
     // Initialize theme service
     await ThemeService.initialize();
+
+    // Initialize app with persistent data
+    await AppInitializationService.initializeApp();
 
     print('All services initialized successfully');
   } catch (e) {
@@ -81,7 +85,9 @@ class _TotalEnergiesAppState extends State<TotalEnergiesApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => LanguageNotifier()..loadCurrentLocale()),
+        ChangeNotifierProvider(
+          create: (context) => LanguageNotifier()..loadCurrentLocale(),
+        ),
         ChangeNotifierProvider(create: (context) => CartService()),
       ],
       child: Consumer<LanguageNotifier>(
